@@ -1,0 +1,12 @@
+# Ruff configuration file
+# See: https://posit-dev.github.io/air/configuration.html for full options and explanations.
+
+[format]
+line-width = 80
+indent-width = 2
+indent-style = "space"
+line-ending = "auto"
+persistent-line-breaks = true
+exclude = []
+default-exclude = true
+skip = []
