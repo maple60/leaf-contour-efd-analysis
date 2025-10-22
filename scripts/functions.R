@@ -213,3 +213,34 @@ efourier_true_norm <- function(coo_out, nb_h = 35, x_sy = TRUE, y_sy = TRUE) {
   ef$coe <- true_normalize_coe(ef$coe, y_sy = y_sy, x_sy = x_sy)
   return(ef)
 }
+
+# 指定した原点を中心に回転する関数
+rotate_xy <- function(df, angle_deg, origin = c(0, 0)) {
+  # 角度をラジアンに変換
+  theta <- angle_deg * pi / 180
+
+  # 原点を移動
+  x <- df[, 1] - origin[1]
+  y <- df[, 2] - origin[2]
+
+  # 回転行列適用
+  x_new <- x * cos(theta) - y * sin(theta)
+  y_new <- x * sin(theta) + y * cos(theta)
+
+  # 元の位置に戻す
+  return(data.frame(x = x_new + origin[1], y = y_new + origin[2]))
+}
+
+# 輪郭の重心を中心に回転する関数
+rotate_xy_centered <- function(df, angle_deg) {
+  origin <- c(mean(df[, 1]), mean(df[, 2]))
+  rotate_xy(df, angle_deg, origin)
+}
+
+# 任意の点を中心に回転する関数クロージャ
+rotate_xy_custom_origin <- function(df, angle_deg, origins) {
+  l <- lapply(seq_along(origins), function(i) {
+    rotate_xy(df[i, ], angle_deg[i], origins[[i]])
+  })
+  do.call(rbind, l)
+}
