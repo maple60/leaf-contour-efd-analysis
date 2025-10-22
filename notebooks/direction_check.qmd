@@ -1,0 +1,237 @@
+
+
+
+
+```{r}
+#| label: setup
+library(tools)
+library(Momocs)
+source("scripts/functions.R")
+palette("Okabe-Ito")
+```
+
+## コナラとミズナラの方向チェック
+
+```{r}
+#| label: species_name
+df_sp_name <- read.csv("data/species_name.csv")
+df_sp_name$species <- ifelse(
+  df_sp_name$konara < df_sp_name$mizunara,
+  "mizunara",
+  "konara"
+)
+```
+
+```{r}
+#| label: load_contours
+file_paths_xy <- list.files(
+  "data/contour/",
+  full.names = TRUE,
+  pattern = "\\.csv$"
+)
+id_name <- file_path_sans_ext(basename(file_paths_xy))
+
+id_name_head <- lapply(id_name, function(x) {
+  parts <- unlist(strsplit(x, "_"))
+  return(parts[1])
+})
+id_name_head <- unlist(id_name_head)
+# 種名の対応付け
+sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
+
+xy_list <- lapply(file_paths_xy, function(fp) {
+  cat("File:", fp, "\n")
+  df <- read.csv(fp)
+  df <- df[, c("x", "y")]
+  df <- as.matrix(df)
+  storage.mode(df) <- "double"
+  # 輪郭が閉じていない場合、最初の点を最後に追加して閉じる
+  if (!all(df[1, ] == df[nrow(df), ])) {
+    df <- rbind(df, df[1, ])
+  }
+  return(df)
+})
+names(xy_list) <- id_name
+
+out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # MomocsのOutオブジェクトに変換
+names(out) <- id_name
+```
+
+### 輪郭の回転
+
+```{r}
+#| label: rotate_contours
+
+set.seed(123) # set.seed for reproducibility
+angles <- sample(0:360, length(out$coo), replace = TRUE) # rotation angles in degrees
+# rotate contours
+out_rotated <- mapply(
+  function(mat, ang) rotate_xy_centered(mat, ang),
+  out$coo,
+  angles,
+  SIMPLIFY = FALSE
+)
+out_rotated <- Out(out_rotated, fac = out$fac)
+#stack(out_rotated)
+```
+
+## 回転後のTrue EFD normalizationの適用
+
+回転後の輪郭座標からEFDを計算します。
+
+```{r}
+#| label: efd_rotation_contours
+
+nb_h = 35 # number of harmonics
+# True EFD normalization
+ef_rotated_true_norm <- efourier_true_norm(
+  out_rotated,
+  nb_h = nb_h,
+  x_sy = TRUE,
+  y_sy = TRUE
+)
+```
+
+### True EFD normalization後の輪郭の再構築
+
+```{r}
+#| label: reconstruct_rotated_contours
+
+coe <- ef_rotated_true_norm$coe # coefficients
+nb_h <- sum(grepl("^A", colnames(coe))) # number of harmonics
+
+coef_list <- lapply(c("A", "B", "C", "D"), function(prefix) {
+  coe[, paste0(prefix, 1:nb_h)]
+})
+names(coef_list) <- c("A", "B", "C", "D")
+
+reconst_list <- lapply(seq_len(dim(coef_list$A)[1]), function(row) {
+  cat("ID:", dimnames(coef_list$A)[[1]][row], "\n")
+  an <- coef_list$A[row, ]
+  bn <- coef_list$B[row, ]
+  cn <- coef_list$C[row, ]
+  dn <- coef_list$D[row, ]
+
+  # reconstruct shape
+  reconstructed_shape <- efourier_shape(
+    an,
+    bn,
+    cn,
+    dn,
+    nb.h = nb_h,
+    nb.pts = 120,
+    plot = FALSE
+  )
+  return(reconstructed_shape)
+})
+
+# convert to Momocs Out object
+out_reconstructed <- Out(
+  reconst_list,
+  fac = data.frame(species = factor(sp_name))
+)
+names(out_reconstructed) <- id_name
+
+save_dir <- "results/contours_rotation_reconstruction/"
+dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
+idx <- list(
+  1:50,
+  51:100,
+  101:150,
+  151:200,
+  201:250,
+  251:300,
+  301:350,
+  351:400,
+  401:450,
+  451:500,
+  501:550,
+  551:600,
+  601:650,
+  651:700,
+  701:746
+)
+
+for (i in seq_along(idx)) {
+  slice_i_rotated <- slice(out_rotated, idx[[i]])
+  slice_i_reconstructed <- slice(out_reconstructed, idx[[i]])
+  svg_filename <- paste0(
+    save_dir,
+    "reconstructed_contours_",
+    min(idx[[i]]),
+    "_",
+    max(idx[[i]]),
+    ".svg"
+  )
+  svg(svg_filename, width = 10, height = 5, bg = "transparent")
+  panel(
+    slice_i_rotated,
+    dim = c(5, 10),
+    names = TRUE,
+    borders = adjustcolor(1, alpha.f = 0.9)
+  )
+  par(new = TRUE) # overlay
+  panel(
+    slice_i_reconstructed,
+    dim = c(5, 10),
+    names = TRUE,
+    borders = adjustcolor(7, alpha.f = 0.9)
+  )
+  dev.off()
+}
+```
+
+一部を取り出します。
+
+```{r}
+idx_left <- c(1:5, 181:184)
+idx_right <- c(322, 372, 374, 375, 376, 378, 595, 596, 746)
+slice_rotated_left <- slice(out_rotated, idx_left)
+slice_reconstructed_left <- slice(out_reconstructed, idx_left)
+names(slice_rotated_left) <- letters[1:length(idx_left)]
+
+slice_rotated_right <- slice(out_rotated, idx_right)
+slice_reconstructed_right <- slice(out_reconstructed, idx_right)
+names(slice_rotated_right) <- letters[
+  (length(idx_left) + 1):(length(idx_left) + length(idx_right))
+]
+
+dims <- c(3, 3)
+cex_names <- 1.5
+
+# left side
+save_filename <- "results/contours_rotation_reconstruction/leftward_examples.svg"
+svg(save_filename, width = 10, height = 5, bg = "transparent")
+panel(
+  slice_rotated_left,
+  dim = dims,
+  borders = adjustcolor(1, alpha.f = 0.9),
+  names = TRUE,
+  cex.names = cex_names
+)
+par(new = TRUE) # overlay
+panel(
+  slice_reconstructed_left,
+  dim = dims,
+  borders = adjustcolor(7, alpha.f = 0.9)
+)
+dev.off()
+
+# right side
+save_filename <- "results/contours_rotation_reconstruction/rightward_examples.svg"
+svg(save_filename, width = 10, height = 5, bg = "transparent")
+panel(
+  slice_rotated_right,
+  dim = dims,
+  borders = adjustcolor(1, alpha.f = 0.9),
+  names = TRUE,
+  cex.names = cex_names
+)
+par(new = TRUE) # overlay
+panel(
+  slice_reconstructed_right,
+  dim = dims,
+  borders = adjustcolor(7, alpha.f = 0.9)
+)
+dev.off()
+```
