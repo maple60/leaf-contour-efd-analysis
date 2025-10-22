@@ -1,0 +1,153 @@
+
+## Setup
+
+```{r}
+#| label: setup
+
+library(tools)
+library(Momocs)
+source("scripts/functions.R")
+palette("Okabe-Ito")
+my_palette <- pal_manual(c("#FF4B00", "#005AFF"), transp = 0) # Quercus serrata and Q. crispula colors
+```
+
+## Load species names
+
+```{r}
+#| label: species_name
+
+df_sp_name <- read.csv("data/species_name.csv")
+# konara: Quercus settata
+# mizunara: Quercus crispula
+df_sp_name$species <- ifelse(
+  df_sp_name$konara < df_sp_name$mizunara,
+  "Quercus crispula",
+  "Quercus serrata"
+)
+df_sp_name$species <- factor(
+  df_sp_name$species,
+  levels = c("Quercus serrata", "Quercus crispula")
+)
+```
+
+## Principal Component Analysis (PCA) using Momocs
+
+Load contours
+
+```{r}
+#| label: load_contours
+
+file_paths_xy <- list.files(
+  "data/contour/",
+  full.names = TRUE,
+  pattern = "\\.csv$"
+)
+xy_list <- lapply(file_paths_xy, function(fp) {
+  cat("File:", fp, "\n")
+  df <- read.csv(fp)
+  df <- df[, c("x", "y")]
+  df <- as.matrix(df)
+  storage.mode(df) <- "double"
+  # 輪郭が閉じていない場合、最初の点を最後に追加して閉じる
+  if (!all(df[1, ] == df[nrow(df), ])) {
+    df <- rbind(df, df[1, ])
+  }
+  return(df)
+})
+```
+
+```{r}
+#| label: prepare_ids_species
+
+id_name <- file_path_sans_ext(basename(file_paths_xy)) # IDs with suffixes
+# individual IDs without suffixes
+id_name_head <- lapply(id_name, function(x) {
+  parts <- unlist(strsplit(x, "_"))
+  return(parts[1])
+})
+id_name_head <- unlist(id_name_head)
+# species names corresponding to individual IDs
+sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
+```
+
+```{r}
+#| label: pca_true_efd_normalized
+
+nb_h <- 20 # Number of harmonics
+out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
+ef_true_norm <- efourier_true_norm(out, nb_h = nb_h, x_sy = TRUE, y_sy = FALSE) # EFD with normalization
+pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+
+svg(
+  "results/pca_true_efd_normalized.svg",
+  bg = "transparent",
+  width = 6,
+  height = 6
+)
+pca_plot <- function(x, ...) {
+  plt <- plot_PCA(
+    x,
+    f = ~species,
+    palette = my_palette,
+    points = FALSE,
+    morphospace = FALSE,
+    morphospace_position = "range",
+    chull = TRUE, # convex hull
+    #chullfilled = TRUE,
+    zoom = 1,
+    eigen = FALSE,
+    box = FALSE,
+    ...
+  )
+  plt <- layer_axes(plt, col = "black", lwd = 1)
+  plt <- layer_ticks(plt, col = "black", lwd = 1)
+  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
+  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
+}
+pca_plot(pca_true_norm)
+dev.off()
+```
+
+### normalized EFD
+
+PCA using normalized EFD coefficients (traditional method)
+
+```{r}
+#| label: pca_efd_normalized
+
+nb_h <- 20 # Number of harmonics
+out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
+ef_norm <- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE) # EFD with normalization
+pca_norm <- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+pca_plot(pca_norm)
+
+svg(
+  "results/pca_efd_normalized.svg",
+  bg = "transparent",
+  width = 6,
+  height = 6
+)
+pca_plot <- function(x, ...) {
+  plt <- plot_PCA(
+    x,
+    f = ~species,
+    palette = my_palette,
+    points = FALSE,
+    morphospace = FALSE,
+    morphospace_position = "range",
+    chull = TRUE, # convex hull
+    #chullfilled = TRUE,
+    labelgroups = FALSE,
+    zoom = 1,
+    eigen = FALSE,
+    box = FALSE,
+    ...
+  )
+  plt <- layer_axes(plt, col = "black", lwd = 1)
+  plt <- layer_ticks(plt, col = "black", lwd = 1)
+  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
+  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
+}
+pca_plot(pca_norm)
+dev.off()
+```
