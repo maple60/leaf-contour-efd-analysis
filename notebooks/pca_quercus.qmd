@@ -71,18 +71,27 @@ sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
 ```
 
 ```{r}
-#| label: pca_true_efd_normalized
+#| label: pca_oriented_true_efd_normalized
 
-nb_h <- 20 # Number of harmonics
+nb_h <- 35 # Number of harmonics
 out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
-ef_true_norm <- efourier_true_norm(out, nb_h = nb_h, x_sy = TRUE, y_sy = FALSE) # EFD with normalization
+# oriented true EFD normalization
+ef_true_norm <- efourier_true_norm(
+  out,
+  nb_h = nb_h,
+  x_sy = TRUE,
+  y_sy = FALSE,
+  skip_rotation = TRUE
+)
 pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
 
+save_dir <- "results/pca_quercus"
+dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+save_file_name <- "pca_oriented_true_efd_normalized.svg"
+save_file_path <- file.path(save_dir, save_file_name)
 svg(
-  "results/pca_true_efd_normalized.svg",
-  bg = "transparent",
-  width = 6,
-  height = 6
+  save_file_path,
+  bg = "transparent"
 )
 pca_plot <- function(x, ...) {
   plt <- plot_PCA(
@@ -115,17 +124,19 @@ PCA using normalized EFD coefficients (traditional method)
 ```{r}
 #| label: pca_efd_normalized
 
-nb_h <- 20 # Number of harmonics
+nb_h <- 35 # Number of harmonics
 out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
 ef_norm <- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE) # EFD with normalization
 pca_norm <- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
 pca_plot(pca_norm)
 
+save_dir <- "results/pca_quercus"
+dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+save_file_name <- "pca_efd_normalized.svg"
+save_file_path <- file.path(save_dir, save_file_name)
 svg(
-  "results/pca_efd_normalized.svg",
-  bg = "transparent",
-  width = 6,
-  height = 6
+  save_file_path,
+  bg = "transparent"
 )
 pca_plot <- function(x, ...) {
   plt <- plot_PCA(
@@ -149,5 +160,55 @@ pca_plot <- function(x, ...) {
   plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
 }
 pca_plot(pca_norm)
+dev.off()
+```
+
+## True EFD normalization
+
+
+```{r}
+#| label: pca_oriented_true_efd_normalized
+
+nb_h <- 35 # Number of harmonics
+out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
+# oriented true EFD normalization
+ef_true_norm <- efourier_true_norm(
+  out,
+  nb_h = nb_h,
+  x_sy = TRUE,
+  y_sy = TRUE,
+  skip_rotation = FALSE
+)
+pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+
+save_dir <- "results/pca_quercus"
+dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+save_file_name <- "pca_true_efd_normalized.svg"
+save_file_path <- file.path(save_dir, save_file_name)
+svg(
+  save_file_path,
+  bg = "transparent"
+)
+pca_plot <- function(x, ...) {
+  plt <- plot_PCA(
+    x,
+    f = ~species,
+    palette = my_palette,
+    points = FALSE,
+    morphospace = FALSE,
+    morphospace_position = "range",
+    chull = TRUE, # convex hull
+    #chullfilled = TRUE,
+    zoom = 1,
+    eigen = FALSE,
+    box = FALSE,
+    ...
+  )
+  plt <- layer_axes(plt, col = "black", lwd = 1)
+  plt <- layer_ticks(plt, col = "black", lwd = 1)
+  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
+  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
+}
+pca_plot(pca_true_norm)
 dev.off()
 ```
