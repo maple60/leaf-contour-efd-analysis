@@ -4,7 +4,8 @@ true_normalize <- function(
   EPS = 1e-10,
   y_sy = TRUE,
   x_sy = TRUE,
-  output_meta = FALSE
+  output_meta = FALSE,
+  skip_rotation = FALSE
 ) {
   stopifnot(!is.null(ef$an), !is.null(ef$bn), !is.null(ef$cn), !is.null(ef$dn))
 
@@ -46,31 +47,35 @@ true_normalize <- function(
   }
 
   # 主軸候補角 θ_t の計算 ----
-  theta_t <- 0.5 * atan2(2 * (a1 * b1 + c1 * d1), (a1^2 + c1^2 - b1^2 - d1^2))
-  # 主軸の候補角を正の象限にそろえる
-  if (theta_t < 0) {
-    theta_t <- theta_t + pi / 2
-  }
-  # 軸の長さの計算
-  sin_2theta_t <- sin(2 * theta_t)
-  cos_2theta_t <- cos(2 * theta_t)
-  cos_theta_square <- (1 + cos_2theta_t) / 2
-  sin_theta_square <- (1 - cos_2theta_t) / 2
-  axis_theta_1 <- sqrt(
-    (a1^2 + c1^2) *
-      cos_theta_square +
-      (a1 * b1 + c1 * d1) * sin_2theta_t +
-      (b1^2 + d1^2) * sin_theta_square
-  )
-  axis_theta_2 <- sqrt(
-    (a1^2 + c1^2) *
-      sin_theta_square -
-      (a1 * b1 + c1 * d1) * sin_2theta_t +
-      (b1^2 + d1^2) * cos_theta_square
-  )
-  # theta_1 < theta_2 なら theta_t を90度回転にして長軸にする
-  if (axis_theta_1 < axis_theta_2) {
-    theta_t <- theta_t + pi / 2
+  if (skip_rotation) {
+    theta_t <- 0
+  } else {
+    theta_t <- 0.5 * atan2(2 * (a1 * b1 + c1 * d1), (a1^2 + c1^2 - b1^2 - d1^2))
+    # 主軸の候補角を正の象限にそろえる
+    if (theta_t < 0) {
+      theta_t <- theta_t + pi / 2
+    }
+    # 軸の長さの計算
+    sin_2theta_t <- sin(2 * theta_t)
+    cos_2theta_t <- cos(2 * theta_t)
+    cos_theta_square <- (1 + cos_2theta_t) / 2
+    sin_theta_square <- (1 - cos_2theta_t) / 2
+    axis_theta_1 <- sqrt(
+      (a1^2 + c1^2) *
+        cos_theta_square +
+        (a1 * b1 + c1 * d1) * sin_2theta_t +
+        (b1^2 + d1^2) * sin_theta_square
+    )
+    axis_theta_2 <- sqrt(
+      (a1^2 + c1^2) *
+        sin_theta_square -
+        (a1 * b1 + c1 * d1) * sin_2theta_t +
+        (b1^2 + d1^2) * cos_theta_square
+    )
+    # theta_1 < theta_2 なら theta_t を90度回転にして長軸にする
+    if (axis_theta_1 < axis_theta_2) {
+      theta_t <- theta_t + pi / 2
+    }
   }
 
   # 長軸の角度 ψ の計算 ----
@@ -96,28 +101,31 @@ true_normalize <- function(
   ef$dn <- ef$dn / E
 
   # 回転に関する正規化 ----
-  cos_psi <- cos(psi)
-  sin_psi <- sin(psi)
-  R_left <- matrix(c(cos_psi, sin_psi, -sin_psi, cos_psi), 2, byrow = TRUE)
-  res <- lapply(seq_along(ef$an), function(i) {
-    M <- matrix(c(ef$an[i], ef$bn[i], ef$cn[i], ef$dn[i]), 2, byrow = TRUE)
-    Rr <- matrix(
-      c(
-        cos(theta_t * i),
-        -sin(theta_t * i),
-        sin(theta_t * i),
-        cos(theta_t * i)
-      ),
-      2,
-      byrow = TRUE
-    )
-    as.vector(t(R_left %*% M %*% Rr)) # a', b', c', d'
-  })
-  mat <- do.call(rbind, res)
-  ef$an <- mat[, 1]
-  ef$bn <- mat[, 2]
-  ef$cn <- mat[, 3]
-  ef$dn <- mat[, 4]
+  if (!skip_rotation) {
+    cos_psi <- cos(psi)
+    sin_psi <- sin(psi)
+    R_left <- matrix(c(cos_psi, sin_psi, -sin_psi, cos_psi), 2, byrow = TRUE)
+
+    res <- lapply(seq_along(ef$an), function(i) {
+      M <- matrix(c(ef$an[i], ef$bn[i], ef$cn[i], ef$dn[i]), 2, byrow = TRUE)
+      Rr <- matrix(
+        c(
+          cos(theta_t * i),
+          -sin(theta_t * i),
+          sin(theta_t * i),
+          cos(theta_t * i)
+        ),
+        2,
+        byrow = TRUE
+      )
+      as.vector(t(R_left %*% M %*% Rr)) # a', b', c', d'
+    })
+    mat <- do.call(rbind, res)
+    ef$an <- mat[, 1]
+    ef$bn <- mat[, 2]
+    ef$cn <- mat[, 3]
+    ef$dn <- mat[, 4]
+  }
 
   # 対称性の正規化 ----
   n <- length(ef$an)
@@ -156,7 +164,14 @@ true_normalize <- function(
   }
 }
 
-true_normalize_coe <- function(ef_coe, EPS = 1e-10, y_sy = TRUE, x_sy = TRUE) {
+
+true_normalize_coe <- function(
+  ef_coe,
+  EPS = 1e-10,
+  y_sy = TRUE,
+  x_sy = TRUE,
+  skip_rotation = FALSE
+) {
   ef_mat <- as.matrix(ef_coe)
   storage.mode(ef_mat) <- "double"
 
@@ -187,7 +202,24 @@ true_normalize_coe <- function(ef_coe, EPS = 1e-10, y_sy = TRUE, x_sy = TRUE) {
       ao = 0, # A0/C0 を使うなら row["A0"], row["C0"] 等に差し替え
       co = 0
     )
-    ef_true <- true_normalize(ef, EPS = EPS, y_sy = y_sy, x_sy = x_sy)
+    if (skip_rotation) {
+      ef_true <- true_normalize(
+        ef,
+        EPS = EPS,
+        y_sy = y_sy,
+        x_sy = x_sy,
+        skip_rotation = TRUE
+      )
+      print("skip_rotation is TRUE")
+    } else {
+      ef_true <- true_normalize(
+        ef,
+        EPS = EPS,
+        y_sy = y_sy,
+        x_sy = x_sy,
+        skip_rotation = FALSE
+      )
+    }
 
     c(
       setNames(ef_true$an, nmA),
@@ -208,11 +240,19 @@ true_normalize_coe <- function(ef_coe, EPS = 1e-10, y_sy = TRUE, x_sy = TRUE) {
   return(ef_mat_norm)
 }
 
-efourier_true_norm <- function(coo_out, nb_h = 35, x_sy = TRUE, y_sy = TRUE) {
+
+efourier_true_norm <- function(
+  coo_out,
+  nb_h = 35,
+  x_sy = TRUE,
+  y_sy = TRUE,
+  ...
+) {
   ef <- efourier(coo_out, nb.h = nb_h, norm = FALSE)
-  ef$coe <- true_normalize_coe(ef$coe, y_sy = y_sy, x_sy = x_sy)
+  ef$coe <- true_normalize_coe(ef$coe, y_sy = y_sy, x_sy = x_sy, ...)
   return(ef)
 }
+
 
 # 指定した原点を中心に回転する関数
 rotate_xy <- function(df, angle_deg, origin = c(0, 0)) {
