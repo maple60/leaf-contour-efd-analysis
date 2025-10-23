@@ -1,0 +1,248 @@
+
+## セットアップ
+
+```{r}
+#| label: setup
+
+library(tools)
+library(Momocs)
+source("scripts/functions.R")
+palette("Okabe-Ito")
+```
+
+## 輪郭データの読み込み
+
+```{r}
+#| label: load_contours
+
+file_paths_xy <- list.files(
+  "data/contour_triadica_sebifera//",
+  full.names = TRUE,
+  pattern = "\\.csv$"
+)
+id_name <- file_path_sans_ext(basename(file_paths_xy))
+
+xy_list <- lapply(file_paths_xy, function(fp) {
+  cat("File:", fp, "\n")
+  df <- read.csv(fp)
+  df <- df[, c("x", "y")]
+  df <- as.matrix(df)
+  storage.mode(df) <- "double"
+  # 輪郭が閉じていない場合、最初の点を最後に追加して閉じる
+  if (!all(df[1, ] == df[nrow(df), ])) {
+    df <- rbind(df, df[1, ])
+  }
+  return(df)
+})
+names(xy_list) <- id_name
+
+out <- Out(xy_list) # MomocsのOutオブジェクトに変換
+names(out) <- id_name
+```
+
+## Check contours
+
+```{r}
+panel(
+  out,
+  dim = c(5, 6),
+  names = TRUE,
+  borders = 1
+)
+```
+
+## True EFD normalization後の輪郭の再構築
+
+```{r}
+file_paths_true_efd <- list.files(
+  "data/coefficients_efd_normalized_triadica_sebifera/",
+  full.names = TRUE,
+  pattern = "\\.csv$"
+)
+id_name <- file_path_sans_ext(basename(file_paths_true_efd))
+
+reconst_list <- lapply(file_paths_true_efd, function(fp) {
+  cat("File:", fp, "\n")
+  df <- read.csv(fp)
+  reconstructed_shape <- efourier_shape(
+    df$an,
+    df$bn,
+    df$cn,
+    df$dn,
+    nb.pts = 120,
+    plot = TRUE
+  )
+  # start point
+  points(
+    reconstructed_shape[1, 1],
+    reconstructed_shape[1, 2],
+    col = 2,
+    pch = 19,
+    cex = 2
+  )
+  return(reconstructed_shape)
+})
+out_reconst_oriented <- Out(reconst_list) # convert to Momocs Out object
+names(out_reconst_oriented) <- id_name
+
+# check reconstructed contours
+panel(
+  out_reconst_oriented,
+  dim = c(5, 6),
+  names = TRUE,
+  borders = 1
+)
+```
+
+## 普通の True EFD normalization を行った場合
+
+取得した輪郭から、通常の True EFD normalization を行い、輪郭を再構築して確認します。
+長軸を x 軸に揃えるように回転させるため、サンプル間で向きがそろわない可能性があります。
+
+```{r}
+nb_h <- 35 # Number of harmonics
+ef_true_norm <- efourier_true_norm(
+  out,
+  nb_h = nb_h,
+  x_sy = TRUE,
+  y_sy = TRUE,
+  skip_rotation = FALSE
+) # EFD with normalization
+coe <- ef_true_norm$coe # coefficients
+
+coef_list <- lapply(c("A", "B", "C", "D"), function(prefix) {
+  coe[, paste0(prefix, 1:nb_h)]
+})
+names(coef_list) <- c("A", "B", "C", "D")
+
+reconst_list <- lapply(seq_len(dim(coef_list$A)[1]), function(row) {
+  cat("ID:", dimnames(coef_list$A)[[1]][row], "\n")
+  an <- coef_list$A[row, ]
+  bn <- coef_list$B[row, ]
+  cn <- coef_list$C[row, ]
+  dn <- coef_list$D[row, ]
+
+  # reconstruct shape
+  reconstructed_shape <- efourier_shape(
+    an,
+    bn,
+    cn,
+    dn,
+    nb.h = nb_h,
+    nb.pts = 120,
+    plot = TRUE
+  )
+  # start point
+  points(
+    reconstructed_shape[1, 1],
+    reconstructed_shape[1, 2],
+    col = 2,
+    pch = 19,
+    cex = 2
+  )
+  return(reconstructed_shape)
+})
+
+# convert to Momocs Out object
+out_reconst <- Out(reconst_list)
+names(out_reconst) <- id_name
+
+# confirmation
+panel(
+  out_reconst,
+  dim = c(5, 6),
+  names = TRUE,
+  borders = 1
+)
+```
+
+## 取得した輪郭と、True EFD normalization 後の輪郭の比較
+
+```{r}
+#| label: compare_contours_oriented_true_efd_normalized
+
+#oldpar <- par("lwd", "new")
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE)
+save_file_name <- "compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg"
+save_file_path <- file.path(save_dir, save_file_name)
+svg(save_file_path, bg = "transparent")
+par(lwd = 2) # make borders thicker
+dim <- c(5, 6)
+panel(out, dim = dim, borders = adjustcolor(1, alpha.f = 0.9))
+par(new = TRUE) # overlay
+panel(
+  out_reconst_oriented,
+  dim = dim,
+  borders = adjustcolor(7, alpha.f = 0.9)
+)
+dev.off()
+#par(oldpar) # restore par
+```
+
+## 取得した輪郭と、普通の True EFD normalization 後の輪郭の比較
+
+```{r}
+#| label: compare_contours_true_efd_normalized
+
+#oldpar <- par("lwd", "new")
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE)
+save_file_name <- "compare_contours_true_efd_normalized_triadica_sebifera.svg"
+save_file_path <- file.path(save_dir, save_file_name)
+svg(save_file_path, bg = "transparent")
+par(lwd = 2) # make borders thicker
+dim <- c(5, 6)
+panel(out, dim = dim, borders = adjustcolor(1, alpha.f = 0.9))
+par(new = TRUE) # overlay
+panel(
+  out_reconst,
+  dim = dim,
+  borders = adjustcolor(7, alpha.f = 0.9)
+)
+dev.off()
+#par(oldpar) # restore par
+```
+
+## テスト
+
+```{r}
+for (i in 1:30) {
+  xy <- out$coo[[i]]
+  idx_x_max <- which.max(xy[, 1])
+  if (length(idx_x_max) > 1) {
+    idx_x_max <- idx_x_max[1]
+  }
+  xy_reordered <- xy[c(idx_x_max:nrow(xy), 1:(idx_x_max - 1)), ]
+  ef <- efourier(xy_reordered, nb.h = 35)
+
+  plot(xy_reordered, type = "l", asp = 1)
+  points(xy_reordered[1, 1], xy_reordered[1, 2], col = 2, pch = 19, cex = 3)
+
+  ef <- efourier(xy_reordered, nb.h = 35)
+  efourier_shape(
+    ef$an,
+    ef$bn,
+    ef$cn,
+    ef$dn,
+    nb.pts = 120,
+    plot = TRUE
+  )
+
+  ef_true_norm <- true_normalize(
+    ef,
+    x_sy = TRUE,
+    y_sy = FALSE,
+    output_meta = TRUE,
+    skip_rotation = TRUE
+  )
+  efourier_shape(
+    ef_true_norm$ef$an,
+    ef_true_norm$ef$bn,
+    ef_true_norm$ef$cn,
+    ef_true_norm$ef$dn,
+    nb.pts = 120,
+    plot = TRUE
+  )
+}
+```
