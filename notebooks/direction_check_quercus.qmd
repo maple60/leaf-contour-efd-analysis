@@ -163,6 +163,7 @@ for (i in seq_along(idx)) {
     ".svg"
   )
   svg(svg_filename, width = 10, height = 5, bg = "transparent")
+  par(lwd = 2) # make borders thicker
   panel(
     slice_i_rotated,
     dim = c(5, 10),
@@ -201,6 +202,7 @@ cex_names <- 1.5
 # left side
 save_filename <- "results/contours_rotation_reconstruction/leftward_examples.svg"
 svg(save_filename, width = 10, height = 5, bg = "transparent")
+par(lwd = 2) # make borders thicker
 panel(
   slice_rotated_left,
   dim = dims,
@@ -219,6 +221,7 @@ dev.off()
 # right side
 save_filename <- "results/contours_rotation_reconstruction/rightward_examples.svg"
 svg(save_filename, width = 10, height = 5, bg = "transparent")
+par(lwd = 2) # make borders thicker
 panel(
   slice_rotated_right,
   dim = dims,
