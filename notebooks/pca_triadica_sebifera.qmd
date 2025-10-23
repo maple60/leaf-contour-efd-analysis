@@ -8,26 +8,6 @@ library(tools)
 library(Momocs)
 source("scripts/functions.R")
 palette("Okabe-Ito")
-my_palette <- pal_manual(c("#FF4B00", "#005AFF"), transp = 0) # Quercus serrata and Q. crispula colors
-```
-
-## Load species names
-
-```{r}
-#| label: species_name
-
-df_sp_name <- read.csv("data/species_name.csv")
-# konara: Quercus settata
-# mizunara: Quercus crispula
-df_sp_name$species <- ifelse(
-  df_sp_name$konara < df_sp_name$mizunara,
-  "Quercus crispula",
-  "Quercus serrata"
-)
-df_sp_name$species <- factor(
-  df_sp_name$species,
-  levels = c("Quercus serrata", "Quercus crispula")
-)
 ```
 
 ## Principal Component Analysis (PCA) using Momocs
@@ -38,7 +18,7 @@ Load contours
 #| label: load_contours
 
 file_paths_xy <- list.files(
-  "data/contour/",
+  "data/contour_triadica_sebifera/",
   full.names = TRUE,
   pattern = "\\.csv$"
 )
@@ -57,23 +37,9 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 ```
 
 ```{r}
-#| label: prepare_ids_species
-
-id_name <- file_path_sans_ext(basename(file_paths_xy)) # IDs with suffixes
-# individual IDs without suffixes
-id_name_head <- lapply(id_name, function(x) {
-  parts <- unlist(strsplit(x, "_"))
-  return(parts[1])
-})
-id_name_head <- unlist(id_name_head)
-# species names corresponding to individual IDs
-sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
-```
-
-```{r}
 #| label: pca_oriented_true_efd_normalized
 
-nb_h <- 35 # Number of harmonics
+nb_h <- 10 # Number of harmonics
 out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
 # oriented true EFD normalization
 ef_true_norm <- efourier_true_norm(
@@ -85,7 +51,7 @@ ef_true_norm <- efourier_true_norm(
 )
 pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
 
-save_dir <- "results/pca_quercus"
+save_dir <- "results/pca_triadica_sebifera"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
 save_file_name <- "pca_oriented_true_efd_normalized.svg"
 save_file_path <- file.path(save_dir, save_file_name)
@@ -96,8 +62,6 @@ svg(
 pca_plot <- function(x, ...) {
   plt <- plot_PCA(
     x,
-    f = ~species,
-    palette = my_palette,
     points = FALSE,
     morphospace = FALSE,
     morphospace_position = "range",
@@ -112,8 +76,8 @@ pca_plot <- function(x, ...) {
   )
   plt <- layer_axes(plt, col = "black", lwd = 1)
   plt <- layer_ticks(plt, col = "black", lwd = 1)
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
   plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
+  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
   plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
   plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
 }
@@ -126,15 +90,36 @@ dev.off()
 PCA using normalized EFD coefficients (traditional method)
 
 ```{r}
+for (i in 1:30) {
+  xy <- xy_list[[i]]
+  ef <- efourier(
+    xy,
+    nb.h = 35,
+    norm = TRUE,
+    start = FALSE
+  )
+  efourier_shape(
+    ef$an,
+    ef$bn,
+    ef$cn,
+    ef$dn,
+    nb.h = 3,
+    nb.pts = 120,
+    plot = TRUE
+  )
+}
+```
+
+```{r}
 #| label: pca_efd_normalized
 
-nb_h <- 35 # Number of harmonics
+nb_h <- 10 # Number of harmonics
 out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
 ef_norm <- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE) # EFD with normalization
 pca_norm <- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
 pca_plot(pca_norm)
 
-save_dir <- "results/pca_quercus"
+save_dir <- "results/pca_triadica_sebifera"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
 save_file_name <- "pca_efd_normalized.svg"
 save_file_path <- file.path(save_dir, save_file_name)
@@ -145,14 +130,11 @@ svg(
 pca_plot <- function(x, ...) {
   plt <- plot_PCA(
     x,
-    f = ~species,
-    palette = my_palette,
     points = FALSE,
     morphospace = FALSE,
     morphospace_position = "range",
     chull = TRUE, # convex hull
     #chullfilled = TRUE,
-    labelgroups = FALSE,
     zoom = 1,
     eigen = FALSE,
     box = FALSE,
@@ -162,8 +144,8 @@ pca_plot <- function(x, ...) {
   )
   plt <- layer_axes(plt, col = "black", lwd = 1)
   plt <- layer_ticks(plt, col = "black", lwd = 1)
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
   plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
+  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
   plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
   plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
 }
@@ -177,7 +159,7 @@ dev.off()
 ```{r}
 #| label: pca_oriented_true_efd_normalized
 
-nb_h <- 35 # Number of harmonics
+nb_h <- 10 # Number of harmonics
 out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
 # oriented true EFD normalization
 ef_true_norm <- efourier_true_norm(
@@ -189,7 +171,7 @@ ef_true_norm <- efourier_true_norm(
 )
 pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
 
-save_dir <- "results/pca_quercus"
+save_dir <- "results/pca_triadica_sebifera"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
 save_file_name <- "pca_true_efd_normalized.svg"
 save_file_path <- file.path(save_dir, save_file_name)
@@ -200,8 +182,6 @@ svg(
 pca_plot <- function(x, ...) {
   plt <- plot_PCA(
     x,
-    f = ~species,
-    palette = my_palette,
     points = FALSE,
     morphospace = FALSE,
     morphospace_position = "range",
@@ -216,8 +196,8 @@ pca_plot <- function(x, ...) {
   )
   plt <- layer_axes(plt, col = "black", lwd = 1)
   plt <- layer_ticks(plt, col = "black", lwd = 1)
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
   plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
+  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
   plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
   plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
 }
