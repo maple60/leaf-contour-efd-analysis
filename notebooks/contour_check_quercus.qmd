@@ -1,4 +1,3 @@
-
 ## セットアップ
 
 ```{r}
@@ -51,45 +50,113 @@ xy_list <- lapply(file_paths_xy, function(fp) {
   return(df)
 })
 names(xy_list) <- id_name
-
-out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # MomocsのOutオブジェクトに変換
-names(out) <- id_name
 ```
 
+## データの読み込み
 
-## True EFD normalization後の輪郭の再構築
-
-```{r}
-file_paths_true_efd <- list.files(
-  "data/coefficients_efd_normalized/",
+```{r} 
+file_paths <- list.files(
+  "data/coefficients_efd_normalized",
   full.names = TRUE,
   pattern = "\\.csv$"
 )
-id_name <- file_path_sans_ext(basename(file_paths_true_efd))
-
-reconst_list <- lapply(file_paths_true_efd, function(fp) {
+ef_list <- lapply(file_paths, function(fp) {
   cat("File:", fp, "\n")
   df <- read.csv(fp)
-  reconstructed_shape <- efourier_shape(
-    df$an,
-    df$bn,
-    df$cn,
-    df$dn,
-    nb.pts = 120,
-    plot = FALSE
-  )
-  return(reconstructed_shape)
+  return(df)
 })
-out_reconst <- Out(reconst_list, fac = data.frame(species = factor(sp_name))) # MomocsのOutオブジェクトに変換
-names(out_reconst) <- id_name
 ```
 
-## すべての輪郭と再構築輪郭のプロット
+## 関数の作成
+
+```{r}
+compare_contour_oriented_ture_EFD_normalization <- function(
+  original,
+  ef_normalized,
+  label = NULL,
+  nb.h = 35,
+  mar = c(0, 0, 0, 0),
+  cex.text = 2,
+  ...
+) {
+  #original <- xy_list[[i]]
+  center <- coo_centpos(original) # center position
+  original_centered <- sweep(original, 2, center, "-") # center the contour
+  ef <- efourier(
+    original_centered,
+    nb.h = nb.h,
+    norm = FALSE
+  )
+  true_ef <- true_normalize(ef, output_meta = TRUE)
+  scale <- true_ef$E
+  #ef_normalized <- ef_list[[i]]
+  true_ef_coef <- list(
+    ao = unique(ef_normalized$ao),
+    co = unique(ef_normalized$co),
+    an = ef_normalized$an,
+    bn = ef_normalized$bn,
+    cn = ef_normalized$cn,
+    dn = ef_normalized$dn
+  )
+  # reonstruct contour from true EFD coefficients
+  reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
+  df_reconstruct <- as.data.frame(reconstruct)
+  df_reconstruct <- df_reconstruct * scale
+  xlim <- range(c(df_reconstruct$x, original_centered[, 1]))
+  par(mar = mar)
+  # original centered contour
+  plot(
+    original_centered,
+    type = "l",
+    asp = 1,
+    col = adjustcolor("black", red = 0.7, green = 0.7, blue = 0.7),
+    xlim = xlim,
+    bty = "n",
+    xaxt = "n",
+    yaxt = "n",
+    xlab = "",
+    ylab = "",
+    ...
+  )
+
+  # reconstructed contour
+  lines(
+    df_reconstruct,
+    type = "l",
+    asp = 1,
+    col = adjustcolor("#FF4B00", alpha.f = 0.9),
+    ...
+  )
+
+  # label
+  if (!is.null(label)) {
+    text(
+      x = mean(par("usr")[1:2]),
+      y = mean(par("usr")[3:4]),
+      labels = label,
+      cex = cex.text,
+      col = "black"
+    )
+  }
+}
+
+compare_contour_oriented_ture_EFD_normalization(
+  original = xy_list[[1]],
+  ef_normalized = ef_list[[1]],
+  label = names(xy_list)[1],
+  nb.h = 35,
+  mar = c(0, 0, 0, 0),
+  lwd = 2,
+  cex.text = 1
+)
+```
+
+## すべての輪郭と再構築輪郭を保存
 
 ```{r}
 save_dir <- "results/contours_reconstruction/"
 dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
-idx <- list(
+list_id <- list(
   1:50,
   51:100,
   101:150,
@@ -107,94 +174,71 @@ idx <- list(
   701:746
 )
 
-for (i in seq_along(idx)) {
-  slice_i_original <- slice(out, idx[[i]])
-  slice_i_reconst <- slice(out_reconst, idx[[i]])
-  svg_filename <- paste0(
+for (ids in list_id) {
+  ids <- unlist(ids)
+  save_path <- paste0(
     save_dir,
     "reconstructed_contours_",
-    min(idx[[i]]),
+    min(ids),
     "_",
-    max(idx[[i]]),
+    max(ids),
     ".svg"
   )
-  svg(svg_filename, width = 10, height = 5, bg = "transparent")
-  par(lwd = 2) # make borders thicker
-  panel(
-    slice_i_original,
-    dim = c(5, 10),
-    names = TRUE,
-    borders = adjustcolor(1, alpha.f = 0.9),
-    lwd = 2
-  )
-  par(new = TRUE) # overlay
-  panel(
-    slice_i_reconst,
-    dim = c(5, 10),
-    names = TRUE,
-    borders = adjustcolor(7, alpha.f = 0.9),
-    lwd = 2
-  )
+  svg(save_path, width = 10, height = 5, bg = "transparent")
+  layout(matrix(1:50, nrow = 5, byrow = TRUE))
+  for (id in ids) {
+    compare_contour_oriented_ture_EFD_normalization(
+      original = xy_list[[id]],
+      ef_normalized = ef_list[[id]],
+      label = names(xy_list)[id],
+      nb.h = 35,
+      mar = c(0, 0, 0, 0),
+      lwd = 2,
+      cex.text = 1
+    )
+  }
   dev.off()
 }
 ```
 
 ## 一部のIDの取り出し
 
-本手法では、向きは統一されていますが、回転後の輪郭と再構築輪郭の向きが異なる場合があります。
-それとの対応のため、一部を取り出します。
-
 ```{r}
 idx_left <- c(1:5, 181:184)
-idx_right <- c(322, 372, 374, 375, 376, 378, 595, 596, 746)
-slice_original_left <- slice(out, idx_left)
-slice_reconstructed_left <- slice(out_reconst, idx_left)
-names(slice_original_left) <- letters[1:length(idx_left)]
+idx_right <- c(322, 374, 375, 376, 378, 595, 596, 746, 372)
+labels_left <- letters[1:9]
+labels_right <- letters[10:18]
 
-slice_original_right <- slice(out, idx_right)
-slice_reconstructed_right <- slice(out_reconst, idx_right)
-names(slice_original_right) <- letters[
-  (length(idx_left) + 1):(length(idx_left) + length(idx_right))
-]
-
-dims <- c(3, 3)
-cex_names <- 1.5
-
-# left side
 save_filename <- "results/contours_reconstruction/leftward_examples.svg"
-svg(save_filename, width = 10, height = 5, bg = "transparent")
-par(lwd = 2) # make borders thicker
-panel(
-  slice_original_left,
-  dim = dims,
-  borders = adjustcolor(1, alpha.f = 0.9),
-  names = TRUE,
-  cex.names = cex_names
-)
-par(new = TRUE) # overlay
-panel(
-  slice_reconstructed_left,
-  dim = dims,
-  borders = adjustcolor(7, alpha.f = 0.9)
-)
+svg(save_filename, bg = "transparent")
+layout(matrix(1:9, nrow = 3, byrow = TRUE))
+for (i in seq_along(idx_left)) {
+  compare_contour_oriented_ture_EFD_normalization(
+    original = xy_list[[idx_left[i]]],
+    ef_normalized = ef_list[[idx_left[i]]],
+    label = labels_left[i],
+    nb.h = 35,
+    mar = c(0, 0, 0, 0),
+    lwd = 3,
+    cex.text = 3
+  )
+}
 dev.off()
 
 # right side
 save_filename <- "results/contours_reconstruction/rightward_examples.svg"
-svg(save_filename, width = 10, height = 5, bg = "transparent")
-par(lwd = 2) # make borders thicker
-panel(
-  slice_original_right,
-  dim = dims,
-  borders = adjustcolor(1, alpha.f = 0.9),
-  names = TRUE,
-  cex.names = cex_names
-)
-par(new = TRUE) # overlay
-panel(
-  slice_reconstructed_right,
-  dim = dims,
-  borders = adjustcolor(7, alpha.f = 0.9)
-)
+svg(save_filename, bg = "transparent")
+layout(matrix(1:9, nrow = 3, byrow = TRUE))
+for (i in seq_along(labels_right)) {
+  compare_contour_oriented_ture_EFD_normalization(
+    original = xy_list[[idx_right[i]]],
+    ef_normalized = ef_list[[idx_right[i]]],
+    label = labels_right[i],
+    nb.h = 35,
+    mar = c(0, 0, 0, 0),
+    lwd = 3,
+    cex.text = 3
+  )
+}
 dev.off()
 ```
