@@ -204,45 +204,83 @@ dev.off()
 #par(oldpar) # restore par
 ```
 
-## テスト
+## 輪郭をランダムに回転させ、 True EFD normalization を適用した場合の確認
 
 ```{r}
-for (i in 1:30) {
-  xy <- out$coo[[i]]
-  idx_x_max <- which.max(xy[, 1])
-  if (length(idx_x_max) > 1) {
-    idx_x_max <- idx_x_max[1]
-  }
-  xy_reordered <- xy[c(idx_x_max:nrow(xy), 1:(idx_x_max - 1)), ]
-  ef <- efourier(xy_reordered, nb.h = 35)
+#| label: rotate_contours
 
-  plot(xy_reordered, type = "l", asp = 1)
-  points(xy_reordered[1, 1], xy_reordered[1, 2], col = 2, pch = 19, cex = 3)
+set.seed(123) # for reproducibility
+angles <- sample(0:360, length(out$coo), replace = TRUE) # rotation angles in degrees
 
-  ef <- efourier(xy_reordered, nb.h = 35)
-  efourier_shape(
-    ef$an,
-    ef$bn,
-    ef$cn,
-    ef$dn,
+# rotate contours
+out_rotated <- mapply(
+  function(mat, ang) rotate_xy_centered(mat, ang),
+  out$coo,
+  angles,
+  SIMPLIFY = FALSE
+)
+out_rotated <- Out(out_rotated, fac = out$fac)
+```
+
+```{r}
+nb_h <- 10 # number of harmonics
+ef_rotated_true_norm <- efourier_true_norm(
+  out_rotated,
+  nb_h = nb_h,
+  x_sy = TRUE,
+  y_sy = TRUE,
+  skip_rotation = FALSE
+)
+coe <- ef_rotated_true_norm$coe # coefficients
+nb_h <- sum(grepl("^A", colnames(coe))) # number of harmonics
+dimnames(ef_rotated_true_norm$coe)[[2]]
+coef_list <- lapply(c("A", "B", "C", "D"), function(prefix) {
+  coe[, paste0(prefix, 1:nb_h)]
+})
+names(coef_list) <- c("A", "B", "C", "D")
+
+reconst_list <- lapply(seq_len(dim(coef_list$A)[1]), function(row) {
+  cat("ID:", dimnames(coef_list$A)[[1]][row], "\n")
+  an <- coef_list$A[row, ]
+  bn <- coef_list$B[row, ]
+  cn <- coef_list$C[row, ]
+  dn <- coef_list$D[row, ]
+
+  # reconstruct shape
+  reconstructed_shape <- efourier_shape(
+    an,
+    bn,
+    cn,
+    dn,
+    nb.h = nb_h,
     nb.pts = 120,
-    plot = TRUE
+    plot = FALSE
   )
+  return(reconstructed_shape)
+})
 
-  ef_true_norm <- true_normalize(
-    ef,
-    x_sy = TRUE,
-    y_sy = FALSE,
-    output_meta = TRUE,
-    skip_rotation = TRUE
-  )
-  efourier_shape(
-    ef_true_norm$ef$an,
-    ef_true_norm$ef$bn,
-    ef_true_norm$ef$cn,
-    ef_true_norm$ef$dn,
-    nb.pts = 120,
-    plot = TRUE
-  )
-}
+out_reconstructed <- Out(
+  reconst_list,
+  fac = data.frame(species = factor(sp_name))
+) # MomocsのOutオブジェクトに変換
+names(out_reconstructed) <- id_name
+
+dim <- c(5, 6)
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+save_file_name <- "contour_rotation_reconstrucsion_triadica_sebifera.svg"
+save_file_path <- file.path(save_dir, save_file_name)
+svg(
+  save_file_path,
+  bg = "transparent"
+)
+par(lwd = 2) # make borders thicker
+panel(out_rotated, dim = dim, borders = adjustcolor(1, alpha.f = 0.9))
+par(new = TRUE) # overlay
+panel(
+  out_reconstructed,
+  dim = dim,
+  borders = adjustcolor(7, alpha.f = 0.9)
+)
+dev.off()
 ```
