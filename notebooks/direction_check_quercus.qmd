@@ -1,4 +1,3 @@
-
 ## Setup
 
 ```{r}
@@ -51,89 +50,119 @@ xy_list <- lapply(file_paths_xy, function(fp) {
   return(df)
 })
 names(xy_list) <- id_name
+```
 
-out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # MomocsのOutオブジェクトに変換
-names(out) <- id_name
+## データの読み込み
+
+```{r} 
+file_paths <- list.files(
+  "data/coefficients_efd",
+  full.names = TRUE,
+  pattern = "\\.csv$"
+)
+ef_list <- lapply(file_paths, function(fp) {
+  cat("File:", fp, "\n")
+  df <- read.csv(fp)
+  return(df)
+})
+```
+
+## true EFD normalizationの適用
+
+## 関数作成
+
+```{r}
+#| label: define_functions
+compare_contour <- function(
+  original,
+  label = NULL,
+  nb.h = 35,
+  mar = c(0, 0, 0, 0),
+  cex.text = 2,
+  ...
+) {
+  center <- coo_centpos(original) # center position
+  original_centered <- sweep(original, 2, center, "-") # center the contour
+
+  ef <- efourier(
+    original_centered,
+    nb.h = nb.h,
+    norm = FALSE
+  )
+  true_ef <- true_normalize(ef, output_meta = TRUE)
+  true_ef_coef <- true_ef$ef
+  true_ef_coef <- list(
+    ao = unique(true_ef_coef$ao),
+    co = unique(true_ef_coef$co),
+    an = true_ef_coef$an,
+    bn = true_ef_coef$bn,
+    cn = true_ef_coef$cn,
+    dn = true_ef_coef$dn
+  )
+  # reonstruct contour from true EFD coefficients
+  reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
+  df_reconstruct <- as.data.frame(reconstruct)
+  df_reconstruct <- df_reconstruct * true_ef$E
+
+  xlim <- range(c(df_reconstruct$x, original_centered[, 1]))
+
+  par(mar = mar)
+  # original centered contour
+  plot(
+    original_centered,
+    type = "l",
+    asp = 1,
+    col = adjustcolor("black", red = 0.7, green = 0.7, blue = 0.7),
+    xlim = xlim,
+    bty = "n",
+    xaxt = "n",
+    yaxt = "n",
+    xlab = "",
+    ylab = "",
+    ...
+  )
+
+  # reconstructed contour
+  lines(
+    df_reconstruct,
+    type = "l",
+    asp = 1,
+    col = adjustcolor("#FF4B00", alpha.f = 0.9),
+    ...
+  )
+  if (!is.null(label)) {
+    text(
+      x = mean(par("usr")[1:2]),
+      y = mean(par("usr")[3:4]),
+      labels = label,
+      cex = cex.text,
+      col = "black"
+    )
+  }
+}
 ```
 
 ### 輪郭の回転
 
 ```{r}
 #| label: rotate_contours
-
 set.seed(123) # set.seed for reproducibility
-angles <- sample(0:360, length(out$coo), replace = TRUE) # rotation angles in degrees
+angles <- sample(0:360, length(xy_list), replace = TRUE) # rotation angles in degrees
 # rotate contours
-out_rotated <- mapply(
+xy_list_rotated <- mapply(
   function(mat, ang) rotate_xy_centered(mat, ang),
-  out$coo,
+  xy_list,
   angles,
   SIMPLIFY = FALSE
 )
-out_rotated <- Out(out_rotated, fac = out$fac)
-#stack(out_rotated)
 ```
 
-## 回転後のTrue EFD normalizationの適用
-
-回転後の輪郭座標からEFDを計算します。
+## プロットと保存
 
 ```{r}
-#| label: efd_rotation_contours
-
-nb_h = 35 # number of harmonics
-# True EFD normalization
-ef_rotated_true_norm <- efourier_true_norm(
-  out_rotated,
-  nb_h = nb_h,
-  x_sy = TRUE,
-  y_sy = TRUE
-)
-```
-
-### True EFD normalization後の輪郭の再構築
-
-```{r}
-#| label: reconstruct_rotated_contours
-
-coe <- ef_rotated_true_norm$coe # coefficients
-nb_h <- sum(grepl("^A", colnames(coe))) # number of harmonics
-
-coef_list <- lapply(c("A", "B", "C", "D"), function(prefix) {
-  coe[, paste0(prefix, 1:nb_h)]
-})
-names(coef_list) <- c("A", "B", "C", "D")
-
-reconst_list <- lapply(seq_len(dim(coef_list$A)[1]), function(row) {
-  cat("ID:", dimnames(coef_list$A)[[1]][row], "\n")
-  an <- coef_list$A[row, ]
-  bn <- coef_list$B[row, ]
-  cn <- coef_list$C[row, ]
-  dn <- coef_list$D[row, ]
-
-  # reconstruct shape
-  reconstructed_shape <- efourier_shape(
-    an,
-    bn,
-    cn,
-    dn,
-    nb.h = nb_h,
-    nb.pts = 120,
-    plot = FALSE
-  )
-  return(reconstructed_shape)
-})
-
-# convert to Momocs Out object
-out_reconstructed <- Out(
-  reconst_list,
-  fac = data.frame(species = factor(sp_name))
-)
-names(out_reconstructed) <- id_name
-
 save_dir <- "results/contours_rotation_reconstruction/"
 dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
-idx <- list(
+list_id <- list(
   1:50,
   51:100,
   101:150,
@@ -151,89 +180,69 @@ idx <- list(
   701:746
 )
 
-for (i in seq_along(idx)) {
-  slice_i_rotated <- slice(out_rotated, idx[[i]])
-  slice_i_reconstructed <- slice(out_reconstructed, idx[[i]])
-  svg_filename <- paste0(
+for (ids in list_id) {
+  ids <- unlist(ids)
+  save_path <- paste0(
     save_dir,
     "reconstructed_contours_",
-    min(idx[[i]]),
+    min(ids),
     "_",
-    max(idx[[i]]),
+    max(ids),
     ".svg"
   )
-  svg(svg_filename, width = 10, height = 5, bg = "transparent")
-  par(lwd = 2) # make borders thicker
-  panel(
-    slice_i_rotated,
-    dim = c(5, 10),
-    names = TRUE,
-    borders = adjustcolor(1, alpha.f = 0.9)
-  )
-  par(new = TRUE) # overlay
-  panel(
-    slice_i_reconstructed,
-    dim = c(5, 10),
-    names = TRUE,
-    borders = adjustcolor(7, alpha.f = 0.9)
-  )
+  svg(save_path, width = 10, height = 5, bg = "transparent")
+  layout(matrix(1:50, nrow = 5, byrow = TRUE))
+  for (id in ids) {
+    compare_contour(
+      xy_list_rotated[[id]],
+      label = names(xy_list_rotated[id]),
+      nb.h = 35,
+      lwd = 2,
+      mar = c(0, 0, 0, 0),
+      cex.text = 1
+    )
+  }
   dev.off()
 }
 ```
 
-一部を取り出します。
+## 一部を取り出す
 
 ```{r}
 idx_left <- c(1:5, 181:184)
-idx_right <- c(322, 372, 374, 375, 376, 378, 595, 596, 746)
-slice_rotated_left <- slice(out_rotated, idx_left)
-slice_reconstructed_left <- slice(out_reconstructed, idx_left)
-names(slice_rotated_left) <- letters[1:length(idx_left)]
-
-slice_rotated_right <- slice(out_rotated, idx_right)
-slice_reconstructed_right <- slice(out_reconstructed, idx_right)
-names(slice_rotated_right) <- letters[
-  (length(idx_left) + 1):(length(idx_left) + length(idx_right))
-]
-
-dims <- c(3, 3)
-cex_names <- 1.5
+idx_right <- c(322, 374, 375, 376, 378, 595, 596, 746, 372)
+labels_left <- letters[1:9]
+labels_right <- letters[10:18]
 
 # left side
 save_filename <- "results/contours_rotation_reconstruction/leftward_examples.svg"
-svg(save_filename, width = 10, height = 5, bg = "transparent")
-par(lwd = 2) # make borders thicker
-panel(
-  slice_rotated_left,
-  dim = dims,
-  borders = adjustcolor(1, alpha.f = 0.9),
-  names = TRUE,
-  cex.names = cex_names
-)
-par(new = TRUE) # overlay
-panel(
-  slice_reconstructed_left,
-  dim = dims,
-  borders = adjustcolor(7, alpha.f = 0.9)
-)
+svg(save_filename, bg = "transparent")
+layout(matrix(1:9, nrow = 3, byrow = TRUE))
+for (i in seq_along(idx_left)) {
+  compare_contour(
+    xy_list_rotated[[idx_left[i]]],
+    label = labels_left[i],
+    nb.h = 35,
+    lwd = 3,
+    mar = c(0, 0, 0, 0),
+    cex.text = 3
+  )
+}
 dev.off()
 
 # right side
 save_filename <- "results/contours_rotation_reconstruction/rightward_examples.svg"
-svg(save_filename, width = 10, height = 5, bg = "transparent")
-par(lwd = 2) # make borders thicker
-panel(
-  slice_rotated_right,
-  dim = dims,
-  borders = adjustcolor(1, alpha.f = 0.9),
-  names = TRUE,
-  cex.names = cex_names
-)
-par(new = TRUE) # overlay
-panel(
-  slice_reconstructed_right,
-  dim = dims,
-  borders = adjustcolor(7, alpha.f = 0.9)
-)
+svg(save_filename, bg = "transparent")
+layout(matrix(1:9, nrow = 3, byrow = TRUE))
+for (i in seq_along(labels_right)) {
+  compare_contour(
+    xy_list_rotated[[idx_right[i]]],
+    label = labels_right[i],
+    nb.h = 35,
+    lwd = 3,
+    mar = c(0, 0, 0, 0),
+    cex.text = 3
+  )
+}
 dev.off()
 ```
