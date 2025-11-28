@@ -1,4 +1,3 @@
-
 ## セットアップ
 
 ```{r}
@@ -35,252 +34,297 @@ xy_list <- lapply(file_paths_xy, function(fp) {
   return(df)
 })
 names(xy_list) <- id_name
-
-out <- Out(xy_list) # MomocsのOutオブジェクトに変換
-names(out) <- id_name
 ```
 
-## Check contours
-
-```{r}
-panel(
-  out,
-  dim = c(5, 6),
-  names = TRUE,
-  borders = 1
-)
-```
-
-## True EFD normalization後の輪郭の再構築
-
-```{r}
-file_paths_true_efd <- list.files(
-  "data/coefficients_efd_normalized_triadica_sebifera/",
+```{r} 
+file_paths <- list.files(
+  "data/coefficients_efd_normalized_triadica_sebifera",
   full.names = TRUE,
   pattern = "\\.csv$"
 )
-id_name <- file_path_sans_ext(basename(file_paths_true_efd))
-
-reconst_list <- lapply(file_paths_true_efd, function(fp) {
+ef_list <- lapply(file_paths, function(fp) {
   cat("File:", fp, "\n")
   df <- read.csv(fp)
-  reconstructed_shape <- efourier_shape(
-    df$an,
-    df$bn,
-    df$cn,
-    df$dn,
-    nb.pts = 120,
-    plot = TRUE
-  )
-  # start point
-  points(
-    reconstructed_shape[1, 1],
-    reconstructed_shape[1, 2],
-    col = 2,
-    pch = 19,
-    cex = 2
-  )
-  return(reconstructed_shape)
+  return(df)
 })
-out_reconst_oriented <- Out(reconst_list) # convert to Momocs Out object
-names(out_reconst_oriented) <- id_name
+```
 
-# check reconstructed contours
-panel(
-  out_reconst_oriented,
-  dim = c(5, 6),
-  names = TRUE,
-  borders = 1
-)
+## 関数の作成
+
+```{r}
+compare_contour_oriented_ture_EFD_normalization <- function(
+  original,
+  ef_normalized,
+  label = NULL,
+  nb.h = 35,
+  mar = c(0, 0, 0, 0),
+  cex.text = 2,
+  ...
+) {
+  # スケール E* を計算する関数
+  compute_E_star <- function(ef) {
+    A1 <- ef$an[1]
+    B1 <- ef$bn[1]
+    C1 <- ef$cn[1]
+    D1 <- ef$dn[1]
+    # θ の計算（主軸の方向）
+    theta <- 0.5 *
+      atan2(
+        2 * (A1 * B1 + C1 * D1),
+        (A1^2 + C1^2 - B1^2 - D1^2)
+      )
+
+    # a*, c* の計算
+    a_star <- A1 * cos(theta) + B1 * sin(theta)
+    c_star <- C1 * cos(theta) + D1 * sin(theta)
+
+    # E*（半長軸の長さ）
+    E_star <- sqrt(a_star^2 + c_star^2)
+    return(E_star)
+  }
+
+  #original <- xy_list[[i]]
+  center <- coo_centpos(original) # center position
+  original_centered <- sweep(original, 2, center, "-") # center the contour
+  ef <- efourier(
+    original_centered,
+    nb.h = nb.h,
+    norm = FALSE
+  )
+  E <- compute_E_star(ef)
+  #true_ef <- true_normalize(ef, output_meta = TRUE)
+  #scale <- true_ef$E
+  true_ef_coef <- list(
+    ao = unique(ef_normalized$ao),
+    co = unique(ef_normalized$co),
+    an = ef_normalized$an,
+    bn = ef_normalized$bn,
+    cn = ef_normalized$cn,
+    dn = ef_normalized$dn
+  )
+  # reonstruct contour from true EFD coefficients
+  reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
+  df_reconstruct <- as.data.frame(reconstruct)
+  df_reconstruct <- df_reconstruct * E
+  xlim <- range(c(df_reconstruct$x, original_centered[, 1]))
+  ylim <- range(c(df_reconstruct$y, original_centered[, 2]))
+  par(mar = mar)
+  # original centered contour
+  plot(
+    original_centered,
+    type = "l",
+    asp = 1,
+    col = adjustcolor("black", red = 0.7, green = 0.7, blue = 0.7),
+    xlim = xlim,
+    ylim = ylim,
+    bty = "n",
+    xaxt = "n",
+    yaxt = "n",
+    xlab = "",
+    ylab = "",
+    ...
+  )
+
+  # reconstructed contour
+  lines(
+    df_reconstruct,
+    asp = 1,
+    col = adjustcolor("#FF4B00", alpha.f = 0.9),
+    ...
+  )
+
+  # label
+  if (!is.null(label)) {
+    text(
+      x = mean(par("usr")[1:2]),
+      y = mean(par("usr")[3:4]),
+      labels = label,
+      cex = cex.text,
+      col = "black"
+    )
+  }
+}
+```
+
+## すべての輪郭と再構築輪郭を保存
+
+Oriented True EFD normalization からの再構築輪郭と元の輪郭を重ね合わせます。
+
+```{r}
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE)
+save_file_name <- "compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg"
+svg(file.path(save_dir, save_file_name), bg = "transparent")
+layout(matrix(seq_along(xy_list), nrow = 5, byrow = TRUE))
+for (i in seq_along(xy_list)) {
+  compare_contour_oriented_ture_EFD_normalization(
+    original = xy_list[[i]],
+    ef_normalized = ef_list[[i]],
+    label = names(xy_list)[i],
+    nb.h = 5,
+    mar = c(0, 0, 0, 0),
+    lwd = 2,
+    cex.text = 1
+  )
+}
+dev.off()
+```
+
+## 一部を保存
+
+```{r}
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE)
+save_file_name <- "compare_contours_oriented_true_efd_normalized_triadica_sebifera_example.svg"
+svg(file.path(save_dir, save_file_name), bg = "transparent")
+xy_list_example <- xy_list[1:9]
+labels <- letters[seq_along(xy_list_example)]
+layout(matrix(seq_along(xy_list_example), nrow = 3, byrow = TRUE))
+for (i in seq_along(xy_list_example)) {
+  compare_contour_oriented_ture_EFD_normalization(
+    original = xy_list[[i]],
+    ef_normalized = ef_list[[i]],
+    nb.h = 5,
+    mar = c(0, 0, 0, 0),
+    lwd = 3,
+    cex.text = 5,
+    label = labels[i]
+  )
+}
+dev.off()
 ```
 
 ## 普通の True EFD normalization を行った場合
 
-取得した輪郭から、通常の True EFD normalization を行い、輪郭を再構築して確認します。
+取得した輪郭から、回転して、通常の True EFD normalization を行い、輪郭を再構築して確認します。
 長軸を x 軸に揃えるように回転させるため、サンプル間で向きがそろわない可能性があります。
 
+### 関数の作成
+
 ```{r}
-nb_h <- 35 # Number of harmonics
-ef_true_norm <- efourier_true_norm(
-  out,
-  nb_h = nb_h,
-  x_sy = TRUE,
-  y_sy = TRUE,
-  skip_rotation = FALSE
-) # EFD with normalization
-coe <- ef_true_norm$coe # coefficients
+compare_contour <- function(
+  original,
+  label = NULL,
+  nb.h = 35,
+  mar = c(0, 0, 0, 0),
+  cex.text = 2,
+  ...
+) {
+  center <- coo_centpos(original) # center position
+  original_centered <- sweep(original, 2, center, "-") # center the contour
 
-coef_list <- lapply(c("A", "B", "C", "D"), function(prefix) {
-  coe[, paste0(prefix, 1:nb_h)]
-})
-names(coef_list) <- c("A", "B", "C", "D")
-
-reconst_list <- lapply(seq_len(dim(coef_list$A)[1]), function(row) {
-  cat("ID:", dimnames(coef_list$A)[[1]][row], "\n")
-  an <- coef_list$A[row, ]
-  bn <- coef_list$B[row, ]
-  cn <- coef_list$C[row, ]
-  dn <- coef_list$D[row, ]
-
-  # reconstruct shape
-  reconstructed_shape <- efourier_shape(
-    an,
-    bn,
-    cn,
-    dn,
-    nb.h = nb_h,
-    nb.pts = 120,
-    plot = TRUE
+  ef <- efourier(
+    original_centered,
+    nb.h = nb.h,
+    norm = FALSE
   )
-  # start point
-  points(
-    reconstructed_shape[1, 1],
-    reconstructed_shape[1, 2],
-    col = 2,
-    pch = 19,
-    cex = 2
+  true_ef <- true_normalize(ef, output_meta = TRUE)
+  true_ef_coef <- true_ef$ef
+  true_ef_coef <- list(
+    ao = unique(true_ef_coef$ao),
+    co = unique(true_ef_coef$co),
+    an = true_ef_coef$an,
+    bn = true_ef_coef$bn,
+    cn = true_ef_coef$cn,
+    dn = true_ef_coef$dn
   )
-  return(reconstructed_shape)
-})
+  # reonstruct contour from true EFD coefficients
+  reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
+  df_reconstruct <- as.data.frame(reconstruct)
+  df_reconstruct <- df_reconstruct * true_ef$E
 
-# convert to Momocs Out object
-out_reconst <- Out(reconst_list)
-names(out_reconst) <- id_name
+  xlim <- range(c(df_reconstruct$x, original_centered[, 1]))
 
-# confirmation
-panel(
-  out_reconst,
-  dim = c(5, 6),
-  names = TRUE,
-  borders = 1
-)
+  par(mar = mar)
+  # original centered contour
+  plot(
+    original_centered,
+    type = "l",
+    asp = 1,
+    col = adjustcolor("black", red = 0.7, green = 0.7, blue = 0.7),
+    xlim = xlim,
+    bty = "n",
+    xaxt = "n",
+    yaxt = "n",
+    xlab = "",
+    ylab = "",
+    ...
+  )
+
+  # reconstructed contour
+  lines(
+    df_reconstruct,
+    asp = 1,
+    col = adjustcolor("#FF4B00", alpha.f = 0.9),
+    ...
+  )
+  if (!is.null(label)) {
+    text(
+      x = mean(par("usr")[1:2]),
+      y = mean(par("usr")[3:4]),
+      labels = label,
+      cex = cex.text,
+      col = "black"
+    )
+  }
+}
 ```
 
-## 取得した輪郭と、True EFD normalization 後の輪郭の比較
+### 保存
 
 ```{r}
-#| label: compare_contours_oriented_true_efd_normalized
-
-#oldpar <- par("lwd", "new")
-save_dir <- "results"
-dir.create(save_dir, showWarnings = FALSE)
-save_file_name <- "compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg"
-save_file_path <- file.path(save_dir, save_file_name)
-svg(save_file_path, bg = "transparent")
-par(lwd = 2) # make borders thicker
-dim <- c(5, 6)
-panel(out, dim = dim, borders = adjustcolor(1, alpha.f = 0.9))
-par(new = TRUE) # overlay
-panel(
-  out_reconst_oriented,
-  dim = dim,
-  borders = adjustcolor(7, alpha.f = 0.9)
-)
-dev.off()
-#par(oldpar) # restore par
-```
-
-## 取得した輪郭と、普通の True EFD normalization 後の輪郭の比較
-
-```{r}
-#| label: compare_contours_true_efd_normalized
-
-#oldpar <- par("lwd", "new")
-save_dir <- "results"
-dir.create(save_dir, showWarnings = FALSE)
-save_file_name <- "compare_contours_true_efd_normalized_triadica_sebifera.svg"
-save_file_path <- file.path(save_dir, save_file_name)
-svg(save_file_path, bg = "transparent")
-par(lwd = 2) # make borders thicker
-dim <- c(5, 6)
-panel(out, dim = dim, borders = adjustcolor(1, alpha.f = 0.9))
-par(new = TRUE) # overlay
-panel(
-  out_reconst,
-  dim = dim,
-  borders = adjustcolor(7, alpha.f = 0.9)
-)
-dev.off()
-#par(oldpar) # restore par
-```
-
-## 輪郭をランダムに回転させ、 True EFD normalization を適用した場合の確認
-
-```{r}
-#| label: rotate_contours
-
-set.seed(123) # for reproducibility
-angles <- sample(0:360, length(out$coo), replace = TRUE) # rotation angles in degrees
-
+# ratation
+set.seed(123) # set.seed for reproducibility
+angles <- sample(0:360, length(xy_list), replace = TRUE) # rotation angles in degrees
 # rotate contours
-out_rotated <- mapply(
+xy_list_rotated <- mapply(
   function(mat, ang) rotate_xy_centered(mat, ang),
-  out$coo,
+  xy_list,
   angles,
   SIMPLIFY = FALSE
 )
-out_rotated <- Out(out_rotated, fac = out$fac)
+
+save_dir <- "results"
+dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
+save_path <- file.path(
+  save_dir,
+  "contour_rotation_reconstrucsion_triadica_sebifera.svg"
+)
+svg(save_path, width = 10, height = 5, bg = "transparent")
+layout(matrix(seq_along(xy_list_rotated), nrow = 5, byrow = TRUE))
+for (i in seq_along(xy_list_rotated)) {
+  compare_contour(
+    original = xy_list_rotated[[i]],
+    nb.h = 5,
+    mar = c(0, 0, 0, 0),
+    lwd = 2,
+    cex.text = 1,
+    label = names(xy_list_rotated)[i]
+  )
+}
+dev.off()
 ```
 
+## 一部を保存
+
 ```{r}
-nb_h <- 10 # number of harmonics
-ef_rotated_true_norm <- efourier_true_norm(
-  out_rotated,
-  nb_h = nb_h,
-  x_sy = TRUE,
-  y_sy = TRUE,
-  skip_rotation = FALSE
-)
-coe <- ef_rotated_true_norm$coe # coefficients
-nb_h <- sum(grepl("^A", colnames(coe))) # number of harmonics
-dimnames(ef_rotated_true_norm$coe)[[2]]
-coef_list <- lapply(c("A", "B", "C", "D"), function(prefix) {
-  coe[, paste0(prefix, 1:nb_h)]
-})
-names(coef_list) <- c("A", "B", "C", "D")
-
-reconst_list <- lapply(seq_len(dim(coef_list$A)[1]), function(row) {
-  cat("ID:", dimnames(coef_list$A)[[1]][row], "\n")
-  an <- coef_list$A[row, ]
-  bn <- coef_list$B[row, ]
-  cn <- coef_list$C[row, ]
-  dn <- coef_list$D[row, ]
-
-  # reconstruct shape
-  reconstructed_shape <- efourier_shape(
-    an,
-    bn,
-    cn,
-    dn,
-    nb.h = nb_h,
-    nb.pts = 120,
-    plot = FALSE
-  )
-  return(reconstructed_shape)
-})
-
-out_reconstructed <- Out(
-  reconst_list,
-  fac = data.frame(species = factor(sp_name))
-) # MomocsのOutオブジェクトに変換
-names(out_reconstructed) <- id_name
-
-dim <- c(5, 6)
 save_dir <- "results"
-dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-save_file_name <- "contour_rotation_reconstrucsion_triadica_sebifera.svg"
-save_file_path <- file.path(save_dir, save_file_name)
-svg(
-  save_file_path,
-  bg = "transparent"
-)
-par(lwd = 2) # make borders thicker
-panel(out_rotated, dim = dim, borders = adjustcolor(1, alpha.f = 0.9))
-par(new = TRUE) # overlay
-panel(
-  out_reconstructed,
-  dim = dim,
-  borders = adjustcolor(7, alpha.f = 0.9)
-)
+dir.create(save_dir, showWarnings = FALSE)
+save_file_name <- "compare_contours_true_efd_normalized_triadica_sebifera_example.svg"
+svg(file.path(save_dir, save_file_name), bg = "transparent")
+
+xy_list_rotated_example <- xy_list_rotated[1:9]
+labels <- letters[seq_along(xy_list_rotated_example)]
+layout(matrix(seq_along(xy_list_rotated_example), nrow = 3, byrow = TRUE))
+for (i in seq_along(xy_list_rotated_example)) {
+  compare_contour(
+    original = xy_list_rotated_example[[i]],
+    nb.h = 5,
+    mar = c(0, 0, 0, 0),
+    lwd = 3,
+    cex.text = 5,
+    label = labels[i]
+  )
+}
 dev.off()
 ```
