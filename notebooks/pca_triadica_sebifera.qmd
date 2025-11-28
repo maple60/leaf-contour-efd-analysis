@@ -39,8 +39,8 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 ```{r}
 #| label: pca_oriented_true_efd_normalized
 
-nb_h <- 10 # Number of harmonics
-out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
+nb_h <- 5 # Number of harmonics
+out <- Out(xy_list) # convert to Momocs Out object
 # oriented true EFD normalization
 ef_true_norm <- efourier_true_norm(
   out,
@@ -75,7 +75,7 @@ pca_plot <- function(x, ...) {
     ...
   )
   plt <- layer_axes(plt, col = "black", lwd = 1)
-  plt <- layer_ticks(plt, col = "black", lwd = 1)
+  plt <- layer_ticks(plt, col = "black", lwd = 1, cex = 1.2)
   plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
   plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
   plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
@@ -113,11 +113,10 @@ for (i in 1:30) {
 ```{r}
 #| label: pca_efd_normalized
 
-nb_h <- 10 # Number of harmonics
-out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
+nb_h <- 5 # Number of harmonics
+out <- Out(xy_list) # convert to Momocs Out object
 ef_norm <- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE) # EFD with normalization
 pca_norm <- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
-pca_plot(pca_norm)
 
 save_dir <- "results/pca_triadica_sebifera"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
@@ -159,8 +158,8 @@ dev.off()
 ```{r}
 #| label: pca_oriented_true_efd_normalized
 
-nb_h <- 10 # Number of harmonics
-out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
+nb_h <- 5 # Number of harmonics
+out <- Out(xy_list) # convert to Momocs Out object
 # oriented true EFD normalization
 ef_true_norm <- efourier_true_norm(
   out,
