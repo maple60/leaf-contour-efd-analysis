@@ -1,4 +1,3 @@
-
 ## Setup
 
 ```{r}
@@ -54,7 +53,37 @@ xy_list <- lapply(file_paths_xy, function(fp) {
   }
   return(df)
 })
+names(xy_list) <- file_path_sans_ext(basename(file_paths_xy))
 ```
+
+## rotate contour
+
+```{r}
+set.seed(123) # set.seed for reproducibility
+angles <- sample(0:360, length(xy_list), replace = TRUE) # rotation angles in degrees
+# rotate contours
+xy_list_rotated <- mapply(
+  function(mat, ang) rotate_xy_centered(mat, ang),
+  xy_list,
+  angles,
+  SIMPLIFY = FALSE
+)
+```
+
+## 開始点もランダムにする
+
+```{r}
+set.seed(123)
+xy_list_rotated_reordered <- lapply(xy_list_rotated, function(xy_rotated) {
+  idx_start <- sample(seq_len(nrow(xy_rotated)), 1) # rotation angles in degrees
+  xy_rotated_reordered <- xy_rotated[
+    c(idx_start:nrow(xy_rotated), 1:(idx_start - 1)),
+  ]
+  return(xy_rotated_reordered)
+})
+```
+
+## species names corresponding to individual IDs
 
 ```{r}
 #| label: prepare_ids_species
@@ -70,6 +99,8 @@ id_name_head <- unlist(id_name_head)
 sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
 ```
 
+## PCA using oriented true EFD normalization
+
 ```{r}
 #| label: pca_oriented_true_efd_normalized
 
@@ -84,7 +115,11 @@ ef_true_norm <- efourier_true_norm(
   skip_rotation = TRUE
 )
 pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+```
 
+#### 保存
+
+```{r}
 save_dir <- "results/pca_quercus"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
 save_file_name <- "pca_oriented_true_efd_normalized.svg"
@@ -121,19 +156,71 @@ pca_plot(pca_true_norm)
 dev.off()
 ```
 
-### normalized EFD
+## PCA using normalized EFD
 
 PCA using normalized EFD coefficients (traditional method)
+Momocs側で正規化を行います。
 
 ```{r}
 #| label: pca_efd_normalized
 
 nb_h <- 35 # Number of harmonics
-out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
+out <- Out(
+  xy_list_rotated_reordered,
+  fac = data.frame(species = factor(sp_name))
+) # convert to Momocs Out object
 ef_norm <- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE) # EFD with normalization
 pca_norm <- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+
+idx_max <- which.max(pca_norm$x[, 2])
+idx_min <- which.min(pca_norm$x[, 2])
+
 pca_plot(pca_norm)
 
+# PC2が最大の点と最小の点を赤で強調表示
+points(
+  pca_norm$x[idx_max, 1],
+  pca_norm$x[idx_max, 2],
+  col = "red",
+  pch = 19,
+  cex = 2
+)
+points(
+  pca_norm$x[idx_min, 1],
+  pca_norm$x[idx_min, 2],
+  col = "red",
+  pch = 19,
+  cex = 2
+)
+
+ef_norm_coef <- ef_norm$coe[idx_max, ]
+ef <- list(
+  ao = 0,
+  co = 0,
+  an = ef_norm_coef[grep("A", names(ef_norm_coef))],
+  bn = ef_norm_coef[grep("B", names(ef_norm_coef))],
+  cn = ef_norm_coef[grep("C", names(ef_norm_coef))],
+  dn = ef_norm_coef[grep("D", names(ef_norm_coef))]
+)
+df_reconstruct <- as.data.frame(efourier_i(ef, nb.h = nb_h))
+plot(df_reconstruct, type = "l", asp = 1)
+
+ef_norm_coef <- ef_norm$coe[idx_min, ]
+ef <- list(
+  ao = 0,
+  co = 0,
+  an = ef_norm_coef[grep("A", names(ef_norm_coef))],
+  bn = ef_norm_coef[grep("B", names(ef_norm_coef))],
+  cn = ef_norm_coef[grep("C", names(ef_norm_coef))],
+  dn = ef_norm_coef[grep("D", names(ef_norm_coef))]
+)
+df_reconstruct <- as.data.frame(efourier_i(ef, nb.h = nb_h))
+plot(df_reconstruct, type = "l", asp = 1)
+```
+
+### Save plot
+
+```{r}
 save_dir <- "results/pca_quercus"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
 save_file_name <- "pca_efd_normalized.svg"
@@ -173,12 +260,14 @@ dev.off()
 
 ## True EFD normalization
 
-
 ```{r}
 #| label: pca_oriented_true_efd_normalized
 
 nb_h <- 35 # Number of harmonics
-out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
+out <- Out(
+  xy_list_rotated_reordered,
+  fac = data.frame(species = factor(sp_name))
+) # convert to Momocs Out object
 # oriented true EFD normalization
 ef_true_norm <- efourier_true_norm(
   out,
@@ -188,6 +277,7 @@ ef_true_norm <- efourier_true_norm(
   skip_rotation = FALSE
 )
 pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+pca_true_norm <- flip_PCaxes(pca_true_norm, 1) # flip PC axes for better visualization
 
 save_dir <- "results/pca_quercus"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
