@@ -1,4 +1,4 @@
-## セットアップ
+## Setup
 
 ```{r}
 #| label: setup
@@ -8,7 +8,7 @@ source("scripts/functions.R")
 palette("Okabe-Ito")
 ```
 
-## 輪郭データの読み込み
+## Load species names
 
 ```{r}
 #| label: species_name
@@ -19,6 +19,8 @@ df_sp_name$species <- ifelse(
   "konara"
 )
 ```
+
+## Load contour data
 
 ```{r}
 #| label: load_contours
@@ -34,7 +36,8 @@ id_name_head <- lapply(id_name, function(x) {
   return(parts[1])
 })
 id_name_head <- unlist(id_name_head)
-# 種名の対応付け
+
+# Match species names
 sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
 
 xy_list <- lapply(file_paths_xy, function(fp) {
@@ -43,7 +46,7 @@ xy_list <- lapply(file_paths_xy, function(fp) {
   df <- df[, c("x", "y")]
   df <- as.matrix(df)
   storage.mode(df) <- "double"
-  # 輪郭が閉じていない場合、最初の点を最後に追加して閉じる
+  # if the contour is not closed, add the first point to the end to close it
   if (!all(df[1, ] == df[nrow(df), ])) {
     df <- rbind(df, df[1, ])
   }
@@ -52,7 +55,7 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 names(xy_list) <- id_name
 ```
 
-## データの読み込み
+## Load normalized EFD coefficients
 
 ```{r} 
 file_paths <- list.files(
@@ -67,7 +70,7 @@ ef_list <- lapply(file_paths, function(fp) {
 })
 ```
 
-## 関数の作成
+## Define function to compare original contour and reconstructed contour from true EFD normalization
 
 ```{r}
 compare_contour_oriented_ture_EFD_normalization <- function(
@@ -79,7 +82,6 @@ compare_contour_oriented_ture_EFD_normalization <- function(
   cex.text = 2,
   ...
 ) {
-  #original <- xy_list[[i]]
   center <- coo_centpos(original) # center position
   original_centered <- sweep(original, 2, center, "-") # center the contour
   ef <- efourier(
@@ -89,7 +91,6 @@ compare_contour_oriented_ture_EFD_normalization <- function(
   )
   true_ef <- true_normalize(ef, output_meta = TRUE)
   scale <- true_ef$E
-  #ef_normalized <- ef_list[[i]]
   true_ef_coef <- list(
     ao = unique(ef_normalized$ao),
     co = unique(ef_normalized$co),
@@ -139,19 +140,9 @@ compare_contour_oriented_ture_EFD_normalization <- function(
     )
   }
 }
-
-compare_contour_oriented_ture_EFD_normalization(
-  original = xy_list[[1]],
-  ef_normalized = ef_list[[1]],
-  label = names(xy_list)[1],
-  nb.h = 35,
-  mar = c(0, 0, 0, 0),
-  lwd = 2,
-  cex.text = 1
-)
 ```
 
-## すべての輪郭と再構築輪郭を保存
+## Save all comparisons
 
 ```{r}
 save_dir <- "results/contours_reconstruction/"
@@ -201,7 +192,7 @@ for (ids in list_id) {
 }
 ```
 
-## 一部のIDの取り出し
+## Example figures for leftward and rightward leaves
 
 ```{r}
 idx_left <- c(1:5, 181:184)
