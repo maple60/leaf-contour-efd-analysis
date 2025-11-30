@@ -192,7 +192,7 @@ for (ids in list_id) {
 }
 ```
 
-## Example figures for leftward and rightward leaves
+## Save a subset of comparisons
 
 ```{r}
 idx_left <- c(1:5, 181:184)
