@@ -76,8 +76,8 @@ pca_plot <- function(x, ...) {
   )
   plt <- layer_axes(plt, col = "black", lwd = 1)
   plt <- layer_ticks(plt, col = "black", lwd = 1, cex = 1.2)
+  plt <- layer_points(plt, pch = 19, cex = 3, transp = 0.5)
   plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
   plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
   plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
 }
@@ -144,7 +144,7 @@ pca_plot <- function(x, ...) {
   plt <- layer_axes(plt, col = "black", lwd = 1)
   plt <- layer_ticks(plt, col = "black", lwd = 1)
   plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
+  plt <- layer_points(plt, pch = 19, cex = 3, transp = 0.5)
   plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
   plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
 }
@@ -156,7 +156,7 @@ dev.off()
 
 
 ```{r}
-#| label: pca_oriented_true_efd_normalized
+#| label: pca__true_efd_normalized
 
 nb_h <- 5 # Number of harmonics
 out <- Out(xy_list) # convert to Momocs Out object
@@ -196,7 +196,7 @@ pca_plot <- function(x, ...) {
   plt <- layer_axes(plt, col = "black", lwd = 1)
   plt <- layer_ticks(plt, col = "black", lwd = 1)
   plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
+  plt <- layer_points(plt, pch = 19, cex = 3, transp = 0.5)
   plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
   plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
 }
