@@ -1,4 +1,4 @@
-## セットアップ
+## Setup
 
 ```{r}
 #| label: setup
@@ -9,7 +9,7 @@ source("scripts/functions.R")
 palette("Okabe-Ito")
 ```
 
-## 輪郭データの読み込み
+## Load contour data
 
 ```{r}
 #| label: load_contours
@@ -27,7 +27,7 @@ xy_list <- lapply(file_paths_xy, function(fp) {
   df <- df[, c("x", "y")]
   df <- as.matrix(df)
   storage.mode(df) <- "double"
-  # 輪郭が閉じていない場合、最初の点を最後に追加して閉じる
+  # if the contour is not closed, add the first point to the end to close it
   if (!all(df[1, ] == df[nrow(df), ])) {
     df <- rbind(df, df[1, ])
   }
@@ -49,7 +49,7 @@ ef_list <- lapply(file_paths, function(fp) {
 })
 ```
 
-## 関数の作成
+## Define function to compare original contour and reconstructed contour from Oriented True EFD normalization
 
 ```{r}
 compare_contour_oriented_ture_EFD_normalization <- function(
@@ -61,29 +61,28 @@ compare_contour_oriented_ture_EFD_normalization <- function(
   cex.text = 2,
   ...
 ) {
-  # スケール E* を計算する関数
+  # Fuction to compute E* from EFD coefficients
   compute_E_star <- function(ef) {
     A1 <- ef$an[1]
     B1 <- ef$bn[1]
     C1 <- ef$cn[1]
     D1 <- ef$dn[1]
-    # θ の計算（主軸の方向）
+    # Calculate theta
     theta <- 0.5 *
       atan2(
         2 * (A1 * B1 + C1 * D1),
         (A1^2 + C1^2 - B1^2 - D1^2)
       )
 
-    # a*, c* の計算
+    # Calculate a* and c*
     a_star <- A1 * cos(theta) + B1 * sin(theta)
     c_star <- C1 * cos(theta) + D1 * sin(theta)
 
-    # E*（半長軸の長さ）
+    # E*
     E_star <- sqrt(a_star^2 + c_star^2)
     return(E_star)
   }
 
-  #original <- xy_list[[i]]
   center <- coo_centpos(original) # center position
   original_centered <- sweep(original, 2, center, "-") # center the contour
   ef <- efourier(
@@ -92,8 +91,6 @@ compare_contour_oriented_ture_EFD_normalization <- function(
     norm = FALSE
   )
   E <- compute_E_star(ef)
-  #true_ef <- true_normalize(ef, output_meta = TRUE)
-  #scale <- true_ef$E
   true_ef_coef <- list(
     ao = unique(ef_normalized$ao),
     co = unique(ef_normalized$co),
@@ -146,9 +143,9 @@ compare_contour_oriented_ture_EFD_normalization <- function(
 }
 ```
 
-## すべての輪郭と再構築輪郭を保存
+## Save all comparisons
 
-Oriented True EFD normalization からの再構築輪郭と元の輪郭を重ね合わせます。
+Overlay the original contour and the reconstructed contour from Oriented True EFD normalization.
 
 ```{r}
 save_dir <- "results"
@@ -170,7 +167,7 @@ for (i in seq_along(xy_list)) {
 dev.off()
 ```
 
-## 一部を保存
+## Save a subset of comparisons
 
 ```{r}
 save_dir <- "results"
@@ -194,12 +191,11 @@ for (i in seq_along(xy_list_example)) {
 dev.off()
 ```
 
-## 普通の True EFD normalization を行った場合
+## True EFD normalization
 
-取得した輪郭から、回転して、通常の True EFD normalization を行い、輪郭を再構築して確認します。
-長軸を x 軸に揃えるように回転させるため、サンプル間で向きがそろわない可能性があります。
+Because the contours are rotated to align the major axis to the x-axis, the orientations may not be consistent among samples.
 
-### 関数の作成
+### Define function to compare original contour and reconstructed contour from True EFD normalization
 
 ```{r}
 compare_contour <- function(
@@ -270,7 +266,7 @@ compare_contour <- function(
 }
 ```
 
-### 保存
+### Save all comparisons with rotated contours
 
 ```{r}
 # ratation
@@ -305,7 +301,7 @@ for (i in seq_along(xy_list_rotated)) {
 dev.off()
 ```
 
-## 一部を保存
+## Save a subset of comparisons with rotated contours
 
 ```{r}
 save_dir <- "results"
