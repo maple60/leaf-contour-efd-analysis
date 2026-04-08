@@ -12,7 +12,7 @@ the LeafContourEFD manuscript. The software itself is available at:
 
 ## Requirements
 
-Tp reproduce the analysis, you need:
+To reproduce the analysis, you need:
 
 - [R](https://www.r-project.org/) (recommended version: 4.3.1 or higher)
 - [Quarto](https://quarto.org/)
@@ -31,13 +31,45 @@ analysis code is written in R version 4.3.1 (*R* 2026).
 ### R environment setup
 
 In this repository, I use [renv](https://rstudio.github.io/renv/) to
-manage R pacage dependencies. Please execute command below after
+manage R package dependencies. Please execute command below after
 installing renv.
 
 ``` r
-# install.packages("renv") # if you don't install
+# install.packages("renv") # if not installed
 renv::restore()
 ```
+
+## Quickstart (5 minutes)
+
+Follow these steps to confirm the environment and run a first example
+notebook.
+
+1.  Set `PROJECT_DATA_DIR` in `.Renviron` (project root):
+
+<div class="code-with-filename">
+
+**.Renviron**
+
+```
+PROJECT_DATA_DIR=/path/to/your/data
+```
+
+</div>
+
+2.  Restore the R package environment:
+
+``` r
+renv::restore()
+```
+
+3.  Render a first notebook example:
+
+``` bash
+quarto render notebooks/00_setup.qmd
+```
+
+If `notebooks/00_setup.qmd` is not available in your local clone, render
+any notebook under `notebooks/` as your first run.
 
 ## Data
 
@@ -66,6 +98,33 @@ For example:
 
 - macOS: /Users/yourname/Dropbox/project_data
 - Windows: C:/Users/yourname/Dropbox/project_data
+
+## Repository layout
+
+| Path | Purpose |
+|----|----|
+| `notebooks/` | Quarto notebooks used for analysis, figures, and report outputs. |
+| `scripts/` or `R/` | Reusable R scripts/functions shared across notebooks and workflows. |
+| `renv/` | Project-local R environment metadata and lockfile support. |
+| `PROJECT_DATA_DIR` location | External data directory expected by analysis code (set via `.Renviron`). |
+
+## Common pitfalls
+
+- **`PROJECT_DATA_DIR` is not set or points to the wrong location**  
+  Symptoms: file-not-found errors when running notebooks or scripts.  
+  Fix: confirm `.Renviron` exists in project root and contains the
+  correct absolute path.
+
+- **`renv::restore()` fails**  
+  Symptoms: package installation errors, version conflicts, or missing
+  system libraries.  
+  Fix: update R to a compatible version (4.3.1+ recommended), then retry
+  `renv::restore()` and install missing system dependencies if prompted.
+
+- **Quarto is missing or not on PATH**  
+  Symptoms: `quarto: command not found` or render failures.  
+  Fix: install Quarto from <https://quarto.org/> and verify with
+  `quarto --version`.
 
 ## About README
 
