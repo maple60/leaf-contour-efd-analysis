@@ -14,13 +14,19 @@ the LeafContourEFD manuscript. The software itself is available at:
 
 Tp reproduce the analysis, you need:
 
-- R
-- Quarto
+- [R](https://www.r-project.org/) (recommended version: 4.3.1 or higher)
+- [Quarto](https://quarto.org/)
 - the R packages required by this project
 
 If you install [renv](https://rstudio.github.io/renv/), you can install
 the required R packages by executing `renv::restore()` (see below). All
-analysis code is written in R vesion 4.3.1 (*R* 2026).
+analysis code is written in R version 4.3.1 (*R* 2026).
+
+### Optional tools
+
+- [Air](https://posit-dev.github.io/air/): R code formatter.
+- [Positron](https://positron.posit.co/): IDE used for all analyses in
+  this project, but not required to run the code.
 
 ### R environment setup
 
@@ -69,6 +75,8 @@ This `README.md` is generated from `README.qmd` using
 ``` bash
 quarto render README.qmd
 ```
+
+## References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 

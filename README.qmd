@@ -62,3 +62,8 @@ This `README.md` is generated from `README.qmd` using [Quarto](https://quarto.or
 ``` bash
 quarto render README.qmd
 ```
+
+## References
+
+::: {#refs}
+:::
