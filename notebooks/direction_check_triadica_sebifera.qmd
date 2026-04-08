@@ -88,7 +88,7 @@ for (i in seq_along(xy_list_example)) {
 ```
 
 ```{r}
-#| label: reconstruct_contour_oriented_ture_EFD_normalization
+#| label: reconstruct_contour_oriented_true_EFD_normalization
 #| eval: false
 #| code-fold: true
 #| code-summary: "Save the plot as SVG file"
