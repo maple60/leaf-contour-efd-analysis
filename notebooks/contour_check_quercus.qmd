@@ -4,7 +4,7 @@
 #| label: setup
 library(tools)
 library(Momocs)
-source("scripts/functions.R")
+source("scripts/load_functions.R")
 palette("Okabe-Ito")
 ```
 
