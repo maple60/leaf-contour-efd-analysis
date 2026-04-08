@@ -5,7 +5,7 @@
 
 library(tools)
 library(Momocs)
-source("scripts/functions.R")
+source("scripts/load_functions.R")
 palette("Okabe-Ito")
 my_palette <- pal_manual(c("#FF4B00", "#005AFF"), transp = 0) # Quercus serrata and Q. crispula colors
 ```
