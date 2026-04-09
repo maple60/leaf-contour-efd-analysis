@@ -48,7 +48,7 @@ df_sp_name$species <- ifelse(
 
 ## Load contour data
 
-Load the contour data from the CSV files in the `data/contour/` directory.
+Load the contour data from the CSV files in the `data/contour_quercus/` directory.
 
 ```{r}
 #| label: load_contours
