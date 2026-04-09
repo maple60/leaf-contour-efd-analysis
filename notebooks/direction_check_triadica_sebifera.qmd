@@ -53,7 +53,8 @@ names(xy_list) <- id_name
 
 these data are obtained by LeafContourEFD.
 
-```{r} 
+```{r}
+#| label: load_oriented_true_normalized_coefficients
 file_paths <- list.files(
   file.path(data_dir, "data/coefficients_efd_normalized_triadica_sebifera"),
   full.names = TRUE,
@@ -71,6 +72,7 @@ ef_list <- lapply(file_paths, function(fp) {
 Compare the original contour and the reconstructed contour from **oriented true EFD normalization** for the first 9 samples.
 
 ```{r}
+#| label: compare_oriented_true_EFD_normalization_examples
 xy_list_example <- xy_list[1:9]
 labels <- letters[seq_along(xy_list_example)]
 layout(matrix(seq_along(xy_list_example), nrow = 3, byrow = TRUE))
@@ -115,7 +117,7 @@ dev.off()
 
 ## True EFD normalization
 
-To assess whether the contours reconstructed agter true EFD normalization are oriented consistently with the original contours, the original contours were randomly rotated prior to applyin true EFD normalization.
+To assess whether contours reconstructed after true EFD normalization are oriented consistently with the original contours, we randomly rotate the original contours before applying true EFD normalization.
 
 ```{r}
 #| label: rotate_contours
@@ -134,6 +136,7 @@ xy_list_rotated <- mapply(
 Compare the original contour and the reconstructed contour from **true EFD normalization** for the first 9 samples.
 
 ```{r}
+#| label: compare_true_EFD_normalization_examples
 xy_list_rotated_example <- xy_list_rotated[1:9]
 labels <- letters[seq_along(xy_list_rotated_example)]
 layout(matrix(seq_along(xy_list_rotated_example), nrow = 3, byrow = TRUE))
