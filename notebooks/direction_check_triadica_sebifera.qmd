@@ -4,7 +4,7 @@ title: "Direction check for *Triadica sebifera*"
 
 This notebook compares the original contour and the reconstructed contour from oriented true EFD normalization and true EFD normalization for *Triadica sebifera*.
 
-Output figures in this notebook are used in Figure 3 of the manuscript.
+Output figures in this notebook are used in **Figure 3** of the manuscript.
 
 ## Setup
 
@@ -118,7 +118,7 @@ dev.off()
 To assess whether the contours reconstructed agter true EFD normalization are oriented consistently with the original contours, the original contours were randomly rotated prior to applyin true EFD normalization.
 
 ```{r}
-# rotation
+#| label: rotate_contours
 set.seed(123) # set.seed for reproducibility
 # rotation angles in degrees
 angles <- sample(0:360, length(xy_list), replace = TRUE)
@@ -169,6 +169,48 @@ for (i in seq_along(xy_list_rotated_example)) {
     lwd = 3,
     cex.text = 5,
     label = labels[i]
+  )
+}
+dev.off()
+```
+
+## Supplementary figures
+
+Visualize all the original contours and the contours reconstructed from oriented true EFD normalization for all samples, and save the plots as SVG files.
+
+```{r}
+#| label: reconstruct_contour_oriented_true_EFD_normalization_all
+layout(matrix(seq_along(xy_list_rotated), nrow = 5, byrow = TRUE))
+for (i in seq_along(xy_list_rotated)) {
+  compare_contour_true_EFD_normalization(
+    original = xy_list_rotated[[i]],
+    nb.h = 5,
+    mar = c(0, 0, 0, 0),
+    lwd = 3,
+    cex.text = 5,
+    label = i
+  )
+}
+```
+
+```{r}
+#| label: save_comparison_plots_all
+#| eval: false
+#| code-fold: true
+#| code-summary: "Save the plot as SVG file"
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE)
+save_file_name <- "supplementary_compare_contours_true_efd_normalized_all_triadica_sebifera.svg"
+svg(file.path(save_dir, save_file_name), bg = "transparent")
+layout(matrix(seq_along(xy_list_rotated), nrow = 5, byrow = TRUE))
+for (i in seq_along(xy_list_rotated)) {
+  compare_contour_true_EFD_normalization(
+    original = xy_list_rotated[[i]],
+    nb.h = 5,
+    mar = c(0, 0, 0, 0),
+    lwd = 3,
+    cex.text = 5,
+    label = i
   )
 }
 dev.off()

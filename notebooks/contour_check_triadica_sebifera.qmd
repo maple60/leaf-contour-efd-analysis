@@ -55,6 +55,11 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 names(xy_list) <- id_name
 ```
 
+## Load oriented true normalized EFD coefficients
+
+Load the oriented true normalized EFD coefficients from the CSV files in the `data/coefficients_efd_normalized_triadica_sebifera/` directory.
+These data are obtained(calculated) from LeafContourEFD.
+
 ```{r} 
 #| label: load_coefficients
 # file paths of EFD coefficient CSV files
@@ -72,7 +77,7 @@ ef_list <- lapply(file_paths, function(fp) {
 })
 ```
 
-## visualize the original contours and the contours reconstructed from Oriented True EFD normalization for the first 9 samples.
+## Visualize the original contours and the contours reconstructed from oriented true EFD normalization
 
 Overlay the original contour and the reconstructed contour from Oriented True EFD normalization.
 
@@ -83,11 +88,11 @@ for (i in seq_along(xy_list)) {
   compare_contour_oriented_true_EFD_normalization(
     original = xy_list[[i]],
     ef_normalized = ef_list[[i]],
-    label = names(xy_list)[i],
+    label = i,
     nb.h = 5,
     mar = c(0, 0, 0, 0),
-    lwd = 2,
-    cex.text = 1
+    lwd = 3,
+    cex.text = 5
   )
 }
 ```
@@ -99,18 +104,18 @@ for (i in seq_along(xy_list)) {
 #| code-summary: "Save the plot as SVG file"
 save_dir <- "results"
 dir.create(save_dir, showWarnings = FALSE)
-save_file_name <- "compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg"
+save_file_name <- "supplementary_compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg"
 svg(file.path(save_dir, save_file_name), bg = "transparent")
 layout(matrix(seq_along(xy_list), nrow = 5, byrow = TRUE))
 for (i in seq_along(xy_list)) {
   compare_contour_oriented_true_EFD_normalization(
     original = xy_list[[i]],
     ef_normalized = ef_list[[i]],
-    label = names(xy_list)[i],
+    label = i,
     nb.h = 5,
     mar = c(0, 0, 0, 0),
-    lwd = 2,
-    cex.text = 1
+    lwd = 3,
+    cex.text = 5
   )
 }
 dev.off()
