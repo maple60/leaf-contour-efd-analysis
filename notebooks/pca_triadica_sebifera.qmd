@@ -1,34 +1,42 @@
+---
+title: "PCA of *Triadica sebifera* leaf contours"
+---
 
-## Setup
+Purposes of this notebook are:  
+1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.
+2. To compare the PCA results among these three methods.
+
+## Setup & preprocessing
 
 ```{r}
 #| label: setup
-
 library(tools)
 library(Momocs)
-source("scripts/load_functions.R")
+source("R/geometry.R")
+source("R/normalization.R")
+source("R/pca_plot.R")
+# color palette for colorblind-friendly visualization
 palette("Okabe-Ito")
+# set the data directory from environment variable (.Renviron)
+data_dir <- Sys.getenv("PROJECT_DATA_DIR")
 ```
-
-## Principal Component Analysis (PCA) using Momocs
 
 Load contours
 
 ```{r}
 #| label: load_contours
-
 file_paths_xy <- list.files(
-  "data/contour_triadica_sebifera/",
+  file.path(data_dir, "data/contour_triadica_sebifera/"),
   full.names = TRUE,
   pattern = "\\.csv$"
 )
 xy_list <- lapply(file_paths_xy, function(fp) {
-  cat("File:", fp, "\n")
+  #cat("File:", fp, "\n")
   df <- read.csv(fp)
   df <- df[, c("x", "y")]
   df <- as.matrix(df)
   storage.mode(df) <- "double"
-  # 輪郭が閉じていない場合、最初の点を最後に追加して閉じる
+  # Ensure the contour is closed by checking if the first and last points are the same. If not, append the first point to the end of the matrix.
   if (!all(df[1, ] == df[nrow(df), ])) {
     df <- rbind(df, df[1, ])
   }
@@ -36,128 +44,41 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 })
 ```
 
-```{r}
-#| label: pca_oriented_true_efd_normalized
+## PCA using conventional normalization
 
-nb_h <- 5 # Number of harmonics
-out <- Out(xy_list) # convert to Momocs Out object
-# oriented true EFD normalization
-ef_true_norm <- efourier_true_norm(
-  out,
-  nb_h = nb_h,
-  x_sy = TRUE,
-  y_sy = FALSE,
-  skip_rotation = TRUE
-)
-pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
-
-save_dir <- "results/pca_triadica_sebifera"
-dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-save_file_name <- "pca_oriented_true_efd_normalized.svg"
-save_file_path <- file.path(save_dir, save_file_name)
-svg(
-  save_file_path,
-  bg = "transparent"
-)
-pca_plot <- function(x, ...) {
-  plt <- plot_PCA(
-    x,
-    points = FALSE,
-    morphospace = FALSE,
-    morphospace_position = "range",
-    chull = TRUE, # convex hull
-    #chullfilled = TRUE,
-    zoom = 1,
-    eigen = FALSE,
-    box = FALSE,
-    axesnames = FALSE,
-    axesvar = FALSE,
-    ...
-  )
-  plt <- layer_axes(plt, col = "black", lwd = 1)
-  plt <- layer_ticks(plt, col = "black", lwd = 1, cex = 1.2)
-  plt <- layer_points(plt, pch = 19, cex = 3, transp = 0.5)
-  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
-  plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
-}
-pca_plot(pca_true_norm)
-dev.off()
-```
-
-### normalized EFD
-
-PCA using normalized EFD coefficients (traditional method)
-
-```{r}
-for (i in 1:30) {
-  xy <- xy_list[[i]]
-  ef <- efourier(
-    xy,
-    nb.h = 35,
-    norm = TRUE,
-    start = FALSE
-  )
-  efourier_shape(
-    ef$an,
-    ef$bn,
-    ef$cn,
-    ef$dn,
-    nb.h = 3,
-    nb.pts = 120,
-    plot = TRUE
-  )
-}
-```
+PCA using normalized EFD coefficients (conventional method)
+Momocs側で正規化を行います。
 
 ```{r}
 #| label: pca_efd_normalized
-
 nb_h <- 5 # Number of harmonics
 out <- Out(xy_list) # convert to Momocs Out object
 ef_norm <- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE) # EFD with normalization
 pca_norm <- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+pca_plot(pca_norm)
+```
 
-save_dir <- "results/pca_triadica_sebifera"
+```{r}
+#| label: pca_efd_normalized_save
+#| eval: false
+#| code-fold: true
+#| code-summary: "Save the plot as SVG file"
+save_dir <- "results"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-save_file_name <- "pca_efd_normalized.svg"
+save_file_name <- "fig4d_pca_efd_normalized.svg"
 save_file_path <- file.path(save_dir, save_file_name)
 svg(
   save_file_path,
   bg = "transparent"
 )
-pca_plot <- function(x, ...) {
-  plt <- plot_PCA(
-    x,
-    points = FALSE,
-    morphospace = FALSE,
-    morphospace_position = "range",
-    chull = TRUE, # convex hull
-    #chullfilled = TRUE,
-    zoom = 1,
-    eigen = FALSE,
-    box = FALSE,
-    axesnames = FALSE,
-    axesvar = FALSE,
-    ...
-  )
-  plt <- layer_axes(plt, col = "black", lwd = 1)
-  plt <- layer_ticks(plt, col = "black", lwd = 1)
-  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_points(plt, pch = 19, cex = 3, transp = 0.5)
-  plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
-  plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
-}
 pca_plot(pca_norm)
 dev.off()
 ```
 
 ## True EFD normalization
 
-
 ```{r}
-#| label: pca__true_efd_normalized
-
+#| label: pca_true_efd_normalized
 nb_h <- 5 # Number of harmonics
 out <- Out(xy_list) # convert to Momocs Out object
 # oriented true EFD normalization
@@ -169,37 +90,65 @@ ef_true_norm <- efourier_true_norm(
   skip_rotation = FALSE
 )
 pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+pca_plot(pca_true_norm)
+```
 
-save_dir <- "results/pca_triadica_sebifera"
+```{r}
+#| label: pca_true_efd_normalized_save
+#| eval: false
+#| code-fold: true
+#| code-summary: "Save the plot as SVG file"
+save_dir <- "results"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-save_file_name <- "pca_true_efd_normalized.svg"
+save_file_name <- "fig4e_pca_true_efd_normalized.svg"
 save_file_path <- file.path(save_dir, save_file_name)
 svg(
   save_file_path,
   bg = "transparent"
 )
-pca_plot <- function(x, ...) {
-  plt <- plot_PCA(
-    x,
-    points = FALSE,
-    morphospace = FALSE,
-    morphospace_position = "range",
-    chull = TRUE, # convex hull
-    #chullfilled = TRUE,
-    zoom = 1,
-    eigen = FALSE,
-    box = FALSE,
-    axesnames = FALSE,
-    axesvar = FALSE,
-    ...
-  )
-  plt <- layer_axes(plt, col = "black", lwd = 1)
-  plt <- layer_ticks(plt, col = "black", lwd = 1)
-  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_points(plt, pch = 19, cex = 3, transp = 0.5)
-  plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
-  plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
-}
+pca_plot(pca_true_norm)
+dev.off()
+```
+
+## PCA using oriented true EFD normalization
+
+(後で英語に直す)
+LeafContourEFDで得られた輪郭はすでに開始点、回転が標準化されています。
+この輪郭にtrue EFD noramlizationのx対照補正のみを行うことで、oriente true EFD normalizationを実現します。
+
+LeafContourEFDで得られたフーリエ係数を使用しても同じ結果が得られますが、今回はMomocsの関数を利用して、PC値の変化に応じた再構築輪郭の変化を簡単にPCAプロット上に可視化できるようにします。
+
+将来的にはMomocsに依存しない方法も提供する予定です。
+
+```{r}
+#| label: pca_oriented_true_efd_normalized
+nb_h <- 5 # Number of harmonics
+out <- Out(xy_list) # convert to Momocs Out object
+# oriented true EFD normalization
+ef_true_norm <- efourier_true_norm(
+  out,
+  nb_h = nb_h,
+  x_sy = TRUE,
+  y_sy = FALSE,
+  skip_rotation = TRUE
+)
+pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+pca_plot(pca_true_norm)
+```
+
+```{r}
+#| label: pca_oriented_true_efd_normalized_save
+#| eval: false
+#| code-fold: true
+#| code-summary: "Save the plot as SVG file"
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+save_file_name <- "fig4f_pca_oriented_true_efd_normalized.svg"
+save_file_path <- file.path(save_dir, save_file_name)
+svg(
+  save_file_path,
+  bg = "transparent"
+)
 pca_plot(pca_true_norm)
 dev.off()
 ```
