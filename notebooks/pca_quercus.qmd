@@ -2,9 +2,9 @@
 title: "PCA of *Quercus serrata* and *Quercus crispula* leaf contours"
 ---
 
-The goals of this notebook are:  
-1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.  
-2. To compare PCA results across these three methods.  
+The goals of this notebook are:\
+1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.\
+2. To compare PCA results across these three methods.
 
 Output figures in this notebook are used in **Figure 4A-C** of the manuscript.
 
@@ -27,15 +27,12 @@ data_dir <- Sys.getenv("PROJECT_DATA_DIR")
 
 Load the species names from the CSV file.
 
-This file contains three columns: `id`, `konara`, and `mizunara`. 
-The `id` column corresponds to the sample ID, while the `konara` and `mizunara` columns contain binary values indicating the species classification. 
-We will determine the species name based on which column has a value of 1 for each sample.
+This file contains three columns: `id`, `konara`, and `mizunara`. The `id` column corresponds to the sample ID, while the `konara` and `mizunara` columns contain binary values indicating the species classification. We will determine the species name based on which column has a value of 1 for each sample.
 
-::: {.callout-note}
+::: callout-note
 ## Species name
 
-`konara` means Quercus serrata, and `mizunara` means Quercus crispula.
-Both are standard Japanese common names used in the original dataset metadata.
+`konara` means Quercus serrata, and `mizunara` means Quercus crispula. Both are standard Japanese common names used in the original dataset metadata.
 :::
 
 ```{r}
@@ -52,7 +49,7 @@ df_sp_name$species <- factor(
 )
 ```
 
-Load contours
+Load contours from the CSV files in the `data/contour_quercus/` directory.
 
 ```{r}
 #| label: load_contours
@@ -76,7 +73,7 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 names(xy_list) <- file_path_sans_ext(basename(file_paths_xy))
 ```
 
-Rotate contour
+Rotate contour to randomize the initial direction.
 
 ```{r}
 #| label: rotate_contours
@@ -91,9 +88,9 @@ xy_list_rotated <- mapply(
 )
 ```
 
-To evaluate the normalization methods without bias from the contour’s initial point, we randomize the starting point of each contour. 
+To evaluate the normalization methods without bias from the contour’s initial point, we randomize the starting point of each contour.
 
-This is necessary because the contours obtained with LeafContourEFD already have a standardized starting point. 
+This is necessary because the contours obtained with [LeafContourEFD](https://github.com/maple60/leaf-contour-efd) already have a standardized starting point.
 
 To randomize the starting point, we reorder the points in each contour by selecting a starting point at random and rearranging the sequence accordingly.
 
@@ -110,7 +107,7 @@ xy_list_rotated_reordered <- lapply(xy_list_rotated, function(xy_rotated) {
 })
 ```
 
-Species names corresponding to individual IDs
+Species names corresponding to individual IDs.
 
 ```{r}
 #| label: prepare_ids_species
@@ -127,8 +124,8 @@ sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
 
 ## PCA using conventional normalization
 
-PCA using normalized EFD coefficients (conventional method).  
-Normalization is performed using Momocs.
+Principal component analysis (PCA) using normalized EFD coefficients (conventional method [@kuhl1982]).\
+Normalization is performed using [Momocs](https://momx.github.io/Momocs/) [@bonhomme2014].
 
 ```{r}
 #| label: pca_efd_normalized
@@ -165,6 +162,9 @@ dev.off()
 ```
 
 ## PCA using true EFD normalization
+
+Principal component analysis (PCA) using coefficients obtained by true EFD normalization.\
+Normalization is performed using the `efourier_true_norm()` function implemented in this project (see [`R/normalization.R`](https://github.com/maple60/leaf-contour-efd-analysis/blob/f04a8cd81357d5195f1da90fc051b169971a3abd/R/normalization.R) for details).
 
 ```{r}
 #| label: pca_true_efd_normalized
@@ -208,15 +208,12 @@ dev.off()
 
 ## PCA using oriented true EFD normalization
 
-Contours obtained from LeafContourEFD already have standardized starting points and rotation.
-Therefore, we apply only the x-axis symmetry correction step from true EFD normalization
-to implement oriented true EFD normalization.
+Contours obtained from [LeafContourEFD](https://github.com/maple60/leaf-contour-efd) already have standardized starting points and rotation. 
+Therefore, we apply only the x-axis symmetry correction step from **true EFD normalization** to implement oriented **true EFD normalization**.
 
-Although the same results can be obtained from the Fourier coefficients exported by
-LeafContourEFD, we use Momocs here so we can easily visualize reconstructed contour
-changes associated with principal component score shifts.
+Although the same results can be obtained from the Fourier coefficients exported by [LeafContourEFD](https://github.com/maple60/leaf-contour-efd), we use [Momocs](https://momx.github.io/Momocs/) here so we can easily visualize reconstructed contour changes associated with principal component score shifts.
 
-In a future update, we plan to provide a workflow that does not depend on Momocs.
+In a future update, we plan to provide a workflow that does not depend on [Momocs](https://momx.github.io/Momocs/).
 
 ```{r}
 #| label: pca_oriented_true_efd_normalized
@@ -234,7 +231,7 @@ ef_true_norm <- efourier_true_norm(
 pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE)
 ```
 
-Visualize PCA results
+Visualize PCA results.
 
 ```{r}
 #| label: pca_oriented_true_efd_normalized_plot
@@ -257,3 +254,8 @@ svg(
 pca_plot(pca_true_norm)
 dev.off()
 ```
+
+## References
+
+::: {#refs}
+:::

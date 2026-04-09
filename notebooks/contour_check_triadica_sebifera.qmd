@@ -2,9 +2,9 @@
 title: "Contour check for *Triadica sebifera*"
 ---
 
-The goals of this notebook are:
-1. To check the original contour data of *Triadica sebifera*.
-2. To check contours reconstructed from oriented true EFD normalization for all samples.
+The goals of this notebook are:  
+1. To check the original contour data of *Triadica sebifera*.  
+2. To check contours reconstructed from oriented true EFD normalization for all samples.  
 
 Output figures of this notebook are not included in the manuscript, but they are saved in the `results/` directory.
 

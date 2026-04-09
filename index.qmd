@@ -44,8 +44,8 @@ PROJECT_DATA_DIR=/path/to/your/data
 
 For example:
 
-- macOS: /Users/yourname/Dropbox/project_data
-- Windows: C:/Users/yourname/Dropbox/project_data
+- macOS: `/Users/yourname/Dropbox/project_data`
+- Windows: `C:/Users/yourname/Dropbox/project_data`
 
 ## References
 

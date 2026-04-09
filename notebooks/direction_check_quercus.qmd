@@ -84,7 +84,7 @@ names(xy_list) <- id_name
 
 ## Load oriented true normalized EFD coefficients
 
-these data are obtained by LeafContourEFD.
+True normalized EFD coefficients are obtained by [LeafContourEFD](https://github.com/maple60/leaf-contour-efd).
 
 ```{r}
 #| label: load_oriented_true_normalized_coefficients

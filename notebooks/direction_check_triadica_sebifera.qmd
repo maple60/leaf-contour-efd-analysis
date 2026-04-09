@@ -51,7 +51,7 @@ names(xy_list) <- id_name
 
 ## Load oriented true normalized EFD coefficients
 
-these data are obtained by LeafContourEFD.
+True normalized EFD coefficients data are obtained by [LeafContourEFD](https://github.com/maple60/leaf-contour-efd).
 
 ```{r}
 #| label: load_oriented_true_normalized_coefficients
@@ -73,12 +73,12 @@ Compare the original contour and the reconstructed contour from **oriented true 
 
 ```{r}
 #| label: compare_oriented_true_EFD_normalization_examples
-xy_list_example <- xy_list[1:9]
-labels <- letters[seq_along(xy_list_example)]
-layout(matrix(seq_along(xy_list_example), nrow = 3, byrow = TRUE))
-for (i in seq_along(xy_list_example)) {
+extract_id <- 1:9
+labels <- letters[seq_along(extract_id)]
+layout(matrix(seq_along(extract_id), nrow = 3, byrow = TRUE))
+for (i in seq_along(extract_id)) {
   compare_contour_oriented_true_EFD_normalization(
-    original = xy_list[[i]],
+    original = xy_list[[extract_id[i]]],
     ef_normalized = ef_list[[i]],
     nb.h = 5,
     mar = c(0, 0, 0, 0),
@@ -98,12 +98,12 @@ save_dir <- "results"
 dir.create(save_dir, showWarnings = FALSE)
 save_file_name <- "fig3a_compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg"
 svg(file.path(save_dir, save_file_name), bg = "transparent")
-xy_list_example <- xy_list[1:9]
-labels <- letters[seq_along(xy_list_example)]
-layout(matrix(seq_along(xy_list_example), nrow = 3, byrow = TRUE))
-for (i in seq_along(xy_list_example)) {
+extract_id <- 1:9
+labels <- letters[seq_along(extract_id)]
+layout(matrix(seq_along(extract_id), nrow = 3, byrow = TRUE))
+for (i in seq_along(extract_id)) {
   compare_contour_oriented_true_EFD_normalization(
-    original = xy_list[[i]],
+    original = xy_list[[extract_id[i]]],
     ef_normalized = ef_list[[i]],
     nb.h = 5,
     mar = c(0, 0, 0, 0),
@@ -117,7 +117,7 @@ dev.off()
 
 ## True EFD normalization
 
-To assess whether contours reconstructed after true EFD normalization are oriented consistently with the original contours, we randomly rotate the original contours before applying true EFD normalization.
+To assess whether contours reconstructed after **true EFD normalization** are oriented consistently with the original contours, we randomly rotate the original contours before applying **true EFD normalization**.
 
 ```{r}
 #| label: rotate_contours

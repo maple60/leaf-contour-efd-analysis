@@ -153,8 +153,6 @@ for (ids in list_id) {
 }
 ```
 
-## Save all comparisons
-
 ```{r}
 #| label: save_comparison_plots
 #| eval: false
@@ -206,5 +204,3 @@ for (ids in list_id) {
   dev.off()
 }
 ```
-
-This results in 15 SVG files, each containing 50 comparisons of original and reconstructed contours.

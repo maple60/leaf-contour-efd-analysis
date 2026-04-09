@@ -21,7 +21,7 @@ palette("Okabe-Ito")
 data_dir <- Sys.getenv("PROJECT_DATA_DIR")
 ```
 
-Load contours
+Load contours from the CSV files in the `data/contour_triadica_sebifera/` directory.
 
 ```{r}
 #| label: load_contours
@@ -46,8 +46,8 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 
 ## PCA using conventional normalization
 
-PCA using normalized EFD coefficients (conventional method).  
-Normalization is performed using Momocs.
+PCA using normalized EFD coefficients (conventional method [@kuhl1982]).  
+Normalization is performed using [Momocs](https://momx.github.io/Momocs/) [@bonhomme2014].
 
 ```{r}
 #| label: pca_efd_normalized
@@ -76,6 +76,9 @@ dev.off()
 ```
 
 ## True EFD normalization
+
+PCA using coefficients obtained by true EFD normalization.  
+Normalization is performed using the `efourier_true_norm()` function implemented in this project (see [`R/normalization.R`](https://github.com/maple60/leaf-contour-efd-analysis/blob/main/R/normalization.R) for details).
 
 ```{r}
 #| label: pca_true_efd_normalized
@@ -112,15 +115,15 @@ dev.off()
 
 ## PCA using oriented true EFD normalization
 
-Contours obtained from LeafContourEFD already have standardized starting points and rotation.
-Therefore, we apply only the x-axis symmetry correction step from true EFD normalization
-to implement oriented true EFD normalization.
+Contours obtained from [LeafContourEFD](https://github.com/maple60/leaf-contour-efd) already have standardized starting points and rotation.
+Therefore, we apply only the x-axis symmetry correction step from **true EFD normalization**
+to implement oriented **true EFD normalization**.
 
 Although the same results can be obtained from the Fourier coefficients exported by
-LeafContourEFD, we use Momocs here so we can easily visualize reconstructed contour
+[LeafContourEFD](https://github.com/maple60/leaf-contour-efd), we use [Momocs](https://momx.github.io/Momocs/) here so we can easily visualize reconstructed contour
 changes associated with principal component score shifts.
 
-In a future update, we plan to provide a workflow that does not depend on Momocs.
+In a future update, we plan to provide a workflow that does not depend on [Momocs](https://momx.github.io/Momocs/).
 
 ```{r}
 #| label: pca_oriented_true_efd_normalized
@@ -154,3 +157,8 @@ svg(
 pca_plot(pca_true_norm)
 dev.off()
 ```
+
+## References
+
+::: {#refs}
+:::
