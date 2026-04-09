@@ -275,7 +275,7 @@ dev.off()
 ```
 
 ```{r}
-#| label: reconstruct_contour_oriented_true_EFD_normalization_rightward
+#| label: reconstruct_contour_true_EFD_normalization_rightward
 #| eval: false
 #| code-fold: true
 #| code-summary: "Save the plot as SVG file"
