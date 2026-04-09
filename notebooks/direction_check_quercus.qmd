@@ -2,7 +2,7 @@
 title: "Direction check for *Quercus serrata* and *Quercus crispula*"
 ---
 
-This notebook compares the original contour and the reconstructed contour from oriented true EFD normalization and true EFD normalization for *Quercus serrata* and *Quercus crispula*.
+This notebook compares original contours and contours reconstructed from oriented true EFD normalization and true EFD normalization for *Quercus serrata* and *Quercus crispula*.
 
 Output figures in this notebook are used in **Figure 2** of the manuscript.
 

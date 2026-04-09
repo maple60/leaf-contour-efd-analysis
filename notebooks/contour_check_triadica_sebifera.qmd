@@ -2,9 +2,9 @@
 title: "Contour check for *Triadica sebifera*"
 ---
 
-Purposes of this notebook are:
+The goals of this notebook are:
 1. To check the original contour data of *Triadica sebifera*.
-2. To check the reconstructed contour from Oriented True EFD normalization for all samples.
+2. To check contours reconstructed from oriented true EFD normalization for all samples.
 
 Output figures of this notebook are not included in the manuscript, but they are saved in the `results/` directory.
 
@@ -58,7 +58,7 @@ names(xy_list) <- id_name
 ## Load oriented true normalized EFD coefficients
 
 Load the oriented true normalized EFD coefficients from the CSV files in the `data/coefficients_efd_normalized_triadica_sebifera/` directory.
-These data are obtained(calculated) from LeafContourEFD.
+These data are generated with LeafContourEFD.
 
 ```{r} 
 #| label: load_coefficients

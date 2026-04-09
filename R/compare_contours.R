@@ -7,7 +7,7 @@ compare_contour_oriented_true_EFD_normalization <- function(
   cex.text = 2,
   ...
 ) {
-  # Fuction to compute E* from EFD coefficients
+  # Function to compute E* from first-harmonic EFD coefficients
   compute_E_star <- function(ef) {
     A1 <- ef$an[1]
     B1 <- ef$bn[1]
@@ -24,7 +24,7 @@ compare_contour_oriented_true_EFD_normalization <- function(
     a_star <- A1 * cos(theta) + B1 * sin(theta)
     c_star <- C1 * cos(theta) + D1 * sin(theta)
 
-    # E*
+    # Scale factor (E*)
     E_star <- sqrt(a_star^2 + c_star^2)
     return(E_star)
   }
@@ -45,7 +45,7 @@ compare_contour_oriented_true_EFD_normalization <- function(
     cn = ef_normalized$cn,
     dn = ef_normalized$dn
   )
-  # reonstruct contour from true EFD coefficients
+  # Reconstruct contour from true EFD coefficients
   reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
   df_reconstruct <- as.data.frame(reconstruct)
   df_reconstruct <- df_reconstruct * E
@@ -114,7 +114,7 @@ compare_contour_true_EFD_normalization <- function(
     cn = true_ef_coef$cn,
     dn = true_ef_coef$dn
   )
-  # reonstruct contour from true EFD coefficients
+  # Reconstruct contour from true EFD coefficients
   reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
   df_reconstruct <- as.data.frame(reconstruct)
   df_reconstruct <- df_reconstruct * true_ef$E
