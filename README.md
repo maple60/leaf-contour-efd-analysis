@@ -141,6 +141,14 @@ This `README.md` is generated from `README.qmd` using
 quarto render README.qmd
 ```
 
+## Use of AI and LLMs
+
+[ChatGPT](https://chat.openai.com/) was used to improve the
+documentation and code. [Codex](https://openai.com/codex) was used to
+refactor the code in this repository. [GitHub
+Copilot](https://github.com/features/copilot) was used for coding
+assistance.
+
 ## References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
