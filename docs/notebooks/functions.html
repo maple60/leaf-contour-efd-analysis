@@ -263,11 +263,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Purpose of this notebook is to introduce the functions used in the analysis of this study.</p>
+</header><p>The purpose of this notebook is to introduce the functions used in this study.</p>
 <section id="rcompare_contours.r" class="level2"><h2 class="anchored" data-anchor-id="rcompare_contours.r"><code>R/compare_contours.R</code></h2>
 <p><code>R/compare_contours.R</code> contains two functions to compare the original contour with the reconstructed contour from EFD coefficients.</p>
 <p>The first function <code>compare_contour_oriented_true_EFD_normalization</code> compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method.</p>
-<p>The second function <code>compare_contour_true_EFD_normalization</code> compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method without orientation.</p>
+<p>The second function <code>compare_contour_true_EFD_normalization</code> compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method without orientation alignment.</p>
 <section id="compare_contour_oriented_true_efd_normalization" class="level3"><h3 class="anchored" data-anchor-id="compare_contour_oriented_true_efd_normalization"><code>compare_contour_oriented_true_EFD_normalization()</code></h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">compare_contour_oriented_true_EFD_normalization</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
@@ -279,7 +279,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="va">cex.text</span> <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Fuction to compute E* from EFD coefficients</span></span>
+<span>  <span class="co"># Function to compute E* from first-harmonic EFD coefficients</span></span>
 <span>  <span class="va">compute_E_star</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ef</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">A1</span> <span class="op">&lt;-</span> <span class="va">ef</span><span class="op">$</span><span class="va">an</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span>    <span class="va">B1</span> <span class="op">&lt;-</span> <span class="va">ef</span><span class="op">$</span><span class="va">bn</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
@@ -296,7 +296,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>    <span class="va">a_star</span> <span class="op">&lt;-</span> <span class="va">A1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">cos</a></span><span class="op">(</span><span class="va">theta</span><span class="op">)</span> <span class="op">+</span> <span class="va">B1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">theta</span><span class="op">)</span></span>
 <span>    <span class="va">c_star</span> <span class="op">&lt;-</span> <span class="va">C1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">cos</a></span><span class="op">(</span><span class="va">theta</span><span class="op">)</span> <span class="op">+</span> <span class="va">D1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">theta</span><span class="op">)</span></span>
 <span></span>
-<span>    <span class="co"># E*</span></span>
+<span>    <span class="co"># Scale factor (E*)</span></span>
 <span>    <span class="va">E_star</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">a_star</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">c_star</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">E_star</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
@@ -317,7 +317,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>    cn <span class="op">=</span> <span class="va">ef_normalized</span><span class="op">$</span><span class="va">cn</span>,</span>
 <span>    dn <span class="op">=</span> <span class="va">ef_normalized</span><span class="op">$</span><span class="va">dn</span></span>
 <span>  <span class="op">)</span></span>
-<span>  <span class="co"># reonstruct contour from true EFD coefficients</span></span>
+<span>  <span class="co"># Reconstruct contour from true EFD coefficients</span></span>
 <span>  <span class="va">reconstruct</span> <span class="op">&lt;-</span> <span class="fu">efourier_i</span><span class="op">(</span><span class="va">true_ef_coef</span>, nb.h <span class="op">=</span> <span class="va">nb.h</span><span class="op">)</span></span>
 <span>  <span class="va">df_reconstruct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">reconstruct</span><span class="op">)</span></span>
 <span>  <span class="va">df_reconstruct</span> <span class="op">&lt;-</span> <span class="va">df_reconstruct</span> <span class="op">*</span> <span class="va">E</span></span>
@@ -388,7 +388,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>    cn <span class="op">=</span> <span class="va">true_ef_coef</span><span class="op">$</span><span class="va">cn</span>,</span>
 <span>    dn <span class="op">=</span> <span class="va">true_ef_coef</span><span class="op">$</span><span class="va">dn</span></span>
 <span>  <span class="op">)</span></span>
-<span>  <span class="co"># reonstruct contour from true EFD coefficients</span></span>
+<span>  <span class="co"># Reconstruct contour from true EFD coefficients</span></span>
 <span>  <span class="va">reconstruct</span> <span class="op">&lt;-</span> <span class="fu">efourier_i</span><span class="op">(</span><span class="va">true_ef_coef</span>, nb.h <span class="op">=</span> <span class="va">nb.h</span><span class="op">)</span></span>
 <span>  <span class="va">df_reconstruct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">reconstruct</span><span class="op">)</span></span>
 <span>  <span class="va">df_reconstruct</span> <span class="op">&lt;-</span> <span class="va">df_reconstruct</span> <span class="op">*</span> <span class="va">true_ef</span><span class="op">$</span><span class="va">E</span></span>
@@ -470,7 +470,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="va">EPS</span> <span class="op">=</span> <span class="fl">1e-10</span>,</span>
 <span>  <span class="va">y_sy</span> <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">x_sy</span> <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">skip_rotation</span> <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="va">skip_rotation</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">verbose</span> <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">ef_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">ef_coe</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/mode.html">storage.mode</a></span><span class="op">(</span><span class="va">ef_mat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"double"</span></span>
@@ -510,7 +511,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>      skip_rotation <span class="op">=</span> <span class="va">skip_rotation</span></span>
 <span>    <span class="op">)</span></span>
 <span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">skip_rotation</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">verbose</span> <span class="op">&amp;&amp;</span> <span class="va">skip_rotation</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span><span class="op">(</span><span class="st">"skip_rotation is TRUE"</span><span class="op">)</span></span>
 <span>    <span class="op">}</span></span>
 <span></span>
@@ -1050,7 +1051,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Functions used in the analysis"</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>Purpose of this notebook is to introduce the functions used in the analysis of this study.</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>The purpose of this notebook is to introduce the functions used in this study.</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## `R/compare_contours.R`</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -1058,344 +1059,353 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>The first function <span class="in">`compare_contour_oriented_true_EFD_normalization`</span> compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method. </span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>The second function <span class="in">`compare_contour_true_EFD_normalization`</span> compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method without orientation.</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>The second function <span class="in">`compare_contour_true_EFD_normalization`</span> compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method without orientation alignment.</span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### `compare_contour_oriented_true_EFD_normalization()`</span></span>
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>compare_contour_oriented_true_EFD_normalization <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  original,</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  ef_normalized,</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="cn">NULL</span>,</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.text =</span> <span class="dv">2</span>,</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  ...</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>) {</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fuction to compute E* from EFD coefficients</span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  compute_E_star <span class="ot">&lt;-</span> <span class="cf">function</span>(ef) {</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    A1 <span class="ot">&lt;-</span> ef<span class="sc">$</span>an[<span class="dv">1</span>]</span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    B1 <span class="ot">&lt;-</span> ef<span class="sc">$</span>bn[<span class="dv">1</span>]</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    C1 <span class="ot">&lt;-</span> ef<span class="sc">$</span>cn[<span class="dv">1</span>]</span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    D1 <span class="ot">&lt;-</span> ef<span class="sc">$</span>dn[<span class="dv">1</span>]</span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate theta</span></span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    theta <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span></span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">atan2</span>(</span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span> <span class="sc">*</span> (A1 <span class="sc">*</span> B1 <span class="sc">+</span> C1 <span class="sc">*</span> D1),</span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>        (A1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> C1<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> B1<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> D1<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate a* and c*</span></span>
-<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>    a_star <span class="ot">&lt;-</span> A1 <span class="sc">*</span> <span class="fu">cos</span>(theta) <span class="sc">+</span> B1 <span class="sc">*</span> <span class="fu">sin</span>(theta)</span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    c_star <span class="ot">&lt;-</span> C1 <span class="sc">*</span> <span class="fu">cos</span>(theta) <span class="sc">+</span> D1 <span class="sc">*</span> <span class="fu">sin</span>(theta)</span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># E*</span></span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    E_star <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(a_star<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> c_star<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(E_star)</span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>  center <span class="ot">&lt;-</span> <span class="fu">coo_centpos</span>(original) <span class="co"># center position</span></span>
-<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>  original_centered <span class="ot">&lt;-</span> <span class="fu">sweep</span>(original, <span class="dv">2</span>, center, <span class="st">"-"</span>) <span class="co"># center the contour</span></span>
-<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>  ef <span class="ot">&lt;-</span> <span class="fu">efourier</span>(</span>
-<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>    original_centered,</span>
-<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> nb.h,</span>
-<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">norm =</span> <span class="cn">FALSE</span></span>
-<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>  E <span class="ot">&lt;-</span> <span class="fu">compute_E_star</span>(ef)</span>
-<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>  true_ef_coef <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">ao =</span> <span class="fu">unique</span>(ef_normalized<span class="sc">$</span>ao),</span>
-<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">co =</span> <span class="fu">unique</span>(ef_normalized<span class="sc">$</span>co),</span>
-<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">an =</span> ef_normalized<span class="sc">$</span>an,</span>
-<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">bn =</span> ef_normalized<span class="sc">$</span>bn,</span>
-<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">cn =</span> ef_normalized<span class="sc">$</span>cn,</span>
-<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">dn =</span> ef_normalized<span class="sc">$</span>dn</span>
-<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reonstruct contour from true EFD coefficients</span></span>
-<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>  reconstruct <span class="ot">&lt;-</span> <span class="fu">efourier_i</span>(true_ef_coef, <span class="at">nb.h =</span> nb.h)</span>
-<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a>  df_reconstruct <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(reconstruct)</span>
-<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>  df_reconstruct <span class="ot">&lt;-</span> df_reconstruct <span class="sc">*</span> E</span>
-<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>  xlim <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">c</span>(df_reconstruct<span class="sc">$</span>x, original_centered[, <span class="dv">1</span>]))</span>
-<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>  ylim <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">c</span>(df_reconstruct<span class="sc">$</span>y, original_centered[, <span class="dv">2</span>]))</span>
-<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> mar)</span>
-<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a>  <span class="co"># original centered contour</span></span>
-<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(</span>
-<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a>    original_centered,</span>
-<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"l"</span>,</span>
-<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>,</span>
-<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"black"</span>, <span class="at">red =</span> <span class="fl">0.7</span>, <span class="at">green =</span> <span class="fl">0.7</span>, <span class="at">blue =</span> <span class="fl">0.7</span>),</span>
-<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> xlim,</span>
-<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylim =</span> ylim,</span>
-<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">bty =</span> <span class="st">"n"</span>,</span>
-<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">xaxt =</span> <span class="st">"n"</span>,</span>
-<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">yaxt =</span> <span class="st">"n"</span>,</span>
-<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">""</span>,</span>
-<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylab =</span> <span class="st">""</span>,</span>
-<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a>    ...</span>
-<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reconstructed contour</span></span>
-<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(</span>
-<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a>    df_reconstruct,</span>
-<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>,</span>
-<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"#FF4B00"</span>, <span class="at">alpha.f =</span> <span class="fl">0.9</span>),</span>
-<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a>    ...</span>
-<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a>  <span class="co"># label</span></span>
-<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(label)) {</span>
-<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a>    <span class="fu">text</span>(</span>
-<span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">mean</span>(<span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]),</span>
-<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">mean</span>(<span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>]),</span>
-<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a>      <span class="at">labels =</span> label,</span>
-<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex =</span> cex.text,</span>
-<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"black"</span></span>
-<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a><span class="fu">### `compare_contour_true_EFD_normalization()`</span></span>
-<span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a>compare_contour_true_EFD_normalization <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a>  original,</span>
-<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="cn">NULL</span>,</span>
-<span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a>  <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.text =</span> <span class="dv">2</span>,</span>
-<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a>  ...</span>
-<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a>) {</span>
-<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a>  center <span class="ot">&lt;-</span> <span class="fu">coo_centpos</span>(original) <span class="co"># center position</span></span>
-<span id="cb9-125"><a href="#cb9-125" aria-hidden="true" tabindex="-1"></a>  original_centered <span class="ot">&lt;-</span> <span class="fu">sweep</span>(original, <span class="dv">2</span>, center, <span class="st">"-"</span>) <span class="co"># center the contour</span></span>
-<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-127"><a href="#cb9-127" aria-hidden="true" tabindex="-1"></a>  ef <span class="ot">&lt;-</span> <span class="fu">efourier</span>(</span>
-<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a>    original_centered,</span>
-<span id="cb9-129"><a href="#cb9-129" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> nb.h,</span>
-<span id="cb9-130"><a href="#cb9-130" aria-hidden="true" tabindex="-1"></a>    <span class="at">norm =</span> <span class="cn">FALSE</span></span>
-<span id="cb9-131"><a href="#cb9-131" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a>  true_ef <span class="ot">&lt;-</span> <span class="fu">true_normalize</span>(ef, <span class="at">output_meta =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-133"><a href="#cb9-133" aria-hidden="true" tabindex="-1"></a>  true_ef_coef <span class="ot">&lt;-</span> true_ef<span class="sc">$</span>ef</span>
-<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a>  true_ef_coef <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb9-135"><a href="#cb9-135" aria-hidden="true" tabindex="-1"></a>    <span class="at">ao =</span> <span class="fu">unique</span>(true_ef_coef<span class="sc">$</span>ao),</span>
-<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a>    <span class="at">co =</span> <span class="fu">unique</span>(true_ef_coef<span class="sc">$</span>co),</span>
-<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a>    <span class="at">an =</span> true_ef_coef<span class="sc">$</span>an,</span>
-<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a>    <span class="at">bn =</span> true_ef_coef<span class="sc">$</span>bn,</span>
-<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a>    <span class="at">cn =</span> true_ef_coef<span class="sc">$</span>cn,</span>
-<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a>    <span class="at">dn =</span> true_ef_coef<span class="sc">$</span>dn</span>
-<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reonstruct contour from true EFD coefficients</span></span>
-<span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a>  reconstruct <span class="ot">&lt;-</span> <span class="fu">efourier_i</span>(true_ef_coef, <span class="at">nb.h =</span> nb.h)</span>
-<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a>  df_reconstruct <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(reconstruct)</span>
-<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a>  df_reconstruct <span class="ot">&lt;-</span> df_reconstruct <span class="sc">*</span> true_ef<span class="sc">$</span>E</span>
-<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-147"><a href="#cb9-147" aria-hidden="true" tabindex="-1"></a>  xlim <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">c</span>(df_reconstruct<span class="sc">$</span>x, original_centered[, <span class="dv">1</span>]))</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: function_compare_contour_oriented_true_efd_normalization</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>compare_contour_oriented_true_EFD_normalization <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  original,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  ef_normalized,</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="cn">NULL</span>,</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.text =</span> <span class="dv">2</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>) {</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Function to compute E* from first-harmonic EFD coefficients</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>  compute_E_star <span class="ot">&lt;-</span> <span class="cf">function</span>(ef) {</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    A1 <span class="ot">&lt;-</span> ef<span class="sc">$</span>an[<span class="dv">1</span>]</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    B1 <span class="ot">&lt;-</span> ef<span class="sc">$</span>bn[<span class="dv">1</span>]</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    C1 <span class="ot">&lt;-</span> ef<span class="sc">$</span>cn[<span class="dv">1</span>]</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    D1 <span class="ot">&lt;-</span> ef<span class="sc">$</span>dn[<span class="dv">1</span>]</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate theta</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    theta <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>      <span class="fu">atan2</span>(</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span> <span class="sc">*</span> (A1 <span class="sc">*</span> B1 <span class="sc">+</span> C1 <span class="sc">*</span> D1),</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>        (A1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> C1<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> B1<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> D1<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate a* and c*</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    a_star <span class="ot">&lt;-</span> A1 <span class="sc">*</span> <span class="fu">cos</span>(theta) <span class="sc">+</span> B1 <span class="sc">*</span> <span class="fu">sin</span>(theta)</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>    c_star <span class="ot">&lt;-</span> C1 <span class="sc">*</span> <span class="fu">cos</span>(theta) <span class="sc">+</span> D1 <span class="sc">*</span> <span class="fu">sin</span>(theta)</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scale factor (E*)</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>    E_star <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(a_star<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> c_star<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(E_star)</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>  center <span class="ot">&lt;-</span> <span class="fu">coo_centpos</span>(original) <span class="co"># center position</span></span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>  original_centered <span class="ot">&lt;-</span> <span class="fu">sweep</span>(original, <span class="dv">2</span>, center, <span class="st">"-"</span>) <span class="co"># center the contour</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>  ef <span class="ot">&lt;-</span> <span class="fu">efourier</span>(</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    original_centered,</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> nb.h,</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">norm =</span> <span class="cn">FALSE</span></span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>  E <span class="ot">&lt;-</span> <span class="fu">compute_E_star</span>(ef)</span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>  true_ef_coef <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">ao =</span> <span class="fu">unique</span>(ef_normalized<span class="sc">$</span>ao),</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">co =</span> <span class="fu">unique</span>(ef_normalized<span class="sc">$</span>co),</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">an =</span> ef_normalized<span class="sc">$</span>an,</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">bn =</span> ef_normalized<span class="sc">$</span>bn,</span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">cn =</span> ef_normalized<span class="sc">$</span>cn,</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">dn =</span> ef_normalized<span class="sc">$</span>dn</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reconstruct contour from true EFD coefficients</span></span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a>  reconstruct <span class="ot">&lt;-</span> <span class="fu">efourier_i</span>(true_ef_coef, <span class="at">nb.h =</span> nb.h)</span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>  df_reconstruct <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(reconstruct)</span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>  df_reconstruct <span class="ot">&lt;-</span> df_reconstruct <span class="sc">*</span> E</span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>  xlim <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">c</span>(df_reconstruct<span class="sc">$</span>x, original_centered[, <span class="dv">1</span>]))</span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a>  ylim <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">c</span>(df_reconstruct<span class="sc">$</span>y, original_centered[, <span class="dv">2</span>]))</span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> mar)</span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a>  <span class="co"># original centered contour</span></span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(</span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>    original_centered,</span>
+<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>,</span>
+<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"black"</span>, <span class="at">red =</span> <span class="fl">0.7</span>, <span class="at">green =</span> <span class="fl">0.7</span>, <span class="at">blue =</span> <span class="fl">0.7</span>),</span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> xlim,</span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylim =</span> ylim,</span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">bty =</span> <span class="st">"n"</span>,</span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">xaxt =</span> <span class="st">"n"</span>,</span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">yaxt =</span> <span class="st">"n"</span>,</span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">""</span>,</span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylab =</span> <span class="st">""</span>,</span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reconstructed contour</span></span>
+<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(</span>
+<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a>    df_reconstruct,</span>
+<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>,</span>
+<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"#FF4B00"</span>, <span class="at">alpha.f =</span> <span class="fl">0.9</span>),</span>
+<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a>  <span class="co"># label</span></span>
+<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(label)) {</span>
+<span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a>    <span class="fu">text</span>(</span>
+<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">mean</span>(<span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]),</span>
+<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">mean</span>(<span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>]),</span>
+<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a>      <span class="at">labels =</span> label,</span>
+<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex =</span> cex.text,</span>
+<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"black"</span></span>
+<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a><span class="fu">### `compare_contour_true_EFD_normalization()`</span></span>
+<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: function_compare_contour_true_efd_normalization</span></span>
+<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a>compare_contour_true_EFD_normalization <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a>  original,</span>
+<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="cn">NULL</span>,</span>
+<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a>  <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.text =</span> <span class="dv">2</span>,</span>
+<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb9-125"><a href="#cb9-125" aria-hidden="true" tabindex="-1"></a>) {</span>
+<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a>  center <span class="ot">&lt;-</span> <span class="fu">coo_centpos</span>(original) <span class="co"># center position</span></span>
+<span id="cb9-127"><a href="#cb9-127" aria-hidden="true" tabindex="-1"></a>  original_centered <span class="ot">&lt;-</span> <span class="fu">sweep</span>(original, <span class="dv">2</span>, center, <span class="st">"-"</span>) <span class="co"># center the contour</span></span>
+<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-129"><a href="#cb9-129" aria-hidden="true" tabindex="-1"></a>  ef <span class="ot">&lt;-</span> <span class="fu">efourier</span>(</span>
+<span id="cb9-130"><a href="#cb9-130" aria-hidden="true" tabindex="-1"></a>    original_centered,</span>
+<span id="cb9-131"><a href="#cb9-131" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> nb.h,</span>
+<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a>    <span class="at">norm =</span> <span class="cn">FALSE</span></span>
+<span id="cb9-133"><a href="#cb9-133" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a>  true_ef <span class="ot">&lt;-</span> <span class="fu">true_normalize</span>(ef, <span class="at">output_meta =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-135"><a href="#cb9-135" aria-hidden="true" tabindex="-1"></a>  true_ef_coef <span class="ot">&lt;-</span> true_ef<span class="sc">$</span>ef</span>
+<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a>  true_ef_coef <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a>    <span class="at">ao =</span> <span class="fu">unique</span>(true_ef_coef<span class="sc">$</span>ao),</span>
+<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a>    <span class="at">co =</span> <span class="fu">unique</span>(true_ef_coef<span class="sc">$</span>co),</span>
+<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a>    <span class="at">an =</span> true_ef_coef<span class="sc">$</span>an,</span>
+<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a>    <span class="at">bn =</span> true_ef_coef<span class="sc">$</span>bn,</span>
+<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a>    <span class="at">cn =</span> true_ef_coef<span class="sc">$</span>cn,</span>
+<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a>    <span class="at">dn =</span> true_ef_coef<span class="sc">$</span>dn</span>
+<span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reconstruct contour from true EFD coefficients</span></span>
+<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a>  reconstruct <span class="ot">&lt;-</span> <span class="fu">efourier_i</span>(true_ef_coef, <span class="at">nb.h =</span> nb.h)</span>
+<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a>  df_reconstruct <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(reconstruct)</span>
+<span id="cb9-147"><a href="#cb9-147" aria-hidden="true" tabindex="-1"></a>  df_reconstruct <span class="ot">&lt;-</span> df_reconstruct <span class="sc">*</span> true_ef<span class="sc">$</span>E</span>
 <span id="cb9-148"><a href="#cb9-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-149"><a href="#cb9-149" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> mar)</span>
-<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a>  <span class="co"># original centered contour</span></span>
-<span id="cb9-151"><a href="#cb9-151" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(</span>
-<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a>    original_centered,</span>
-<span id="cb9-153"><a href="#cb9-153" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"l"</span>,</span>
-<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>,</span>
-<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"black"</span>, <span class="at">red =</span> <span class="fl">0.7</span>, <span class="at">green =</span> <span class="fl">0.7</span>, <span class="at">blue =</span> <span class="fl">0.7</span>),</span>
-<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> xlim,</span>
-<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a>    <span class="at">bty =</span> <span class="st">"n"</span>,</span>
-<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a>    <span class="at">xaxt =</span> <span class="st">"n"</span>,</span>
-<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a>    <span class="at">yaxt =</span> <span class="st">"n"</span>,</span>
-<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">""</span>,</span>
-<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylab =</span> <span class="st">""</span>,</span>
-<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a>    ...</span>
-<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reconstructed contour</span></span>
-<span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(</span>
-<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a>    df_reconstruct,</span>
-<span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>,</span>
-<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"#FF4B00"</span>, <span class="at">alpha.f =</span> <span class="fl">0.9</span>),</span>
-<span id="cb9-170"><a href="#cb9-170" aria-hidden="true" tabindex="-1"></a>    ...</span>
-<span id="cb9-171"><a href="#cb9-171" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-172"><a href="#cb9-172" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(label)) {</span>
-<span id="cb9-173"><a href="#cb9-173" aria-hidden="true" tabindex="-1"></a>    <span class="fu">text</span>(</span>
-<span id="cb9-174"><a href="#cb9-174" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">mean</span>(<span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]),</span>
-<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">mean</span>(<span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>]),</span>
-<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a>      <span class="at">labels =</span> label,</span>
-<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex =</span> cex.text,</span>
-<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"black"</span></span>
-<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a><span class="fu">## `R/geometry.R`</span></span>
+<span id="cb9-149"><a href="#cb9-149" aria-hidden="true" tabindex="-1"></a>  xlim <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">c</span>(df_reconstruct<span class="sc">$</span>x, original_centered[, <span class="dv">1</span>]))</span>
+<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-151"><a href="#cb9-151" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> mar)</span>
+<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a>  <span class="co"># original centered contour</span></span>
+<span id="cb9-153"><a href="#cb9-153" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(</span>
+<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a>    original_centered,</span>
+<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>,</span>
+<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"black"</span>, <span class="at">red =</span> <span class="fl">0.7</span>, <span class="at">green =</span> <span class="fl">0.7</span>, <span class="at">blue =</span> <span class="fl">0.7</span>),</span>
+<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> xlim,</span>
+<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a>    <span class="at">bty =</span> <span class="st">"n"</span>,</span>
+<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a>    <span class="at">xaxt =</span> <span class="st">"n"</span>,</span>
+<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a>    <span class="at">yaxt =</span> <span class="st">"n"</span>,</span>
+<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">""</span>,</span>
+<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylab =</span> <span class="st">""</span>,</span>
+<span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reconstructed contour</span></span>
+<span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(</span>
+<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a>    df_reconstruct,</span>
+<span id="cb9-170"><a href="#cb9-170" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>,</span>
+<span id="cb9-171"><a href="#cb9-171" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"#FF4B00"</span>, <span class="at">alpha.f =</span> <span class="fl">0.9</span>),</span>
+<span id="cb9-172"><a href="#cb9-172" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb9-173"><a href="#cb9-173" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-174"><a href="#cb9-174" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(label)) {</span>
+<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a>    <span class="fu">text</span>(</span>
+<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">mean</span>(<span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]),</span>
+<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">mean</span>(<span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>]),</span>
+<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a>      <span class="at">labels =</span> label,</span>
+<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex =</span> cex.text,</span>
+<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"black"</span></span>
+<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-185"><a href="#cb9-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a><span class="in">`R/geometry.R`</span> contains three functions to rotate the contour.</span>
+<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a><span class="fu">## `R/geometry.R`</span></span>
 <span id="cb9-187"><a href="#cb9-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-188"><a href="#cb9-188" aria-hidden="true" tabindex="-1"></a><span class="fu">### `rotate_xy()`</span></span>
+<span id="cb9-188"><a href="#cb9-188" aria-hidden="true" tabindex="-1"></a><span class="in">`R/geometry.R`</span> contains three functions to rotate the contour.</span>
 <span id="cb9-189"><a href="#cb9-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-192"><a href="#cb9-192" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-193"><a href="#cb9-193" aria-hidden="true" tabindex="-1"></a>rotate_xy <span class="ot">&lt;-</span> <span class="cf">function</span>(df, angle_deg, <span class="at">origin =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) {</span>
-<span id="cb9-194"><a href="#cb9-194" aria-hidden="true" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> angle_deg <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span></span>
-<span id="cb9-195"><a href="#cb9-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-196"><a href="#cb9-196" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> df[, <span class="dv">1</span>] <span class="sc">-</span> origin[<span class="dv">1</span>]</span>
-<span id="cb9-197"><a href="#cb9-197" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> df[, <span class="dv">2</span>] <span class="sc">-</span> origin[<span class="dv">2</span>]</span>
+<span id="cb9-190"><a href="#cb9-190" aria-hidden="true" tabindex="-1"></a><span class="fu">### `rotate_xy()`</span></span>
+<span id="cb9-191"><a href="#cb9-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-194"><a href="#cb9-194" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-195"><a href="#cb9-195" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: function_rotate_xy</span></span>
+<span id="cb9-196"><a href="#cb9-196" aria-hidden="true" tabindex="-1"></a>rotate_xy <span class="ot">&lt;-</span> <span class="cf">function</span>(df, angle_deg, <span class="at">origin =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) {</span>
+<span id="cb9-197"><a href="#cb9-197" aria-hidden="true" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> angle_deg <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span></span>
 <span id="cb9-198"><a href="#cb9-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-199"><a href="#cb9-199" aria-hidden="true" tabindex="-1"></a>  x_new <span class="ot">&lt;-</span> x <span class="sc">*</span> <span class="fu">cos</span>(theta) <span class="sc">-</span> y <span class="sc">*</span> <span class="fu">sin</span>(theta)</span>
-<span id="cb9-200"><a href="#cb9-200" aria-hidden="true" tabindex="-1"></a>  y_new <span class="ot">&lt;-</span> x <span class="sc">*</span> <span class="fu">sin</span>(theta) <span class="sc">+</span> y <span class="sc">*</span> <span class="fu">cos</span>(theta)</span>
+<span id="cb9-199"><a href="#cb9-199" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> df[, <span class="dv">1</span>] <span class="sc">-</span> origin[<span class="dv">1</span>]</span>
+<span id="cb9-200"><a href="#cb9-200" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> df[, <span class="dv">2</span>] <span class="sc">-</span> origin[<span class="dv">2</span>]</span>
 <span id="cb9-201"><a href="#cb9-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-202"><a href="#cb9-202" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">x =</span> x_new <span class="sc">+</span> origin[<span class="dv">1</span>], <span class="at">y =</span> y_new <span class="sc">+</span> origin[<span class="dv">2</span>])</span>
-<span id="cb9-203"><a href="#cb9-203" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-204"><a href="#cb9-204" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-205"><a href="#cb9-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-206"><a href="#cb9-206" aria-hidden="true" tabindex="-1"></a><span class="fu">### `rotate_xy_centered()`</span></span>
-<span id="cb9-207"><a href="#cb9-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-210"><a href="#cb9-210" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-211"><a href="#cb9-211" aria-hidden="true" tabindex="-1"></a>rotate_xy_centered <span class="ot">&lt;-</span> <span class="cf">function</span>(df, angle_deg) {</span>
-<span id="cb9-212"><a href="#cb9-212" aria-hidden="true" tabindex="-1"></a>  origin <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">mean</span>(df[, <span class="dv">1</span>]), <span class="fu">mean</span>(df[, <span class="dv">2</span>]))</span>
-<span id="cb9-213"><a href="#cb9-213" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rotate_xy</span>(df, angle_deg, origin)</span>
-<span id="cb9-214"><a href="#cb9-214" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a><span class="fu">### `rotate_xy_custom_origin()`</span></span>
-<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a>rotate_xy_custom_origin <span class="ot">&lt;-</span> <span class="cf">function</span>(df, angle_deg, origins) {</span>
-<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>  l <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(origins), <span class="cf">function</span>(i) {</span>
-<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rotate_xy</span>(df[i, ], angle_deg[i], origins[[i]])</span>
-<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do.call</span>(rbind, l)</span>
-<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a><span class="fu">## `R/normalization.R`</span></span>
-<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a><span class="in">`R/normalization.R`</span> contains two functions to normalize EFD coefficients by the true normalization method.</span>
-<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a><span class="fu">### `true_normalize_coe()`</span></span>
-<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a>true_normalize_coe <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a>  ef_coe,</span>
-<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a>  <span class="at">EPS =</span> <span class="fl">1e-10</span>,</span>
-<span id="cb9-242"><a href="#cb9-242" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb9-244"><a href="#cb9-244" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">FALSE</span></span>
-<span id="cb9-245"><a href="#cb9-245" aria-hidden="true" tabindex="-1"></a>) {</span>
-<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a>  ef_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(ef_coe)</span>
-<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage.mode</span>(ef_mat) <span class="ot">&lt;-</span> <span class="st">"double"</span></span>
-<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a>  get_H <span class="ot">&lt;-</span> <span class="cf">function</span>(cn) {</span>
-<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"^[ABCD][0-9]+$"</span>, cn)</span>
-<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">length</span>(idx)) {</span>
-<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="st">"A/B/C/D indexed columns were not found."</span>)</span>
-<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb9-254"><a href="#cb9-254" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(<span class="fu">as.integer</span>(<span class="fu">sub</span>(<span class="st">"^[ABCD]"</span>, <span class="st">""</span>, cn[idx])))</span>
-<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-256"><a href="#cb9-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-257"><a href="#cb9-257" aria-hidden="true" tabindex="-1"></a>  H <span class="ot">&lt;-</span> <span class="fu">get_H</span>(<span class="fu">colnames</span>(ef_mat))</span>
-<span id="cb9-258"><a href="#cb9-258" aria-hidden="true" tabindex="-1"></a>  nmA <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"A"</span>, <span class="dv">1</span><span class="sc">:</span>H)</span>
-<span id="cb9-259"><a href="#cb9-259" aria-hidden="true" tabindex="-1"></a>  nmB <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"B"</span>, <span class="dv">1</span><span class="sc">:</span>H)</span>
-<span id="cb9-260"><a href="#cb9-260" aria-hidden="true" tabindex="-1"></a>  nmC <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"C"</span>, <span class="dv">1</span><span class="sc">:</span>H)</span>
-<span id="cb9-261"><a href="#cb9-261" aria-hidden="true" tabindex="-1"></a>  nmD <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"D"</span>, <span class="dv">1</span><span class="sc">:</span>H)</span>
-<span id="cb9-262"><a href="#cb9-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a>  need <span class="ot">&lt;-</span> <span class="fu">c</span>(nmA, nmB, nmC, nmD)</span>
-<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(<span class="fu">all</span>(need <span class="sc">%in%</span> <span class="fu">colnames</span>(ef_mat)))</span>
-<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a>  norm_one <span class="ot">&lt;-</span> <span class="cf">function</span>(row) {</span>
-<span id="cb9-267"><a href="#cb9-267" aria-hidden="true" tabindex="-1"></a>    ef <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb9-268"><a href="#cb9-268" aria-hidden="true" tabindex="-1"></a>      <span class="at">an =</span> <span class="fu">as.numeric</span>(row[nmA]),</span>
-<span id="cb9-269"><a href="#cb9-269" aria-hidden="true" tabindex="-1"></a>      <span class="at">bn =</span> <span class="fu">as.numeric</span>(row[nmB]),</span>
-<span id="cb9-270"><a href="#cb9-270" aria-hidden="true" tabindex="-1"></a>      <span class="at">cn =</span> <span class="fu">as.numeric</span>(row[nmC]),</span>
-<span id="cb9-271"><a href="#cb9-271" aria-hidden="true" tabindex="-1"></a>      <span class="at">dn =</span> <span class="fu">as.numeric</span>(row[nmD]),</span>
-<span id="cb9-272"><a href="#cb9-272" aria-hidden="true" tabindex="-1"></a>      <span class="at">ao =</span> <span class="dv">0</span>,</span>
-<span id="cb9-273"><a href="#cb9-273" aria-hidden="true" tabindex="-1"></a>      <span class="at">co =</span> <span class="dv">0</span></span>
-<span id="cb9-274"><a href="#cb9-274" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-275"><a href="#cb9-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-276"><a href="#cb9-276" aria-hidden="true" tabindex="-1"></a>    ef_true <span class="ot">&lt;-</span> <span class="fu">true_normalize</span>(</span>
-<span id="cb9-277"><a href="#cb9-277" aria-hidden="true" tabindex="-1"></a>      ef,</span>
-<span id="cb9-278"><a href="#cb9-278" aria-hidden="true" tabindex="-1"></a>      <span class="at">EPS =</span> EPS,</span>
-<span id="cb9-279"><a href="#cb9-279" aria-hidden="true" tabindex="-1"></a>      <span class="at">y_sy =</span> y_sy,</span>
-<span id="cb9-280"><a href="#cb9-280" aria-hidden="true" tabindex="-1"></a>      <span class="at">x_sy =</span> x_sy,</span>
-<span id="cb9-281"><a href="#cb9-281" aria-hidden="true" tabindex="-1"></a>      <span class="at">skip_rotation =</span> skip_rotation</span>
-<span id="cb9-282"><a href="#cb9-282" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-283"><a href="#cb9-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-284"><a href="#cb9-284" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (skip_rotation) {</span>
-<span id="cb9-285"><a href="#cb9-285" aria-hidden="true" tabindex="-1"></a>      <span class="fu">message</span>(<span class="st">"skip_rotation is TRUE"</span>)</span>
-<span id="cb9-286"><a href="#cb9-286" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb9-287"><a href="#cb9-287" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-288"><a href="#cb9-288" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
-<span id="cb9-289"><a href="#cb9-289" aria-hidden="true" tabindex="-1"></a>      <span class="fu">setNames</span>(ef_true<span class="sc">$</span>an, nmA),</span>
-<span id="cb9-290"><a href="#cb9-290" aria-hidden="true" tabindex="-1"></a>      <span class="fu">setNames</span>(ef_true<span class="sc">$</span>bn, nmB),</span>
-<span id="cb9-291"><a href="#cb9-291" aria-hidden="true" tabindex="-1"></a>      <span class="fu">setNames</span>(ef_true<span class="sc">$</span>cn, nmC),</span>
-<span id="cb9-292"><a href="#cb9-292" aria-hidden="true" tabindex="-1"></a>      <span class="fu">setNames</span>(ef_true<span class="sc">$</span>dn, nmD)</span>
-<span id="cb9-293"><a href="#cb9-293" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-294"><a href="#cb9-294" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-295"><a href="#cb9-295" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-296"><a href="#cb9-296" aria-hidden="true" tabindex="-1"></a>  ef_mat_norm <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(ef_mat, <span class="dv">1</span>, norm_one))</span>
-<span id="cb9-297"><a href="#cb9-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-298"><a href="#cb9-298" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(ef_mat_norm) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(ef_mat)</span>
-<span id="cb9-299"><a href="#cb9-299" aria-hidden="true" tabindex="-1"></a>  ef_mat_norm <span class="ot">&lt;-</span> ef_mat_norm[, need, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb9-300"><a href="#cb9-300" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage.mode</span>(ef_mat_norm) <span class="ot">&lt;-</span> <span class="st">"double"</span></span>
-<span id="cb9-301"><a href="#cb9-301" aria-hidden="true" tabindex="-1"></a>  ef_mat_norm</span>
-<span id="cb9-302"><a href="#cb9-302" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-303"><a href="#cb9-303" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-202"><a href="#cb9-202" aria-hidden="true" tabindex="-1"></a>  x_new <span class="ot">&lt;-</span> x <span class="sc">*</span> <span class="fu">cos</span>(theta) <span class="sc">-</span> y <span class="sc">*</span> <span class="fu">sin</span>(theta)</span>
+<span id="cb9-203"><a href="#cb9-203" aria-hidden="true" tabindex="-1"></a>  y_new <span class="ot">&lt;-</span> x <span class="sc">*</span> <span class="fu">sin</span>(theta) <span class="sc">+</span> y <span class="sc">*</span> <span class="fu">cos</span>(theta)</span>
+<span id="cb9-204"><a href="#cb9-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-205"><a href="#cb9-205" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">x =</span> x_new <span class="sc">+</span> origin[<span class="dv">1</span>], <span class="at">y =</span> y_new <span class="sc">+</span> origin[<span class="dv">2</span>])</span>
+<span id="cb9-206"><a href="#cb9-206" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-207"><a href="#cb9-207" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-208"><a href="#cb9-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-209"><a href="#cb9-209" aria-hidden="true" tabindex="-1"></a><span class="fu">### `rotate_xy_centered()`</span></span>
+<span id="cb9-210"><a href="#cb9-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-213"><a href="#cb9-213" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-214"><a href="#cb9-214" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: function_rotate_xy_centered</span></span>
+<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a>rotate_xy_centered <span class="ot">&lt;-</span> <span class="cf">function</span>(df, angle_deg) {</span>
+<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a>  origin <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">mean</span>(df[, <span class="dv">1</span>]), <span class="fu">mean</span>(df[, <span class="dv">2</span>]))</span>
+<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rotate_xy</span>(df, angle_deg, origin)</span>
+<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a><span class="fu">### `rotate_xy_custom_origin()`</span></span>
+<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: function_rotate_xy_custom_origin</span></span>
+<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>rotate_xy_custom_origin <span class="ot">&lt;-</span> <span class="cf">function</span>(df, angle_deg, origins) {</span>
+<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a>  l <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(origins), <span class="cf">function</span>(i) {</span>
+<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rotate_xy</span>(df[i, ], angle_deg[i], origins[[i]])</span>
+<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do.call</span>(rbind, l)</span>
+<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a><span class="fu">## `R/normalization.R`</span></span>
+<span id="cb9-236"><a href="#cb9-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-237"><a href="#cb9-237" aria-hidden="true" tabindex="-1"></a><span class="in">`R/normalization.R`</span> contains two functions to normalize EFD coefficients by the true normalization method.</span>
+<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a><span class="fu">### `true_normalize_coe()`</span></span>
+<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-244"><a href="#cb9-244" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: function_true_normalize_coe</span></span>
+<span id="cb9-245"><a href="#cb9-245" aria-hidden="true" tabindex="-1"></a>true_normalize_coe <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a>  ef_coe,</span>
+<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a>  <span class="at">EPS =</span> <span class="fl">1e-10</span>,</span>
+<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a>) {</span>
+<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a>  ef_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(ef_coe)</span>
+<span id="cb9-254"><a href="#cb9-254" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage.mode</span>(ef_mat) <span class="ot">&lt;-</span> <span class="st">"double"</span></span>
+<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-256"><a href="#cb9-256" aria-hidden="true" tabindex="-1"></a>  get_H <span class="ot">&lt;-</span> <span class="cf">function</span>(cn) {</span>
+<span id="cb9-257"><a href="#cb9-257" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"^[ABCD][0-9]+$"</span>, cn)</span>
+<span id="cb9-258"><a href="#cb9-258" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">length</span>(idx)) {</span>
+<span id="cb9-259"><a href="#cb9-259" aria-hidden="true" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="st">"A/B/C/D indexed columns were not found."</span>)</span>
+<span id="cb9-260"><a href="#cb9-260" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-261"><a href="#cb9-261" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(<span class="fu">as.integer</span>(<span class="fu">sub</span>(<span class="st">"^[ABCD]"</span>, <span class="st">""</span>, cn[idx])))</span>
+<span id="cb9-262"><a href="#cb9-262" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a>  H <span class="ot">&lt;-</span> <span class="fu">get_H</span>(<span class="fu">colnames</span>(ef_mat))</span>
+<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a>  nmA <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"A"</span>, <span class="dv">1</span><span class="sc">:</span>H)</span>
+<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a>  nmB <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"B"</span>, <span class="dv">1</span><span class="sc">:</span>H)</span>
+<span id="cb9-267"><a href="#cb9-267" aria-hidden="true" tabindex="-1"></a>  nmC <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"C"</span>, <span class="dv">1</span><span class="sc">:</span>H)</span>
+<span id="cb9-268"><a href="#cb9-268" aria-hidden="true" tabindex="-1"></a>  nmD <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"D"</span>, <span class="dv">1</span><span class="sc">:</span>H)</span>
+<span id="cb9-269"><a href="#cb9-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-270"><a href="#cb9-270" aria-hidden="true" tabindex="-1"></a>  need <span class="ot">&lt;-</span> <span class="fu">c</span>(nmA, nmB, nmC, nmD)</span>
+<span id="cb9-271"><a href="#cb9-271" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(<span class="fu">all</span>(need <span class="sc">%in%</span> <span class="fu">colnames</span>(ef_mat)))</span>
+<span id="cb9-272"><a href="#cb9-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-273"><a href="#cb9-273" aria-hidden="true" tabindex="-1"></a>  norm_one <span class="ot">&lt;-</span> <span class="cf">function</span>(row) {</span>
+<span id="cb9-274"><a href="#cb9-274" aria-hidden="true" tabindex="-1"></a>    ef <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-275"><a href="#cb9-275" aria-hidden="true" tabindex="-1"></a>      <span class="at">an =</span> <span class="fu">as.numeric</span>(row[nmA]),</span>
+<span id="cb9-276"><a href="#cb9-276" aria-hidden="true" tabindex="-1"></a>      <span class="at">bn =</span> <span class="fu">as.numeric</span>(row[nmB]),</span>
+<span id="cb9-277"><a href="#cb9-277" aria-hidden="true" tabindex="-1"></a>      <span class="at">cn =</span> <span class="fu">as.numeric</span>(row[nmC]),</span>
+<span id="cb9-278"><a href="#cb9-278" aria-hidden="true" tabindex="-1"></a>      <span class="at">dn =</span> <span class="fu">as.numeric</span>(row[nmD]),</span>
+<span id="cb9-279"><a href="#cb9-279" aria-hidden="true" tabindex="-1"></a>      <span class="at">ao =</span> <span class="dv">0</span>,</span>
+<span id="cb9-280"><a href="#cb9-280" aria-hidden="true" tabindex="-1"></a>      <span class="at">co =</span> <span class="dv">0</span></span>
+<span id="cb9-281"><a href="#cb9-281" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-282"><a href="#cb9-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-283"><a href="#cb9-283" aria-hidden="true" tabindex="-1"></a>    ef_true <span class="ot">&lt;-</span> <span class="fu">true_normalize</span>(</span>
+<span id="cb9-284"><a href="#cb9-284" aria-hidden="true" tabindex="-1"></a>      ef,</span>
+<span id="cb9-285"><a href="#cb9-285" aria-hidden="true" tabindex="-1"></a>      <span class="at">EPS =</span> EPS,</span>
+<span id="cb9-286"><a href="#cb9-286" aria-hidden="true" tabindex="-1"></a>      <span class="at">y_sy =</span> y_sy,</span>
+<span id="cb9-287"><a href="#cb9-287" aria-hidden="true" tabindex="-1"></a>      <span class="at">x_sy =</span> x_sy,</span>
+<span id="cb9-288"><a href="#cb9-288" aria-hidden="true" tabindex="-1"></a>      <span class="at">skip_rotation =</span> skip_rotation</span>
+<span id="cb9-289"><a href="#cb9-289" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-290"><a href="#cb9-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-291"><a href="#cb9-291" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (verbose <span class="sc">&amp;&amp;</span> skip_rotation) {</span>
+<span id="cb9-292"><a href="#cb9-292" aria-hidden="true" tabindex="-1"></a>      <span class="fu">message</span>(<span class="st">"skip_rotation is TRUE"</span>)</span>
+<span id="cb9-293"><a href="#cb9-293" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-294"><a href="#cb9-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-295"><a href="#cb9-295" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb9-296"><a href="#cb9-296" aria-hidden="true" tabindex="-1"></a>      <span class="fu">setNames</span>(ef_true<span class="sc">$</span>an, nmA),</span>
+<span id="cb9-297"><a href="#cb9-297" aria-hidden="true" tabindex="-1"></a>      <span class="fu">setNames</span>(ef_true<span class="sc">$</span>bn, nmB),</span>
+<span id="cb9-298"><a href="#cb9-298" aria-hidden="true" tabindex="-1"></a>      <span class="fu">setNames</span>(ef_true<span class="sc">$</span>cn, nmC),</span>
+<span id="cb9-299"><a href="#cb9-299" aria-hidden="true" tabindex="-1"></a>      <span class="fu">setNames</span>(ef_true<span class="sc">$</span>dn, nmD)</span>
+<span id="cb9-300"><a href="#cb9-300" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-301"><a href="#cb9-301" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-302"><a href="#cb9-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-303"><a href="#cb9-303" aria-hidden="true" tabindex="-1"></a>  ef_mat_norm <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(ef_mat, <span class="dv">1</span>, norm_one))</span>
 <span id="cb9-304"><a href="#cb9-304" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-305"><a href="#cb9-305" aria-hidden="true" tabindex="-1"></a><span class="fu">### `efourier_true_norm()`</span></span>
-<span id="cb9-306"><a href="#cb9-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-309"><a href="#cb9-309" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-310"><a href="#cb9-310" aria-hidden="true" tabindex="-1"></a>efourier_true_norm <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb9-311"><a href="#cb9-311" aria-hidden="true" tabindex="-1"></a>  coo_out,</span>
-<span id="cb9-312"><a href="#cb9-312" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> <span class="dv">35</span>,</span>
-<span id="cb9-313"><a href="#cb9-313" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb9-314"><a href="#cb9-314" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb9-315"><a href="#cb9-315" aria-hidden="true" tabindex="-1"></a>  ...</span>
-<span id="cb9-316"><a href="#cb9-316" aria-hidden="true" tabindex="-1"></a>) {</span>
-<span id="cb9-317"><a href="#cb9-317" aria-hidden="true" tabindex="-1"></a>  ef <span class="ot">&lt;-</span> <span class="fu">efourier</span>(coo_out, <span class="at">nb.h =</span> nb_h, <span class="at">norm =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb9-318"><a href="#cb9-318" aria-hidden="true" tabindex="-1"></a>  ef<span class="sc">$</span>coe <span class="ot">&lt;-</span> <span class="fu">true_normalize_coe</span>(ef<span class="sc">$</span>coe, <span class="at">y_sy =</span> y_sy, <span class="at">x_sy =</span> x_sy, ...)</span>
-<span id="cb9-319"><a href="#cb9-319" aria-hidden="true" tabindex="-1"></a>  ef</span>
-<span id="cb9-320"><a href="#cb9-320" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-321"><a href="#cb9-321" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-322"><a href="#cb9-322" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-323"><a href="#cb9-323" aria-hidden="true" tabindex="-1"></a><span class="fu">## `R/pca_plot.R`</span></span>
-<span id="cb9-324"><a href="#cb9-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-325"><a href="#cb9-325" aria-hidden="true" tabindex="-1"></a><span class="in">`R/pca_plot.R`</span> contains a function to plot PCA results.</span>
-<span id="cb9-326"><a href="#cb9-326" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-329"><a href="#cb9-329" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-330"><a href="#cb9-330" aria-hidden="true" tabindex="-1"></a>pca_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">group =</span> <span class="st">"species"</span>, <span class="at">palette =</span> <span class="cn">NULL</span>, ...) {</span>
-<span id="cb9-331"><a href="#cb9-331" aria-hidden="true" tabindex="-1"></a>  fac_names <span class="ot">&lt;-</span> <span class="fu">names</span>(x<span class="sc">$</span>fac)</span>
-<span id="cb9-332"><a href="#cb9-332" aria-hidden="true" tabindex="-1"></a>  has_group <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.null</span>(fac_names) <span class="sc">&amp;&amp;</span> group <span class="sc">%in%</span> fac_names</span>
-<span id="cb9-333"><a href="#cb9-333" aria-hidden="true" tabindex="-1"></a>  grouping_formula <span class="ot">&lt;-</span> <span class="cf">if</span> (has_group) stats<span class="sc">::</span><span class="fu">reformulate</span>(group) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb9-305"><a href="#cb9-305" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(ef_mat_norm) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(ef_mat)</span>
+<span id="cb9-306"><a href="#cb9-306" aria-hidden="true" tabindex="-1"></a>  ef_mat_norm <span class="ot">&lt;-</span> ef_mat_norm[, need, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb9-307"><a href="#cb9-307" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage.mode</span>(ef_mat_norm) <span class="ot">&lt;-</span> <span class="st">"double"</span></span>
+<span id="cb9-308"><a href="#cb9-308" aria-hidden="true" tabindex="-1"></a>  ef_mat_norm</span>
+<span id="cb9-309"><a href="#cb9-309" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-310"><a href="#cb9-310" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-311"><a href="#cb9-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-312"><a href="#cb9-312" aria-hidden="true" tabindex="-1"></a><span class="fu">### `efourier_true_norm()`</span></span>
+<span id="cb9-313"><a href="#cb9-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-316"><a href="#cb9-316" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-317"><a href="#cb9-317" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: function_efourier_true_norm</span></span>
+<span id="cb9-318"><a href="#cb9-318" aria-hidden="true" tabindex="-1"></a>efourier_true_norm <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb9-319"><a href="#cb9-319" aria-hidden="true" tabindex="-1"></a>  coo_out,</span>
+<span id="cb9-320"><a href="#cb9-320" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> <span class="dv">35</span>,</span>
+<span id="cb9-321"><a href="#cb9-321" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-322"><a href="#cb9-322" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-323"><a href="#cb9-323" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb9-324"><a href="#cb9-324" aria-hidden="true" tabindex="-1"></a>) {</span>
+<span id="cb9-325"><a href="#cb9-325" aria-hidden="true" tabindex="-1"></a>  ef <span class="ot">&lt;-</span> <span class="fu">efourier</span>(coo_out, <span class="at">nb.h =</span> nb_h, <span class="at">norm =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb9-326"><a href="#cb9-326" aria-hidden="true" tabindex="-1"></a>  ef<span class="sc">$</span>coe <span class="ot">&lt;-</span> <span class="fu">true_normalize_coe</span>(ef<span class="sc">$</span>coe, <span class="at">y_sy =</span> y_sy, <span class="at">x_sy =</span> x_sy, ...)</span>
+<span id="cb9-327"><a href="#cb9-327" aria-hidden="true" tabindex="-1"></a>  ef</span>
+<span id="cb9-328"><a href="#cb9-328" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-329"><a href="#cb9-329" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-330"><a href="#cb9-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-331"><a href="#cb9-331" aria-hidden="true" tabindex="-1"></a><span class="fu">## `R/pca_plot.R`</span></span>
+<span id="cb9-332"><a href="#cb9-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-333"><a href="#cb9-333" aria-hidden="true" tabindex="-1"></a><span class="in">`R/pca_plot.R`</span> contains a function to plot PCA results.</span>
 <span id="cb9-334"><a href="#cb9-334" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-335"><a href="#cb9-335" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(palette)) {</span>
-<span id="cb9-336"><a href="#cb9-336" aria-hidden="true" tabindex="-1"></a>    palette <span class="ot">&lt;-</span> <span class="cf">if</span> (has_group <span class="sc">&amp;&amp;</span> <span class="fu">exists</span>(<span class="st">"my_palette"</span>, <span class="at">inherits =</span> <span class="cn">TRUE</span>)) {</span>
-<span id="cb9-337"><a href="#cb9-337" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get</span>(<span class="st">"my_palette"</span>, <span class="at">inherits =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-338"><a href="#cb9-338" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb9-339"><a href="#cb9-339" aria-hidden="true" tabindex="-1"></a>      <span class="st">"grey30"</span></span>
-<span id="cb9-340"><a href="#cb9-340" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb9-341"><a href="#cb9-341" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-342"><a href="#cb9-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-343"><a href="#cb9-343" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">plot_PCA</span>(</span>
-<span id="cb9-344"><a href="#cb9-344" aria-hidden="true" tabindex="-1"></a>    x,</span>
-<span id="cb9-345"><a href="#cb9-345" aria-hidden="true" tabindex="-1"></a>    <span class="at">f =</span> grouping_formula,</span>
-<span id="cb9-346"><a href="#cb9-346" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> palette,</span>
-<span id="cb9-347"><a href="#cb9-347" aria-hidden="true" tabindex="-1"></a>    <span class="at">points =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb9-348"><a href="#cb9-348" aria-hidden="true" tabindex="-1"></a>    <span class="at">morphospace =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb9-349"><a href="#cb9-349" aria-hidden="true" tabindex="-1"></a>    <span class="at">morphospace_position =</span> <span class="st">"range"</span>,</span>
-<span id="cb9-350"><a href="#cb9-350" aria-hidden="true" tabindex="-1"></a>    <span class="at">chull =</span> <span class="cn">TRUE</span>, <span class="co"># convex hull</span></span>
-<span id="cb9-351"><a href="#cb9-351" aria-hidden="true" tabindex="-1"></a>    <span class="co">#chullfilled = TRUE,</span></span>
-<span id="cb9-352"><a href="#cb9-352" aria-hidden="true" tabindex="-1"></a>    <span class="at">zoom =</span> <span class="dv">1</span>,</span>
-<span id="cb9-353"><a href="#cb9-353" aria-hidden="true" tabindex="-1"></a>    <span class="at">eigen =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb9-354"><a href="#cb9-354" aria-hidden="true" tabindex="-1"></a>    <span class="at">box =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb9-355"><a href="#cb9-355" aria-hidden="true" tabindex="-1"></a>    <span class="at">axesnames =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb9-356"><a href="#cb9-356" aria-hidden="true" tabindex="-1"></a>    <span class="at">axesvar =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb9-357"><a href="#cb9-357" aria-hidden="true" tabindex="-1"></a>    ...</span>
-<span id="cb9-358"><a href="#cb9-358" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-359"><a href="#cb9-359" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_axes</span>(plt, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
-<span id="cb9-360"><a href="#cb9-360" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_ticks</span>(plt, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
-<span id="cb9-361"><a href="#cb9-361" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_points</span>(plt, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">transp =</span> <span class="fl">0.5</span>)</span>
-<span id="cb9-362"><a href="#cb9-362" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_morphospace_PCA</span>(plt, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span>
-<span id="cb9-363"><a href="#cb9-363" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_axesnames</span>(plt, <span class="at">cex =</span> <span class="fl">1.5</span>, <span class="at">name =</span> <span class="st">"PC"</span>) <span class="co"># add axes names</span></span>
-<span id="cb9-364"><a href="#cb9-364" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_axesvar</span>(plt, <span class="at">cex =</span> <span class="fl">1.5</span>) <span class="co"># add axes variance</span></span>
-<span id="cb9-365"><a href="#cb9-365" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-366"><a href="#cb9-366" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-337"><a href="#cb9-337" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-338"><a href="#cb9-338" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: function_pca_plot</span></span>
+<span id="cb9-339"><a href="#cb9-339" aria-hidden="true" tabindex="-1"></a>pca_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">group =</span> <span class="st">"species"</span>, <span class="at">palette =</span> <span class="cn">NULL</span>, ...) {</span>
+<span id="cb9-340"><a href="#cb9-340" aria-hidden="true" tabindex="-1"></a>  fac_names <span class="ot">&lt;-</span> <span class="fu">names</span>(x<span class="sc">$</span>fac)</span>
+<span id="cb9-341"><a href="#cb9-341" aria-hidden="true" tabindex="-1"></a>  has_group <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.null</span>(fac_names) <span class="sc">&amp;&amp;</span> group <span class="sc">%in%</span> fac_names</span>
+<span id="cb9-342"><a href="#cb9-342" aria-hidden="true" tabindex="-1"></a>  grouping_formula <span class="ot">&lt;-</span> <span class="cf">if</span> (has_group) stats<span class="sc">::</span><span class="fu">reformulate</span>(group) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb9-343"><a href="#cb9-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-344"><a href="#cb9-344" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(palette)) {</span>
+<span id="cb9-345"><a href="#cb9-345" aria-hidden="true" tabindex="-1"></a>    palette <span class="ot">&lt;-</span> <span class="cf">if</span> (has_group <span class="sc">&amp;&amp;</span> <span class="fu">exists</span>(<span class="st">"my_palette"</span>, <span class="at">inherits =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb9-346"><a href="#cb9-346" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get</span>(<span class="st">"my_palette"</span>, <span class="at">inherits =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-347"><a href="#cb9-347" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb9-348"><a href="#cb9-348" aria-hidden="true" tabindex="-1"></a>      <span class="st">"grey30"</span></span>
+<span id="cb9-349"><a href="#cb9-349" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-350"><a href="#cb9-350" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-351"><a href="#cb9-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-352"><a href="#cb9-352" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">plot_PCA</span>(</span>
+<span id="cb9-353"><a href="#cb9-353" aria-hidden="true" tabindex="-1"></a>    x,</span>
+<span id="cb9-354"><a href="#cb9-354" aria-hidden="true" tabindex="-1"></a>    <span class="at">f =</span> grouping_formula,</span>
+<span id="cb9-355"><a href="#cb9-355" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> palette,</span>
+<span id="cb9-356"><a href="#cb9-356" aria-hidden="true" tabindex="-1"></a>    <span class="at">points =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-357"><a href="#cb9-357" aria-hidden="true" tabindex="-1"></a>    <span class="at">morphospace =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-358"><a href="#cb9-358" aria-hidden="true" tabindex="-1"></a>    <span class="at">morphospace_position =</span> <span class="st">"range"</span>,</span>
+<span id="cb9-359"><a href="#cb9-359" aria-hidden="true" tabindex="-1"></a>    <span class="at">chull =</span> <span class="cn">TRUE</span>, <span class="co"># convex hull</span></span>
+<span id="cb9-360"><a href="#cb9-360" aria-hidden="true" tabindex="-1"></a>    <span class="co">#chullfilled = TRUE,</span></span>
+<span id="cb9-361"><a href="#cb9-361" aria-hidden="true" tabindex="-1"></a>    <span class="at">zoom =</span> <span class="dv">1</span>,</span>
+<span id="cb9-362"><a href="#cb9-362" aria-hidden="true" tabindex="-1"></a>    <span class="at">eigen =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-363"><a href="#cb9-363" aria-hidden="true" tabindex="-1"></a>    <span class="at">box =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-364"><a href="#cb9-364" aria-hidden="true" tabindex="-1"></a>    <span class="at">axesnames =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-365"><a href="#cb9-365" aria-hidden="true" tabindex="-1"></a>    <span class="at">axesvar =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-366"><a href="#cb9-366" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb9-367"><a href="#cb9-367" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-368"><a href="#cb9-368" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_axes</span>(plt, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb9-369"><a href="#cb9-369" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_ticks</span>(plt, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb9-370"><a href="#cb9-370" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_points</span>(plt, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">transp =</span> <span class="fl">0.5</span>)</span>
+<span id="cb9-371"><a href="#cb9-371" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_morphospace_PCA</span>(plt, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span>
+<span id="cb9-372"><a href="#cb9-372" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_axesnames</span>(plt, <span class="at">cex =</span> <span class="fl">1.5</span>, <span class="at">name =</span> <span class="st">"PC"</span>) <span class="co"># add axes names</span></span>
+<span id="cb9-373"><a href="#cb9-373" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> <span class="fu">layer_axesvar</span>(plt, <span class="at">cex =</span> <span class="fl">1.5</span>) <span class="co"># add axes variance</span></span>
+<span id="cb9-374"><a href="#cb9-374" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-375"><a href="#cb9-375" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

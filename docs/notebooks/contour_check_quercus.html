@@ -228,7 +228,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#load-contour-data" id="toc-load-contour-data" class="nav-link" data-scroll-target="#load-contour-data">Load contour data</a></li>
   <li><a href="#load-oriented-true-normalized-efd-coefficients" id="toc-load-oriented-true-normalized-efd-coefficients" class="nav-link" data-scroll-target="#load-oriented-true-normalized-efd-coefficients">Load oriented true normalized EFD coefficients</a></li>
   <li><a href="#visualize-the-original-contours-and-the-contours-reconstructed-from-oriented-true-efd-normalization" id="toc-visualize-the-original-contours-and-the-contours-reconstructed-from-oriented-true-efd-normalization" class="nav-link" data-scroll-target="#visualize-the-original-contours-and-the-contours-reconstructed-from-oriented-true-efd-normalization">Visualize the original contours and the contours reconstructed from oriented true EFD normalization</a></li>
-  <li><a href="#save-all-comparisons" id="toc-save-all-comparisons" class="nav-link" data-scroll-target="#save-all-comparisons">Save all comparisons</a></li>
   </ul></nav>
     </div>
 <!-- main -->
@@ -247,9 +246,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Purposes of this notebook are:<br>
+</header><p>The goals of this notebook are:<br>
 1. To check the original contour data of <em>Quercus serrata</em> and <em>Quercus crispula</em>.<br>
-2. To check the reconstructed contour from Oriented True EFD normalization for all samples.</p>
+2. To check contours reconstructed from oriented true EFD normalization for all samples.</p>
 <p>Output figures of this notebook are not included in the manuscript, but they are saved in the <code>results/</code> directory.</p>
 <section id="setup" class="level2"><h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <div class="cell">
@@ -284,7 +283,7 @@ Attaching package: 'Momocs'</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>konara</code> means Quercus serrata, and <code>mizunara</code> means Quercus crispula. <code>konara</code> (コナラ) represents the standard Japanese name of Quercus serrata, while <code>mizunara</code> (ミズナラ) is the standard Japanese name of Quercus crispula.</p>
+<p><code>konara</code> means Quercus serrata, and <code>mizunara</code> means Quercus crispula. Both are standard Japanese common names used in the original dataset metadata.</p>
 </div>
 </div>
 <div class="cell">
@@ -491,7 +490,6 @@ Attaching package: 'Momocs'</code></pre>
 </div>
 </div>
 </div>
-</section><section id="save-all-comparisons" class="level2"><h2 class="anchored" data-anchor-id="save-all-comparisons">Save all comparisons</h2>
 <div class="cell">
 <details class="code-fold"><summary>Save the plot as SVG file</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="st">"results/supplementary_compare_contours_oriented_true_efd_normalized_quercus"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="va">save_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -540,7 +538,6 @@ Attaching package: 'Momocs'</code></pre>
 <span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>This results in 15 SVG files, each containing 50 comparisons of original and reconstructed contours.</p>
 
 
 <!-- -->
@@ -1010,9 +1007,9 @@ Attaching package: 'Momocs'</code></pre>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Contour check for *Quercus serrata* and *Quercus crispula*"</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>Purposes of this notebook are:  </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>The goals of this notebook are:  </span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>To check the original contour data of *Quercus serrata* and *Quercus crispula*.  </span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To check the reconstructed contour from Oriented True EFD normalization for all samples.  </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To check contours reconstructed from oriented true EFD normalization for all samples.  </span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>Output figures of this notebook are not included in the manuscript, but they are saved in the <span class="in">`results/`</span> directory.</span>
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
@@ -1042,7 +1039,7 @@ Attaching package: 'Momocs'</code></pre>
 <span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="fu">## Species name</span></span>
 <span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="in">`konara`</span> means Quercus serrata, and <span class="in">`mizunara`</span> means Quercus crispula.</span>
-<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="in">`konara`</span> (コナラ) represents the standard Japanese name of Quercus serrata, while <span class="in">`mizunara`</span> (ミズナラ) is the standard Japanese name of Quercus crispula.</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>Both are standard Japanese common names used in the original dataset metadata.</span>
 <span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
@@ -1161,61 +1158,57 @@ Attaching package: 'Momocs'</code></pre>
 <span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a><span class="fu">## Save all comparisons</span></span>
-<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: save_comparison_plots</span></span>
-<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results/supplementary_compare_contours_oriented_true_efd_normalized_quercus"</span></span>
-<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>list_id <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>,</span>
-<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>  <span class="dv">51</span><span class="sc">:</span><span class="dv">100</span>,</span>
-<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a>  <span class="dv">101</span><span class="sc">:</span><span class="dv">150</span>,</span>
-<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>  <span class="dv">151</span><span class="sc">:</span><span class="dv">200</span>,</span>
-<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a>  <span class="dv">201</span><span class="sc">:</span><span class="dv">250</span>,</span>
-<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a>  <span class="dv">251</span><span class="sc">:</span><span class="dv">300</span>,</span>
-<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>  <span class="dv">301</span><span class="sc">:</span><span class="dv">350</span>,</span>
-<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>  <span class="dv">351</span><span class="sc">:</span><span class="dv">400</span>,</span>
-<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a>  <span class="dv">401</span><span class="sc">:</span><span class="dv">450</span>,</span>
-<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a>  <span class="dv">451</span><span class="sc">:</span><span class="dv">500</span>,</span>
-<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a>  <span class="dv">501</span><span class="sc">:</span><span class="dv">550</span>,</span>
-<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a>  <span class="dv">551</span><span class="sc">:</span><span class="dv">600</span>,</span>
-<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a>  <span class="dv">601</span><span class="sc">:</span><span class="dv">650</span>,</span>
-<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a>  <span class="dv">651</span><span class="sc">:</span><span class="dv">700</span>,</span>
-<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a>  <span class="dv">701</span><span class="sc">:</span><span class="dv">746</span></span>
-<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ids <span class="cf">in</span> list_id) {</span>
-<span id="cb11-196"><a href="#cb11-196" aria-hidden="true" tabindex="-1"></a>  ids <span class="ot">&lt;-</span> <span class="fu">unlist</span>(ids)</span>
-<span id="cb11-197"><a href="#cb11-197" aria-hidden="true" tabindex="-1"></a>  save_path <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
-<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a>    save_dir,</span>
-<span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a>    <span class="st">"/compare_contours_oriented_true_efd_normalized_quercus_"</span>,</span>
-<span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a>    <span class="fu">min</span>(ids),</span>
-<span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a>    <span class="st">"_"</span>,</span>
-<span id="cb11-202"><a href="#cb11-202" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(ids),</span>
-<span id="cb11-203"><a href="#cb11-203" aria-hidden="true" tabindex="-1"></a>    <span class="st">".svg"</span></span>
-<span id="cb11-204"><a href="#cb11-204" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-205"><a href="#cb11-205" aria-hidden="true" tabindex="-1"></a>  <span class="fu">svg</span>(save_path, <span class="at">width =</span> <span class="dv">10</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
-<span id="cb11-206"><a href="#cb11-206" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>, <span class="at">nrow =</span> <span class="dv">5</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb11-207"><a href="#cb11-207" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (id <span class="cf">in</span> ids) {</span>
-<span id="cb11-208"><a href="#cb11-208" aria-hidden="true" tabindex="-1"></a>    <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
-<span id="cb11-209"><a href="#cb11-209" aria-hidden="true" tabindex="-1"></a>      <span class="at">original =</span> xy_list[[id]],</span>
-<span id="cb11-210"><a href="#cb11-210" aria-hidden="true" tabindex="-1"></a>      <span class="at">ef_normalized =</span> ef_list[[id]],</span>
-<span id="cb11-211"><a href="#cb11-211" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">names</span>(xy_list)[id],</span>
-<span id="cb11-212"><a href="#cb11-212" aria-hidden="true" tabindex="-1"></a>      <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb11-213"><a href="#cb11-213" aria-hidden="true" tabindex="-1"></a>      <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb11-214"><a href="#cb11-214" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb11-215"><a href="#cb11-215" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex.text =</span> <span class="dv">1</span></span>
-<span id="cb11-216"><a href="#cb11-216" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb11-217"><a href="#cb11-217" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb11-218"><a href="#cb11-218" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
-<span id="cb11-219"><a href="#cb11-219" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb11-220"><a href="#cb11-220" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-221"><a href="#cb11-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-222"><a href="#cb11-222" aria-hidden="true" tabindex="-1"></a>This results in 15 SVG files, each containing 50 comparisons of original and reconstructed contours.</span>
+<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: save_comparison_plots</span></span>
+<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results/supplementary_compare_contours_oriented_true_efd_normalized_quercus"</span></span>
+<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>list_id <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>,</span>
+<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>  <span class="dv">51</span><span class="sc">:</span><span class="dv">100</span>,</span>
+<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>  <span class="dv">101</span><span class="sc">:</span><span class="dv">150</span>,</span>
+<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>  <span class="dv">151</span><span class="sc">:</span><span class="dv">200</span>,</span>
+<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a>  <span class="dv">201</span><span class="sc">:</span><span class="dv">250</span>,</span>
+<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>  <span class="dv">251</span><span class="sc">:</span><span class="dv">300</span>,</span>
+<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a>  <span class="dv">301</span><span class="sc">:</span><span class="dv">350</span>,</span>
+<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a>  <span class="dv">351</span><span class="sc">:</span><span class="dv">400</span>,</span>
+<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>  <span class="dv">401</span><span class="sc">:</span><span class="dv">450</span>,</span>
+<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>  <span class="dv">451</span><span class="sc">:</span><span class="dv">500</span>,</span>
+<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a>  <span class="dv">501</span><span class="sc">:</span><span class="dv">550</span>,</span>
+<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a>  <span class="dv">551</span><span class="sc">:</span><span class="dv">600</span>,</span>
+<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a>  <span class="dv">601</span><span class="sc">:</span><span class="dv">650</span>,</span>
+<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a>  <span class="dv">651</span><span class="sc">:</span><span class="dv">700</span>,</span>
+<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a>  <span class="dv">701</span><span class="sc">:</span><span class="dv">746</span></span>
+<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ids <span class="cf">in</span> list_id) {</span>
+<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a>  ids <span class="ot">&lt;-</span> <span class="fu">unlist</span>(ids)</span>
+<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a>  save_path <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb11-196"><a href="#cb11-196" aria-hidden="true" tabindex="-1"></a>    save_dir,</span>
+<span id="cb11-197"><a href="#cb11-197" aria-hidden="true" tabindex="-1"></a>    <span class="st">"/compare_contours_oriented_true_efd_normalized_quercus_"</span>,</span>
+<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a>    <span class="fu">min</span>(ids),</span>
+<span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a>    <span class="st">"_"</span>,</span>
+<span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(ids),</span>
+<span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a>    <span class="st">".svg"</span></span>
+<span id="cb11-202"><a href="#cb11-202" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-203"><a href="#cb11-203" aria-hidden="true" tabindex="-1"></a>  <span class="fu">svg</span>(save_path, <span class="at">width =</span> <span class="dv">10</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
+<span id="cb11-204"><a href="#cb11-204" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>, <span class="at">nrow =</span> <span class="dv">5</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb11-205"><a href="#cb11-205" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (id <span class="cf">in</span> ids) {</span>
+<span id="cb11-206"><a href="#cb11-206" aria-hidden="true" tabindex="-1"></a>    <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
+<span id="cb11-207"><a href="#cb11-207" aria-hidden="true" tabindex="-1"></a>      <span class="at">original =</span> xy_list[[id]],</span>
+<span id="cb11-208"><a href="#cb11-208" aria-hidden="true" tabindex="-1"></a>      <span class="at">ef_normalized =</span> ef_list[[id]],</span>
+<span id="cb11-209"><a href="#cb11-209" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">names</span>(xy_list)[id],</span>
+<span id="cb11-210"><a href="#cb11-210" aria-hidden="true" tabindex="-1"></a>      <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb11-211"><a href="#cb11-211" aria-hidden="true" tabindex="-1"></a>      <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb11-212"><a href="#cb11-212" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb11-213"><a href="#cb11-213" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex.text =</span> <span class="dv">1</span></span>
+<span id="cb11-214"><a href="#cb11-214" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-215"><a href="#cb11-215" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-216"><a href="#cb11-216" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
+<span id="cb11-217"><a href="#cb11-217" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-218"><a href="#cb11-218" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

@@ -55,7 +55,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
@@ -227,6 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#pca-using-conventional-normalization" id="toc-pca-using-conventional-normalization" class="nav-link" data-scroll-target="#pca-using-conventional-normalization">PCA using conventional normalization</a></li>
   <li><a href="#pca-using-true-efd-normalization" id="toc-pca-using-true-efd-normalization" class="nav-link" data-scroll-target="#pca-using-true-efd-normalization">PCA using true EFD normalization</a></li>
   <li><a href="#pca-using-oriented-true-efd-normalization" id="toc-pca-using-oriented-true-efd-normalization" class="nav-link" data-scroll-target="#pca-using-oriented-true-efd-normalization">PCA using oriented true EFD normalization</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></nav>
     </div>
 <!-- main -->
@@ -245,9 +265,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Purposes of this notebook are:<br>
+</header><p>The goals of this notebook are:<br>
 1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.<br>
-2. To compare the PCA results among these three methods.</p>
+2. To compare PCA results across these three methods.</p>
 <p>Output figures in this notebook are used in <strong>Figure 4A-C</strong> of the manuscript.</p>
 <section id="setup-preprocessing" class="level2"><h2 class="anchored" data-anchor-id="setup-preprocessing">Setup &amp; preprocessing</h2>
 <div class="cell">
@@ -284,7 +304,7 @@ Attaching package: 'Momocs'</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>konara</code> means Quercus serrata, and <code>mizunara</code> means Quercus crispula. <code>konara</code> (コナラ) represents the standard Japanese name of Quercus serrata, while <code>mizunara</code> (ミズナラ) is the standard Japanese name of Quercus crispula.</p>
+<p><code>konara</code> means Quercus serrata, and <code>mizunara</code> means Quercus crispula. Both are standard Japanese common names used in the original dataset metadata.</p>
 </div>
 </div>
 <div class="cell">
@@ -299,7 +319,7 @@ Attaching package: 'Momocs'</code></pre>
 <span>  levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Quercus serrata"</span>, <span class="st">"Quercus crispula"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Load contours</p>
+<p>Load contours from the CSV files in the <code>data/contour_quercus/</code> directory.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">file_paths_xy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"data/contour_quercus/"</span><span class="op">)</span>,</span>
@@ -312,7 +332,7 @@ Attaching package: 'Momocs'</code></pre>
 <span>  <span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/mode.html">storage.mode</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"double"</span></span>
-<span>  <span class="co"># 輪郭が閉じていない場合、最初の点を最後に追加して閉じる</span></span>
+<span>  <span class="co"># If the contour is not closed, append the first point to the end.</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span> <span class="op">==</span> <span class="va">df</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">df</span>, <span class="va">df</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
@@ -320,7 +340,7 @@ Attaching package: 'Momocs'</code></pre>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">xy_list</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/tools/fileutils.html">file_path_sans_ext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html">basename</a></span><span class="op">(</span><span class="va">file_paths_xy</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Rotate contour</p>
+<p>Rotate contour to randomize the initial direction.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> <span class="co"># set.seed for reproducibility</span></span>
 <span><span class="va">angles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">360</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">xy_list</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># rotation angles in degrees</span></span>
@@ -333,7 +353,7 @@ Attaching package: 'Momocs'</code></pre>
 <span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>To evaluate the normalization methods without bias from the contour’s initial point, we randomize the starting point of each contour.</p>
-<p>This is necessary because the contours obtained with LeafContourEFD already have a standardized starting point.</p>
+<p>This is necessary because the contours obtained with <a href="https://github.com/maple60/leaf-contour-efd">LeafContourEFD</a> already have a standardized starting point.</p>
 <p>To randomize the starting point, we reorder the points in each contour by selecting a starting point at random and rearranging the sequence accordingly.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
@@ -346,7 +366,7 @@ Attaching package: 'Momocs'</code></pre>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">xy_rotated_reordered</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Species names corresponding to individual IDs</p>
+<p>Species names corresponding to individual IDs.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">id_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/tools/fileutils.html">file_path_sans_ext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html">basename</a></span><span class="op">(</span><span class="va">file_paths_xy</span><span class="op">)</span><span class="op">)</span> <span class="co"># IDs with suffixes</span></span>
 <span><span class="co"># individual IDs without suffixes</span></span>
@@ -359,7 +379,8 @@ Attaching package: 'Momocs'</code></pre>
 <span><span class="va">sp_name</span> <span class="op">&lt;-</span> <span class="va">df_sp_name</span><span class="op">$</span><span class="va">species</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">id_name_head</span>, <span class="va">df_sp_name</span><span class="op">$</span><span class="va">id</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="pca-using-conventional-normalization" class="level2"><h2 class="anchored" data-anchor-id="pca-using-conventional-normalization">PCA using conventional normalization</h2>
-<p>PCA using normalized EFD coefficients (conventional method) Momocs側で正規化を行います。</p>
+<p>Principal component analysis (PCA) using normalized EFD coefficients (conventional method <span class="citation" data-cites="kuhl1982">(<a href="../index.html#ref-kuhl1982" role="doc-biblioref">Kuhl and Giardina 1982</a>)</span>).<br>
+Normalization is performed using <a href="https://momx.github.io/Momocs/">Momocs</a> <span class="citation" data-cites="bonhomme2014">(<a href="../index.html#ref-bonhomme2014" role="doc-biblioref">Bonhomme et al. 2014</a>)</span>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nb_h</span> <span class="op">&lt;-</span> <span class="fl">35</span> <span class="co"># Number of harmonics</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://momx.github.io/Momocs/reference/Out.html">Out</a></span><span class="op">(</span></span>
@@ -395,6 +416,8 @@ Attaching package: 'Momocs'</code></pre>
 </details>
 </div>
 </section><section id="pca-using-true-efd-normalization" class="level2"><h2 class="anchored" data-anchor-id="pca-using-true-efd-normalization">PCA using true EFD normalization</h2>
+<p>Principal component analysis (PCA) using coefficients obtained by true EFD normalization.<br>
+Normalization is performed using the <code>efourier_true_norm()</code> function implemented in this project (see <a href="https://github.com/maple60/leaf-contour-efd-analysis/blob/f04a8cd81357d5195f1da90fc051b169971a3abd/R/normalization.R"><code>R/normalization.R</code></a> for details).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nb_h</span> <span class="op">&lt;-</span> <span class="fl">35</span> <span class="co"># Number of harmonics</span></span>
 <span><span class="co"># convert to Momocs Out object</span></span>
@@ -436,9 +459,9 @@ Attaching package: 'Momocs'</code></pre>
 </details>
 </div>
 </section><section id="pca-using-oriented-true-efd-normalization" class="level2"><h2 class="anchored" data-anchor-id="pca-using-oriented-true-efd-normalization">PCA using oriented true EFD normalization</h2>
-<p>(後で英語に直す) LeafContourEFDで得られた輪郭はすでに開始点、回転が標準化されています。 この輪郭にtrue EFD noramlizationのx対照補正のみを行うことで、oriente true EFD normalizationを実現します。</p>
-<p>LeafContourEFDで得られたフーリエ係数を使用しても同じ結果が得られますが、今回はMomocsの関数を利用して、PC値の変化に応じた再構築輪郭の変化を簡単にPCAプロット上に可視化できるようにします。</p>
-<p>将来的にはMomocsに依存しない方法も提供する予定です。</p>
+<p>Contours obtained from <a href="https://github.com/maple60/leaf-contour-efd">LeafContourEFD</a> already have standardized starting points and rotation. Therefore, we apply only the x-axis symmetry correction step from <strong>true EFD normalization</strong> to implement oriented <strong>true EFD normalization</strong>.</p>
+<p>Although the same results can be obtained from the Fourier coefficients exported by <a href="https://github.com/maple60/leaf-contour-efd">LeafContourEFD</a>, we use <a href="https://momx.github.io/Momocs/">Momocs</a> here so we can easily visualize reconstructed contour changes associated with principal component score shifts.</p>
+<p>In a future update, we plan to provide a workflow that does not depend on <a href="https://momx.github.io/Momocs/">Momocs</a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nb_h</span> <span class="op">&lt;-</span> <span class="fl">35</span> <span class="co"># Number of harmonics</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://momx.github.io/Momocs/reference/Out.html">Out</a></span><span class="op">(</span><span class="va">xy_list</span>, fac <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">sp_name</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># convert to Momocs Out object</span></span>
@@ -449,761 +472,13 @@ Attaching package: 'Momocs'</code></pre>
 <span>  x_sy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  y_sy <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  skip_rotation <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># PCA with Momocs</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># PCA with Momocs</span></span>
 <span><span class="va">pca_true_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://momx.github.io/Momocs/reference/PCA.html">PCA</a></span><span class="op">(</span><span class="va">ef_true_norm</span>, center <span class="op">=</span> <span class="cn">TRUE</span>, scale. <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Visualize PCA results</p>
+<p>Visualize PCA results.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pca_plot</span><span class="op">(</span><span class="va">pca_true_norm</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pca_plot</span><span class="op">(</span><span class="va">pca_true_norm</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure"><p><img src="pca_quercus_files/figure-html/pca_oriented_true_efd_normalized_plot-1.png" class="img-fluid figure-img" width="672"></p>
@@ -1212,7 +487,7 @@ skip_rotation is TRUE</code></pre>
 </div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Save the plot as SVG file</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="st">"results"</span></span>
+<details class="code-fold"><summary>Save the plot as SVG file</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="st">"results"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="va">save_dir</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">save_file_name</span> <span class="op">&lt;-</span> <span class="st">"fig4c_pca_oriented_true_efd_normalized.svg"</span></span>
 <span><span class="va">save_file_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">save_dir</span>, <span class="va">save_file_name</span><span class="op">)</span></span>
@@ -1223,6 +498,15 @@ skip_rotation is TRUE</code></pre>
 <span><span class="fu">pca_plot</span><span class="op">(</span><span class="va">pca_true_norm</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+</div>
+</section><section id="references" class="level2"><h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-bonhomme2014" class="csl-entry" role="listitem">
+Bonhomme, Vincent, Sandrine Picq, Cédric Gaucherel, and Julien Claude. 2014. <span>“<span><strong>Momocs</strong></span> : Outline Analysis Using <span><em>R</em></span>.”</span> <em>Journal of Statistical Software</em> 56 (13). <a href="https://doi.org/10.18637/jss.v056.i13">https://doi.org/10.18637/jss.v056.i13</a>.
+</div>
+<div id="ref-kuhl1982" class="csl-entry" role="listitem">
+Kuhl, Frank P, and Charles R Giardina. 1982. <span>“Elliptic Fourier Features of a Closed Contour.”</span> <em>Computer Graphics and Image Processing</em> 18 (3): 236–58. <a href="https://doi.org/10.1016/0146-664X(82)90034-X">https://doi.org/10.1016/0146-664X(82)90034-X</a>.
+</div>
 </div>
 
 
@@ -1689,263 +973,267 @@ skip_rotation is TRUE</code></pre>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "PCA of *Quercus serrata* and *Quercus crispula* leaf contours"</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>Purposes of this notebook are:  </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.  </span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To compare the PCA results among these three methods.  </span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>Output figures in this notebook are used in **Figure 4A-C** of the manuscript.</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Setup &amp; preprocessing</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tools)</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Momocs)</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/geometry.R"</span>)</span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/normalization.R"</span>)</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/pca_plot.R"</span>)</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co"># color palette for colorblind-friendly visualization</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="fu">palette</span>(<span class="st">"Okabe-Ito"</span>)</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Quercus serrata and Q. crispula colors</span></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>my_palette <span class="ot">&lt;-</span> <span class="fu">pal_manual</span>(<span class="fu">c</span>(<span class="st">"#FF4B00"</span>, <span class="st">"#005AFF"</span>), <span class="at">transp =</span> <span class="dv">0</span>)</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="co"># set the data directory from environment variable (.Renviron)</span></span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"PROJECT_DATA_DIR"</span>)</span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>Load the species names from the CSV file.</span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>This file contains three columns: <span class="in">`id`</span>, <span class="in">`konara`</span>, and <span class="in">`mizunara`</span>. </span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>The <span class="in">`id`</span> column corresponds to the sample ID, while the <span class="in">`konara`</span> and <span class="in">`mizunara`</span> columns contain binary values indicating the species classification. </span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>We will determine the species name based on which column has a value of 1 for each sample.</span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="fu">## Species name</span></span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="in">`konara`</span> means Quercus serrata, and <span class="in">`mizunara`</span> means Quercus crispula.</span>
-<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="in">`konara`</span> (コナラ) represents the standard Japanese name of Quercus serrata, while <span class="in">`mizunara`</span> (ミズナラ) is the standard Japanese name of Quercus crispula.</span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: species_name</span></span>
-<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a>df_sp_name <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(data_dir, <span class="st">"data/species_name.csv"</span>))</span>
-<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a>df_sp_name<span class="sc">$</span>species <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
-<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a>  df_sp_name<span class="sc">$</span>konara <span class="sc">&lt;</span> df_sp_name<span class="sc">$</span>mizunara,</span>
-<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Quercus crispula"</span>,</span>
-<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Quercus serrata"</span></span>
-<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a>df_sp_name<span class="sc">$</span>species <span class="ot">&lt;-</span> <span class="fu">factor</span>(</span>
-<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a>  df_sp_name<span class="sc">$</span>species,</span>
-<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Quercus serrata"</span>, <span class="st">"Quercus crispula"</span>)</span>
-<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a>Load contours</span>
-<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load_contours</span></span>
-<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a>file_paths_xy <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
-<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(data_dir, <span class="st">"data/contour_quercus/"</span>),</span>
-<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span></span>
-<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a>xy_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(file_paths_xy, <span class="cf">function</span>(fp) {</span>
-<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a>  <span class="co">#cat("File:", fp, "\n")</span></span>
-<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(fp)</span>
-<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)]</span>
-<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df)</span>
-<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage.mode</span>(df) <span class="ot">&lt;-</span> <span class="st">"double"</span></span>
-<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 輪郭が閉じていない場合、最初の点を最後に追加して閉じる</span></span>
-<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(df[<span class="dv">1</span>, ] <span class="sc">==</span> df[<span class="fu">nrow</span>(df), ])) {</span>
-<span id="cb19-78"><a href="#cb19-78" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, df[<span class="dv">1</span>, ])</span>
-<span id="cb19-79"><a href="#cb19-79" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb19-80"><a href="#cb19-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
-<span id="cb19-81"><a href="#cb19-81" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb19-82"><a href="#cb19-82" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(xy_list) <span class="ot">&lt;-</span> <span class="fu">file_path_sans_ext</span>(<span class="fu">basename</span>(file_paths_xy))</span>
-<span id="cb19-83"><a href="#cb19-83" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-84"><a href="#cb19-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-85"><a href="#cb19-85" aria-hidden="true" tabindex="-1"></a>Rotate contour</span>
-<span id="cb19-86"><a href="#cb19-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-89"><a href="#cb19-89" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-90"><a href="#cb19-90" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rotate_contours</span></span>
-<span id="cb19-91"><a href="#cb19-91" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) <span class="co"># set.seed for reproducibility</span></span>
-<span id="cb19-92"><a href="#cb19-92" aria-hidden="true" tabindex="-1"></a>angles <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">360</span>, <span class="fu">length</span>(xy_list), <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="co"># rotation angles in degrees</span></span>
-<span id="cb19-93"><a href="#cb19-93" aria-hidden="true" tabindex="-1"></a><span class="co"># rotate contours</span></span>
-<span id="cb19-94"><a href="#cb19-94" aria-hidden="true" tabindex="-1"></a>xy_list_rotated <span class="ot">&lt;-</span> <span class="fu">mapply</span>(</span>
-<span id="cb19-95"><a href="#cb19-95" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(mat, ang) <span class="fu">rotate_xy_centered</span>(mat, ang),</span>
-<span id="cb19-96"><a href="#cb19-96" aria-hidden="true" tabindex="-1"></a>  xy_list,</span>
-<span id="cb19-97"><a href="#cb19-97" aria-hidden="true" tabindex="-1"></a>  angles,</span>
-<span id="cb19-98"><a href="#cb19-98" aria-hidden="true" tabindex="-1"></a>  <span class="at">SIMPLIFY =</span> <span class="cn">FALSE</span></span>
-<span id="cb19-99"><a href="#cb19-99" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-100"><a href="#cb19-100" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-101"><a href="#cb19-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-102"><a href="#cb19-102" aria-hidden="true" tabindex="-1"></a>To evaluate the normalization methods without bias from the contour’s initial point, we randomize the starting point of each contour. </span>
-<span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a>This is necessary because the contours obtained with LeafContourEFD already have a standardized starting point. </span>
-<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a>To randomize the starting point, we reorder the points in each contour by selecting a starting point at random and rearranging the sequence accordingly.</span>
-<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: randomize_starting_point</span></span>
-<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a>xy_list_rotated_reordered <span class="ot">&lt;-</span> <span class="fu">lapply</span>(xy_list_rotated, <span class="cf">function</span>(xy_rotated) {</span>
-<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a>  <span class="co"># rotation angles in degrees</span></span>
-<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a>  idx_start <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(xy_rotated)), <span class="dv">1</span>)</span>
-<span id="cb19-116"><a href="#cb19-116" aria-hidden="true" tabindex="-1"></a>  xy_rotated_reordered <span class="ot">&lt;-</span> xy_rotated[</span>
-<span id="cb19-117"><a href="#cb19-117" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(idx_start<span class="sc">:</span><span class="fu">nrow</span>(xy_rotated), <span class="dv">1</span><span class="sc">:</span>(idx_start <span class="sc">-</span> <span class="dv">1</span>)),</span>
-<span id="cb19-118"><a href="#cb19-118" aria-hidden="true" tabindex="-1"></a>  ]</span>
-<span id="cb19-119"><a href="#cb19-119" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(xy_rotated_reordered)</span>
-<span id="cb19-120"><a href="#cb19-120" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a>Species names corresponding to individual IDs</span>
-<span id="cb19-124"><a href="#cb19-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-127"><a href="#cb19-127" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-128"><a href="#cb19-128" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: prepare_ids_species</span></span>
-<span id="cb19-129"><a href="#cb19-129" aria-hidden="true" tabindex="-1"></a>id_name <span class="ot">&lt;-</span> <span class="fu">file_path_sans_ext</span>(<span class="fu">basename</span>(file_paths_xy)) <span class="co"># IDs with suffixes</span></span>
-<span id="cb19-130"><a href="#cb19-130" aria-hidden="true" tabindex="-1"></a><span class="co"># individual IDs without suffixes</span></span>
-<span id="cb19-131"><a href="#cb19-131" aria-hidden="true" tabindex="-1"></a>id_name_head <span class="ot">&lt;-</span> <span class="fu">lapply</span>(id_name, <span class="cf">function</span>(x) {</span>
-<span id="cb19-132"><a href="#cb19-132" aria-hidden="true" tabindex="-1"></a>  parts <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(x, <span class="st">"_"</span>))</span>
-<span id="cb19-133"><a href="#cb19-133" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(parts[<span class="dv">1</span>])</span>
-<span id="cb19-134"><a href="#cb19-134" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb19-135"><a href="#cb19-135" aria-hidden="true" tabindex="-1"></a>id_name_head <span class="ot">&lt;-</span> <span class="fu">unlist</span>(id_name_head)</span>
-<span id="cb19-136"><a href="#cb19-136" aria-hidden="true" tabindex="-1"></a><span class="co"># species names corresponding to individual IDs</span></span>
-<span id="cb19-137"><a href="#cb19-137" aria-hidden="true" tabindex="-1"></a>sp_name <span class="ot">&lt;-</span> df_sp_name<span class="sc">$</span>species[<span class="fu">match</span>(id_name_head, df_sp_name<span class="sc">$</span>id)]</span>
-<span id="cb19-138"><a href="#cb19-138" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-139"><a href="#cb19-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-140"><a href="#cb19-140" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using conventional normalization</span></span>
-<span id="cb19-141"><a href="#cb19-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-142"><a href="#cb19-142" aria-hidden="true" tabindex="-1"></a>PCA using normalized EFD coefficients (conventional method)</span>
-<span id="cb19-143"><a href="#cb19-143" aria-hidden="true" tabindex="-1"></a>Momocs側で正規化を行います。</span>
-<span id="cb19-144"><a href="#cb19-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-147"><a href="#cb19-147" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-148"><a href="#cb19-148" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_efd_normalized</span></span>
-<span id="cb19-149"><a href="#cb19-149" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">35</span> <span class="co"># Number of harmonics</span></span>
-<span id="cb19-150"><a href="#cb19-150" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(</span>
-<span id="cb19-151"><a href="#cb19-151" aria-hidden="true" tabindex="-1"></a>  xy_list_rotated_reordered,</span>
-<span id="cb19-152"><a href="#cb19-152" aria-hidden="true" tabindex="-1"></a>  <span class="at">fac =</span> <span class="fu">data.frame</span>(<span class="at">species =</span> <span class="fu">factor</span>(sp_name))</span>
-<span id="cb19-153"><a href="#cb19-153" aria-hidden="true" tabindex="-1"></a>) <span class="co"># convert to Momocs Out object</span></span>
-<span id="cb19-154"><a href="#cb19-154" aria-hidden="true" tabindex="-1"></a><span class="co"># EFD with normalization</span></span>
-<span id="cb19-155"><a href="#cb19-155" aria-hidden="true" tabindex="-1"></a>ef_norm <span class="ot">&lt;-</span> <span class="fu">efourier</span>(out, <span class="at">nb.h =</span> nb_h, <span class="at">norm =</span> <span class="cn">TRUE</span>, <span class="at">start =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-156"><a href="#cb19-156" aria-hidden="true" tabindex="-1"></a>pca_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>) <span class="co"># PCA with Momocs</span></span>
-<span id="cb19-157"><a href="#cb19-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-158"><a href="#cb19-158" aria-hidden="true" tabindex="-1"></a>idx_max <span class="ot">&lt;-</span> <span class="fu">which.max</span>(pca_norm<span class="sc">$</span>x[, <span class="dv">2</span>])</span>
-<span id="cb19-159"><a href="#cb19-159" aria-hidden="true" tabindex="-1"></a>idx_min <span class="ot">&lt;-</span> <span class="fu">which.min</span>(pca_norm<span class="sc">$</span>x[, <span class="dv">2</span>])</span>
-<span id="cb19-160"><a href="#cb19-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-161"><a href="#cb19-161" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_norm) <span class="co"># visualize PCA results</span></span>
-<span id="cb19-162"><a href="#cb19-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-163"><a href="#cb19-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-166"><a href="#cb19-166" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-167"><a href="#cb19-167" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_efd_normalized_save</span></span>
-<span id="cb19-168"><a href="#cb19-168" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb19-169"><a href="#cb19-169" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb19-170"><a href="#cb19-170" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb19-171"><a href="#cb19-171" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb19-172"><a href="#cb19-172" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb19-173"><a href="#cb19-173" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4a_pca_efd_normalized_quercus.svg"</span></span>
-<span id="cb19-174"><a href="#cb19-174" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
-<span id="cb19-175"><a href="#cb19-175" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
-<span id="cb19-176"><a href="#cb19-176" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
-<span id="cb19-177"><a href="#cb19-177" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
-<span id="cb19-178"><a href="#cb19-178" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-179"><a href="#cb19-179" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_norm)</span>
-<span id="cb19-180"><a href="#cb19-180" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb19-181"><a href="#cb19-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-182"><a href="#cb19-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-183"><a href="#cb19-183" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using true EFD normalization</span></span>
-<span id="cb19-184"><a href="#cb19-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-187"><a href="#cb19-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-188"><a href="#cb19-188" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_true_efd_normalized</span></span>
-<span id="cb19-189"><a href="#cb19-189" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">35</span> <span class="co"># Number of harmonics</span></span>
-<span id="cb19-190"><a href="#cb19-190" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to Momocs Out object</span></span>
-<span id="cb19-191"><a href="#cb19-191" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(</span>
-<span id="cb19-192"><a href="#cb19-192" aria-hidden="true" tabindex="-1"></a>  xy_list_rotated_reordered,</span>
-<span id="cb19-193"><a href="#cb19-193" aria-hidden="true" tabindex="-1"></a>  <span class="at">fac =</span> <span class="fu">data.frame</span>(<span class="at">species =</span> <span class="fu">factor</span>(sp_name))</span>
-<span id="cb19-194"><a href="#cb19-194" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-195"><a href="#cb19-195" aria-hidden="true" tabindex="-1"></a><span class="co"># oriented true EFD normalization</span></span>
-<span id="cb19-196"><a href="#cb19-196" aria-hidden="true" tabindex="-1"></a>ef_true_norm <span class="ot">&lt;-</span> <span class="fu">efourier_true_norm</span>(</span>
-<span id="cb19-197"><a href="#cb19-197" aria-hidden="true" tabindex="-1"></a>  out,</span>
-<span id="cb19-198"><a href="#cb19-198" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> nb_h,</span>
-<span id="cb19-199"><a href="#cb19-199" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb19-200"><a href="#cb19-200" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb19-201"><a href="#cb19-201" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">FALSE</span></span>
-<span id="cb19-202"><a href="#cb19-202" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-203"><a href="#cb19-203" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA with Momocs</span></span>
-<span id="cb19-204"><a href="#cb19-204" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_true_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-205"><a href="#cb19-205" aria-hidden="true" tabindex="-1"></a><span class="co"># flip PC axes for better visualization</span></span>
-<span id="cb19-206"><a href="#cb19-206" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">flip_PCaxes</span>(pca_true_norm, <span class="dv">1</span>)</span>
-<span id="cb19-207"><a href="#cb19-207" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
-<span id="cb19-208"><a href="#cb19-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-209"><a href="#cb19-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-212"><a href="#cb19-212" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-213"><a href="#cb19-213" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_true_efd_normalized_save</span></span>
-<span id="cb19-214"><a href="#cb19-214" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb19-215"><a href="#cb19-215" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb19-216"><a href="#cb19-216" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb19-217"><a href="#cb19-217" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb19-218"><a href="#cb19-218" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb19-219"><a href="#cb19-219" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4b_pca_true_efd_normalized.svg"</span></span>
-<span id="cb19-220"><a href="#cb19-220" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
-<span id="cb19-221"><a href="#cb19-221" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
-<span id="cb19-222"><a href="#cb19-222" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
-<span id="cb19-223"><a href="#cb19-223" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
-<span id="cb19-224"><a href="#cb19-224" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-225"><a href="#cb19-225" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
-<span id="cb19-226"><a href="#cb19-226" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb19-227"><a href="#cb19-227" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-228"><a href="#cb19-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-229"><a href="#cb19-229" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using oriented true EFD normalization</span></span>
-<span id="cb19-230"><a href="#cb19-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-231"><a href="#cb19-231" aria-hidden="true" tabindex="-1"></a>(後で英語に直す)</span>
-<span id="cb19-232"><a href="#cb19-232" aria-hidden="true" tabindex="-1"></a>LeafContourEFDで得られた輪郭はすでに開始点、回転が標準化されています。</span>
-<span id="cb19-233"><a href="#cb19-233" aria-hidden="true" tabindex="-1"></a>この輪郭にtrue EFD noramlizationのx対照補正のみを行うことで、oriente true EFD normalizationを実現します。</span>
-<span id="cb19-234"><a href="#cb19-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-235"><a href="#cb19-235" aria-hidden="true" tabindex="-1"></a>LeafContourEFDで得られたフーリエ係数を使用しても同じ結果が得られますが、今回はMomocsの関数を利用して、PC値の変化に応じた再構築輪郭の変化を簡単にPCAプロット上に可視化できるようにします。</span>
-<span id="cb19-236"><a href="#cb19-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-237"><a href="#cb19-237" aria-hidden="true" tabindex="-1"></a>将来的にはMomocsに依存しない方法も提供する予定です。</span>
-<span id="cb19-238"><a href="#cb19-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-241"><a href="#cb19-241" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-242"><a href="#cb19-242" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized</span></span>
-<span id="cb19-243"><a href="#cb19-243" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">35</span> <span class="co"># Number of harmonics</span></span>
-<span id="cb19-244"><a href="#cb19-244" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(xy_list, <span class="at">fac =</span> <span class="fu">data.frame</span>(<span class="at">species =</span> <span class="fu">factor</span>(sp_name))) <span class="co"># convert to Momocs Out object</span></span>
-<span id="cb19-245"><a href="#cb19-245" aria-hidden="true" tabindex="-1"></a><span class="co"># oriented true EFD normalization</span></span>
-<span id="cb19-246"><a href="#cb19-246" aria-hidden="true" tabindex="-1"></a>ef_true_norm <span class="ot">&lt;-</span> <span class="fu">efourier_true_norm</span>(</span>
-<span id="cb19-247"><a href="#cb19-247" aria-hidden="true" tabindex="-1"></a>  out,</span>
-<span id="cb19-248"><a href="#cb19-248" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> nb_h,</span>
-<span id="cb19-249"><a href="#cb19-249" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb19-250"><a href="#cb19-250" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb19-251"><a href="#cb19-251" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">TRUE</span></span>
-<span id="cb19-252"><a href="#cb19-252" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-253"><a href="#cb19-253" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA with Momocs</span></span>
-<span id="cb19-254"><a href="#cb19-254" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_true_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-255"><a href="#cb19-255" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-256"><a href="#cb19-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-257"><a href="#cb19-257" aria-hidden="true" tabindex="-1"></a>Visualize PCA results</span>
-<span id="cb19-258"><a href="#cb19-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-261"><a href="#cb19-261" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-262"><a href="#cb19-262" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized_plot</span></span>
-<span id="cb19-263"><a href="#cb19-263" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
-<span id="cb19-264"><a href="#cb19-264" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-269"><a href="#cb19-269" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized_save</span></span>
-<span id="cb19-270"><a href="#cb19-270" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb19-271"><a href="#cb19-271" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb19-272"><a href="#cb19-272" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb19-273"><a href="#cb19-273" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb19-274"><a href="#cb19-274" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb19-275"><a href="#cb19-275" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4c_pca_oriented_true_efd_normalized.svg"</span></span>
-<span id="cb19-276"><a href="#cb19-276" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
-<span id="cb19-277"><a href="#cb19-277" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
-<span id="cb19-278"><a href="#cb19-278" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
-<span id="cb19-279"><a href="#cb19-279" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
-<span id="cb19-280"><a href="#cb19-280" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-281"><a href="#cb19-281" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
-<span id="cb19-282"><a href="#cb19-282" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb19-283"><a href="#cb19-283" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "PCA of *Quercus serrata* and *Quercus crispula* leaf contours"</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>The goals of this notebook are:\</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.\</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To compare PCA results across these three methods.</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>Output figures in this notebook are used in **Figure 4A-C** of the manuscript.</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Setup &amp; preprocessing</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tools)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Momocs)</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/geometry.R"</span>)</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/normalization.R"</span>)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/pca_plot.R"</span>)</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="co"># color palette for colorblind-friendly visualization</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="fu">palette</span>(<span class="st">"Okabe-Ito"</span>)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Quercus serrata and Q. crispula colors</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>my_palette <span class="ot">&lt;-</span> <span class="fu">pal_manual</span>(<span class="fu">c</span>(<span class="st">"#FF4B00"</span>, <span class="st">"#005AFF"</span>), <span class="at">transp =</span> <span class="dv">0</span>)</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="co"># set the data directory from environment variable (.Renviron)</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"PROJECT_DATA_DIR"</span>)</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>Load the species names from the CSV file.</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>This file contains three columns: <span class="in">`id`</span>, <span class="in">`konara`</span>, and <span class="in">`mizunara`</span>. The <span class="in">`id`</span> column corresponds to the sample ID, while the <span class="in">`konara`</span> and <span class="in">`mizunara`</span> columns contain binary values indicating the species classification. We will determine the species name based on which column has a value of 1 for each sample.</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>::: callout-note</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="fu">## Species name</span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a><span class="in">`konara`</span> means Quercus serrata, and <span class="in">`mizunara`</span> means Quercus crispula. Both are standard Japanese common names used in the original dataset metadata.</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: species_name</span></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>df_sp_name <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(data_dir, <span class="st">"data/species_name.csv"</span>))</span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>df_sp_name<span class="sc">$</span>species <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>  df_sp_name<span class="sc">$</span>konara <span class="sc">&lt;</span> df_sp_name<span class="sc">$</span>mizunara,</span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Quercus crispula"</span>,</span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Quercus serrata"</span></span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a>df_sp_name<span class="sc">$</span>species <span class="ot">&lt;-</span> <span class="fu">factor</span>(</span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a>  df_sp_name<span class="sc">$</span>species,</span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Quercus serrata"</span>, <span class="st">"Quercus crispula"</span>)</span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a>Load contours from the CSV files in the <span class="in">`data/contour_quercus/`</span> directory.</span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load_contours</span></span>
+<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a>file_paths_xy <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(data_dir, <span class="st">"data/contour_quercus/"</span>),</span>
+<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb17-65"><a href="#cb17-65" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span></span>
+<span id="cb17-66"><a href="#cb17-66" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-67"><a href="#cb17-67" aria-hidden="true" tabindex="-1"></a>xy_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(file_paths_xy, <span class="cf">function</span>(fp) {</span>
+<span id="cb17-68"><a href="#cb17-68" aria-hidden="true" tabindex="-1"></a>  <span class="co">#cat("File:", fp, "\n")</span></span>
+<span id="cb17-69"><a href="#cb17-69" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(fp)</span>
+<span id="cb17-70"><a href="#cb17-70" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)]</span>
+<span id="cb17-71"><a href="#cb17-71" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df)</span>
+<span id="cb17-72"><a href="#cb17-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage.mode</span>(df) <span class="ot">&lt;-</span> <span class="st">"double"</span></span>
+<span id="cb17-73"><a href="#cb17-73" aria-hidden="true" tabindex="-1"></a>  <span class="co"># If the contour is not closed, append the first point to the end.</span></span>
+<span id="cb17-74"><a href="#cb17-74" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(df[<span class="dv">1</span>, ] <span class="sc">==</span> df[<span class="fu">nrow</span>(df), ])) {</span>
+<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, df[<span class="dv">1</span>, ])</span>
+<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-77"><a href="#cb17-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb17-78"><a href="#cb17-78" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb17-79"><a href="#cb17-79" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(xy_list) <span class="ot">&lt;-</span> <span class="fu">file_path_sans_ext</span>(<span class="fu">basename</span>(file_paths_xy))</span>
+<span id="cb17-80"><a href="#cb17-80" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-81"><a href="#cb17-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-82"><a href="#cb17-82" aria-hidden="true" tabindex="-1"></a>Rotate contour to randomize the initial direction.</span>
+<span id="cb17-83"><a href="#cb17-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-86"><a href="#cb17-86" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-87"><a href="#cb17-87" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rotate_contours</span></span>
+<span id="cb17-88"><a href="#cb17-88" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) <span class="co"># set.seed for reproducibility</span></span>
+<span id="cb17-89"><a href="#cb17-89" aria-hidden="true" tabindex="-1"></a>angles <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">360</span>, <span class="fu">length</span>(xy_list), <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="co"># rotation angles in degrees</span></span>
+<span id="cb17-90"><a href="#cb17-90" aria-hidden="true" tabindex="-1"></a><span class="co"># rotate contours</span></span>
+<span id="cb17-91"><a href="#cb17-91" aria-hidden="true" tabindex="-1"></a>xy_list_rotated <span class="ot">&lt;-</span> <span class="fu">mapply</span>(</span>
+<span id="cb17-92"><a href="#cb17-92" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(mat, ang) <span class="fu">rotate_xy_centered</span>(mat, ang),</span>
+<span id="cb17-93"><a href="#cb17-93" aria-hidden="true" tabindex="-1"></a>  xy_list,</span>
+<span id="cb17-94"><a href="#cb17-94" aria-hidden="true" tabindex="-1"></a>  angles,</span>
+<span id="cb17-95"><a href="#cb17-95" aria-hidden="true" tabindex="-1"></a>  <span class="at">SIMPLIFY =</span> <span class="cn">FALSE</span></span>
+<span id="cb17-96"><a href="#cb17-96" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-97"><a href="#cb17-97" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-98"><a href="#cb17-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-99"><a href="#cb17-99" aria-hidden="true" tabindex="-1"></a>To evaluate the normalization methods without bias from the contour’s initial point, we randomize the starting point of each contour.</span>
+<span id="cb17-100"><a href="#cb17-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-101"><a href="#cb17-101" aria-hidden="true" tabindex="-1"></a>This is necessary because the contours obtained with <span class="co">[</span><span class="ot">LeafContourEFD</span><span class="co">](https://github.com/maple60/leaf-contour-efd)</span> already have a standardized starting point.</span>
+<span id="cb17-102"><a href="#cb17-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-103"><a href="#cb17-103" aria-hidden="true" tabindex="-1"></a>To randomize the starting point, we reorder the points in each contour by selecting a starting point at random and rearranging the sequence accordingly.</span>
+<span id="cb17-104"><a href="#cb17-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-107"><a href="#cb17-107" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-108"><a href="#cb17-108" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: randomize_starting_point</span></span>
+<span id="cb17-109"><a href="#cb17-109" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb17-110"><a href="#cb17-110" aria-hidden="true" tabindex="-1"></a>xy_list_rotated_reordered <span class="ot">&lt;-</span> <span class="fu">lapply</span>(xy_list_rotated, <span class="cf">function</span>(xy_rotated) {</span>
+<span id="cb17-111"><a href="#cb17-111" aria-hidden="true" tabindex="-1"></a>  <span class="co"># rotation angles in degrees</span></span>
+<span id="cb17-112"><a href="#cb17-112" aria-hidden="true" tabindex="-1"></a>  idx_start <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(xy_rotated)), <span class="dv">1</span>)</span>
+<span id="cb17-113"><a href="#cb17-113" aria-hidden="true" tabindex="-1"></a>  xy_rotated_reordered <span class="ot">&lt;-</span> xy_rotated[</span>
+<span id="cb17-114"><a href="#cb17-114" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(idx_start<span class="sc">:</span><span class="fu">nrow</span>(xy_rotated), <span class="dv">1</span><span class="sc">:</span>(idx_start <span class="sc">-</span> <span class="dv">1</span>)),</span>
+<span id="cb17-115"><a href="#cb17-115" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb17-116"><a href="#cb17-116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(xy_rotated_reordered)</span>
+<span id="cb17-117"><a href="#cb17-117" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb17-118"><a href="#cb17-118" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-119"><a href="#cb17-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-120"><a href="#cb17-120" aria-hidden="true" tabindex="-1"></a>Species names corresponding to individual IDs.</span>
+<span id="cb17-121"><a href="#cb17-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-124"><a href="#cb17-124" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-125"><a href="#cb17-125" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: prepare_ids_species</span></span>
+<span id="cb17-126"><a href="#cb17-126" aria-hidden="true" tabindex="-1"></a>id_name <span class="ot">&lt;-</span> <span class="fu">file_path_sans_ext</span>(<span class="fu">basename</span>(file_paths_xy)) <span class="co"># IDs with suffixes</span></span>
+<span id="cb17-127"><a href="#cb17-127" aria-hidden="true" tabindex="-1"></a><span class="co"># individual IDs without suffixes</span></span>
+<span id="cb17-128"><a href="#cb17-128" aria-hidden="true" tabindex="-1"></a>id_name_head <span class="ot">&lt;-</span> <span class="fu">lapply</span>(id_name, <span class="cf">function</span>(x) {</span>
+<span id="cb17-129"><a href="#cb17-129" aria-hidden="true" tabindex="-1"></a>  parts <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(x, <span class="st">"_"</span>))</span>
+<span id="cb17-130"><a href="#cb17-130" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(parts[<span class="dv">1</span>])</span>
+<span id="cb17-131"><a href="#cb17-131" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb17-132"><a href="#cb17-132" aria-hidden="true" tabindex="-1"></a>id_name_head <span class="ot">&lt;-</span> <span class="fu">unlist</span>(id_name_head)</span>
+<span id="cb17-133"><a href="#cb17-133" aria-hidden="true" tabindex="-1"></a><span class="co"># species names corresponding to individual IDs</span></span>
+<span id="cb17-134"><a href="#cb17-134" aria-hidden="true" tabindex="-1"></a>sp_name <span class="ot">&lt;-</span> df_sp_name<span class="sc">$</span>species[<span class="fu">match</span>(id_name_head, df_sp_name<span class="sc">$</span>id)]</span>
+<span id="cb17-135"><a href="#cb17-135" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-136"><a href="#cb17-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-137"><a href="#cb17-137" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using conventional normalization</span></span>
+<span id="cb17-138"><a href="#cb17-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-139"><a href="#cb17-139" aria-hidden="true" tabindex="-1"></a>Principal component analysis (PCA) using normalized EFD coefficients (conventional method <span class="co">[</span><span class="ot">@kuhl1982</span><span class="co">]</span>).\</span>
+<span id="cb17-140"><a href="#cb17-140" aria-hidden="true" tabindex="-1"></a>Normalization is performed using <span class="co">[</span><span class="ot">Momocs</span><span class="co">](https://momx.github.io/Momocs/)</span> <span class="co">[</span><span class="ot">@bonhomme2014</span><span class="co">]</span>.</span>
+<span id="cb17-141"><a href="#cb17-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-144"><a href="#cb17-144" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-145"><a href="#cb17-145" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_efd_normalized</span></span>
+<span id="cb17-146"><a href="#cb17-146" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">35</span> <span class="co"># Number of harmonics</span></span>
+<span id="cb17-147"><a href="#cb17-147" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(</span>
+<span id="cb17-148"><a href="#cb17-148" aria-hidden="true" tabindex="-1"></a>  xy_list_rotated_reordered,</span>
+<span id="cb17-149"><a href="#cb17-149" aria-hidden="true" tabindex="-1"></a>  <span class="at">fac =</span> <span class="fu">data.frame</span>(<span class="at">species =</span> <span class="fu">factor</span>(sp_name))</span>
+<span id="cb17-150"><a href="#cb17-150" aria-hidden="true" tabindex="-1"></a>) <span class="co"># convert to Momocs Out object</span></span>
+<span id="cb17-151"><a href="#cb17-151" aria-hidden="true" tabindex="-1"></a><span class="co"># EFD with normalization</span></span>
+<span id="cb17-152"><a href="#cb17-152" aria-hidden="true" tabindex="-1"></a>ef_norm <span class="ot">&lt;-</span> <span class="fu">efourier</span>(out, <span class="at">nb.h =</span> nb_h, <span class="at">norm =</span> <span class="cn">TRUE</span>, <span class="at">start =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-153"><a href="#cb17-153" aria-hidden="true" tabindex="-1"></a>pca_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>) <span class="co"># PCA with Momocs</span></span>
+<span id="cb17-154"><a href="#cb17-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-155"><a href="#cb17-155" aria-hidden="true" tabindex="-1"></a>idx_max <span class="ot">&lt;-</span> <span class="fu">which.max</span>(pca_norm<span class="sc">$</span>x[, <span class="dv">2</span>])</span>
+<span id="cb17-156"><a href="#cb17-156" aria-hidden="true" tabindex="-1"></a>idx_min <span class="ot">&lt;-</span> <span class="fu">which.min</span>(pca_norm<span class="sc">$</span>x[, <span class="dv">2</span>])</span>
+<span id="cb17-157"><a href="#cb17-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-158"><a href="#cb17-158" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_norm) <span class="co"># visualize PCA results</span></span>
+<span id="cb17-159"><a href="#cb17-159" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-160"><a href="#cb17-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-163"><a href="#cb17-163" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-164"><a href="#cb17-164" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_efd_normalized_save</span></span>
+<span id="cb17-165"><a href="#cb17-165" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb17-166"><a href="#cb17-166" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb17-167"><a href="#cb17-167" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb17-168"><a href="#cb17-168" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb17-169"><a href="#cb17-169" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-170"><a href="#cb17-170" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4a_pca_efd_normalized_quercus.svg"</span></span>
+<span id="cb17-171"><a href="#cb17-171" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
+<span id="cb17-172"><a href="#cb17-172" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
+<span id="cb17-173"><a href="#cb17-173" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
+<span id="cb17-174"><a href="#cb17-174" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
+<span id="cb17-175"><a href="#cb17-175" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-176"><a href="#cb17-176" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_norm)</span>
+<span id="cb17-177"><a href="#cb17-177" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb17-178"><a href="#cb17-178" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-179"><a href="#cb17-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-180"><a href="#cb17-180" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using true EFD normalization</span></span>
+<span id="cb17-181"><a href="#cb17-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-182"><a href="#cb17-182" aria-hidden="true" tabindex="-1"></a>Principal component analysis (PCA) using coefficients obtained by true EFD normalization.\</span>
+<span id="cb17-183"><a href="#cb17-183" aria-hidden="true" tabindex="-1"></a>Normalization is performed using the <span class="in">`efourier_true_norm()`</span> function implemented in this project (see <span class="co">[</span><span class="ot">`R/normalization.R`</span><span class="co">](https://github.com/maple60/leaf-contour-efd-analysis/blob/f04a8cd81357d5195f1da90fc051b169971a3abd/R/normalization.R)</span> for details).</span>
+<span id="cb17-184"><a href="#cb17-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-187"><a href="#cb17-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-188"><a href="#cb17-188" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_true_efd_normalized</span></span>
+<span id="cb17-189"><a href="#cb17-189" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">35</span> <span class="co"># Number of harmonics</span></span>
+<span id="cb17-190"><a href="#cb17-190" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to Momocs Out object</span></span>
+<span id="cb17-191"><a href="#cb17-191" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(</span>
+<span id="cb17-192"><a href="#cb17-192" aria-hidden="true" tabindex="-1"></a>  xy_list_rotated_reordered,</span>
+<span id="cb17-193"><a href="#cb17-193" aria-hidden="true" tabindex="-1"></a>  <span class="at">fac =</span> <span class="fu">data.frame</span>(<span class="at">species =</span> <span class="fu">factor</span>(sp_name))</span>
+<span id="cb17-194"><a href="#cb17-194" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-195"><a href="#cb17-195" aria-hidden="true" tabindex="-1"></a><span class="co"># oriented true EFD normalization</span></span>
+<span id="cb17-196"><a href="#cb17-196" aria-hidden="true" tabindex="-1"></a>ef_true_norm <span class="ot">&lt;-</span> <span class="fu">efourier_true_norm</span>(</span>
+<span id="cb17-197"><a href="#cb17-197" aria-hidden="true" tabindex="-1"></a>  out,</span>
+<span id="cb17-198"><a href="#cb17-198" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> nb_h,</span>
+<span id="cb17-199"><a href="#cb17-199" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb17-200"><a href="#cb17-200" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb17-201"><a href="#cb17-201" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">FALSE</span></span>
+<span id="cb17-202"><a href="#cb17-202" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-203"><a href="#cb17-203" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA with Momocs</span></span>
+<span id="cb17-204"><a href="#cb17-204" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_true_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-205"><a href="#cb17-205" aria-hidden="true" tabindex="-1"></a><span class="co"># flip PC axes for better visualization</span></span>
+<span id="cb17-206"><a href="#cb17-206" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">flip_PCaxes</span>(pca_true_norm, <span class="dv">1</span>)</span>
+<span id="cb17-207"><a href="#cb17-207" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
+<span id="cb17-208"><a href="#cb17-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-209"><a href="#cb17-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-212"><a href="#cb17-212" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-213"><a href="#cb17-213" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_true_efd_normalized_save</span></span>
+<span id="cb17-214"><a href="#cb17-214" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb17-215"><a href="#cb17-215" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb17-216"><a href="#cb17-216" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb17-217"><a href="#cb17-217" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb17-218"><a href="#cb17-218" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-219"><a href="#cb17-219" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4b_pca_true_efd_normalized.svg"</span></span>
+<span id="cb17-220"><a href="#cb17-220" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
+<span id="cb17-221"><a href="#cb17-221" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
+<span id="cb17-222"><a href="#cb17-222" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
+<span id="cb17-223"><a href="#cb17-223" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
+<span id="cb17-224"><a href="#cb17-224" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-225"><a href="#cb17-225" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
+<span id="cb17-226"><a href="#cb17-226" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb17-227"><a href="#cb17-227" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-228"><a href="#cb17-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-229"><a href="#cb17-229" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using oriented true EFD normalization</span></span>
+<span id="cb17-230"><a href="#cb17-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-231"><a href="#cb17-231" aria-hidden="true" tabindex="-1"></a>Contours obtained from <span class="co">[</span><span class="ot">LeafContourEFD</span><span class="co">](https://github.com/maple60/leaf-contour-efd)</span> already have standardized starting points and rotation. </span>
+<span id="cb17-232"><a href="#cb17-232" aria-hidden="true" tabindex="-1"></a>Therefore, we apply only the x-axis symmetry correction step from **true EFD normalization** to implement oriented **true EFD normalization**.</span>
+<span id="cb17-233"><a href="#cb17-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-234"><a href="#cb17-234" aria-hidden="true" tabindex="-1"></a>Although the same results can be obtained from the Fourier coefficients exported by <span class="co">[</span><span class="ot">LeafContourEFD</span><span class="co">](https://github.com/maple60/leaf-contour-efd)</span>, we use <span class="co">[</span><span class="ot">Momocs</span><span class="co">](https://momx.github.io/Momocs/)</span> here so we can easily visualize reconstructed contour changes associated with principal component score shifts.</span>
+<span id="cb17-235"><a href="#cb17-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-236"><a href="#cb17-236" aria-hidden="true" tabindex="-1"></a>In a future update, we plan to provide a workflow that does not depend on <span class="co">[</span><span class="ot">Momocs</span><span class="co">](https://momx.github.io/Momocs/)</span>.</span>
+<span id="cb17-237"><a href="#cb17-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-240"><a href="#cb17-240" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-241"><a href="#cb17-241" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized</span></span>
+<span id="cb17-242"><a href="#cb17-242" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">35</span> <span class="co"># Number of harmonics</span></span>
+<span id="cb17-243"><a href="#cb17-243" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(xy_list, <span class="at">fac =</span> <span class="fu">data.frame</span>(<span class="at">species =</span> <span class="fu">factor</span>(sp_name))) <span class="co"># convert to Momocs Out object</span></span>
+<span id="cb17-244"><a href="#cb17-244" aria-hidden="true" tabindex="-1"></a><span class="co"># oriented true EFD normalization</span></span>
+<span id="cb17-245"><a href="#cb17-245" aria-hidden="true" tabindex="-1"></a>ef_true_norm <span class="ot">&lt;-</span> <span class="fu">efourier_true_norm</span>(</span>
+<span id="cb17-246"><a href="#cb17-246" aria-hidden="true" tabindex="-1"></a>  out,</span>
+<span id="cb17-247"><a href="#cb17-247" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> nb_h,</span>
+<span id="cb17-248"><a href="#cb17-248" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb17-249"><a href="#cb17-249" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb17-250"><a href="#cb17-250" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">TRUE</span></span>
+<span id="cb17-251"><a href="#cb17-251" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-252"><a href="#cb17-252" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA with Momocs</span></span>
+<span id="cb17-253"><a href="#cb17-253" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_true_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-254"><a href="#cb17-254" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-255"><a href="#cb17-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-256"><a href="#cb17-256" aria-hidden="true" tabindex="-1"></a>Visualize PCA results.</span>
+<span id="cb17-257"><a href="#cb17-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-260"><a href="#cb17-260" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-261"><a href="#cb17-261" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized_plot</span></span>
+<span id="cb17-262"><a href="#cb17-262" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
+<span id="cb17-263"><a href="#cb17-263" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-264"><a href="#cb17-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-267"><a href="#cb17-267" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-268"><a href="#cb17-268" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized_save</span></span>
+<span id="cb17-269"><a href="#cb17-269" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb17-270"><a href="#cb17-270" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb17-271"><a href="#cb17-271" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb17-272"><a href="#cb17-272" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb17-273"><a href="#cb17-273" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-274"><a href="#cb17-274" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4c_pca_oriented_true_efd_normalized.svg"</span></span>
+<span id="cb17-275"><a href="#cb17-275" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
+<span id="cb17-276"><a href="#cb17-276" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
+<span id="cb17-277"><a href="#cb17-277" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
+<span id="cb17-278"><a href="#cb17-278" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
+<span id="cb17-279"><a href="#cb17-279" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-280"><a href="#cb17-280" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
+<span id="cb17-281"><a href="#cb17-281" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb17-282"><a href="#cb17-282" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-283"><a href="#cb17-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-284"><a href="#cb17-284" aria-hidden="true" tabindex="-1"></a><span class="fu">## References</span></span>
+<span id="cb17-285"><a href="#cb17-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-286"><a href="#cb17-286" aria-hidden="true" tabindex="-1"></a>::: {#refs}</span>
+<span id="cb17-287"><a href="#cb17-287" aria-hidden="true" tabindex="-1"></a>:::</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

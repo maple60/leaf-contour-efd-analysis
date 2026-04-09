@@ -248,7 +248,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>This notebook compares the original contour and the reconstructed contour from oriented true EFD normalization and true EFD normalization for <em>Quercus serrata</em> and <em>Quercus crispula</em>.</p>
+</header><p>This notebook compares original contours and contours reconstructed from oriented true EFD normalization and true EFD normalization for <em>Quercus serrata</em> and <em>Quercus crispula</em>.</p>
 <p>Output figures in this notebook are used in <strong>Figure 2</strong> of the manuscript.</p>
 <section id="setup" class="level2"><h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <div class="cell">
@@ -284,7 +284,7 @@ Attaching package: 'Momocs'</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>konara</code> means Quercus serrata, and <code>mizunara</code> means Quercus crispula. <code>konara</code> (コナラ) represents the standard Japanese name of Quercus serrata, while <code>mizunara</code> (ミズナラ) is the standard Japanese name of Quercus crispula.</p>
+<p><code>konara</code> means Quercus serrata, and <code>mizunara</code> means Quercus crispula. Both are standard Japanese common names used in the original dataset metadata.</p>
 </div>
 </div>
 <div class="cell">
@@ -328,7 +328,7 @@ Attaching package: 'Momocs'</code></pre>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">xy_list</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">id_name</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="load-oriented-true-normalized-efd-coefficients" class="level2"><h2 class="anchored" data-anchor-id="load-oriented-true-normalized-efd-coefficients">Load oriented true normalized EFD coefficients</h2>
-<p>these data are obtained by LeafContourEFD.</p>
+<p>True normalized EFD coefficients are obtained by <a href="https://github.com/maple60/leaf-contour-efd">LeafContourEFD</a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">file_paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"data/coefficients_efd_normalized_quercus/"</span><span class="op">)</span>,</span>
@@ -434,7 +434,7 @@ Attaching package: 'Momocs'</code></pre>
 </details>
 </div>
 </section><section id="true-efd-normalization" class="level2"><h2 class="anchored" data-anchor-id="true-efd-normalization">True EFD normalization</h2>
-<p>To assess whether the contours reconstructed agter true EFD normalization are oriented consistently with the original contours, the original contours were randomly rotated prior to applyin true EFD normalization.</p>
+<p>To assess whether contours reconstructed after true EFD normalization are oriented consistently with the original contours, we randomly rotate the original contours before applying true EFD normalization.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> <span class="co"># set.seed for reproducibility</span></span>
 <span><span class="va">angles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">360</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">xy_list</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># rotation angles in degrees</span></span>
@@ -1174,7 +1174,7 @@ Attaching package: 'Momocs'</code></pre>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Direction check for *Quercus serrata* and *Quercus crispula*"</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>This notebook compares the original contour and the reconstructed contour from oriented true EFD normalization and true EFD normalization for *Quercus serrata* and *Quercus crispula*.</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>This notebook compares original contours and contours reconstructed from oriented true EFD normalization and true EFD normalization for *Quercus serrata* and *Quercus crispula*.</span>
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>Output figures in this notebook are used in **Figure 2** of the manuscript.</span>
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -1205,7 +1205,7 @@ Attaching package: 'Momocs'</code></pre>
 <span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="fu">## Species name</span></span>
 <span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="in">`konara`</span> means Quercus serrata, and <span class="in">`mizunara`</span> means Quercus crispula.</span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="in">`konara`</span> (コナラ) represents the standard Japanese name of Quercus serrata, while <span class="in">`mizunara`</span> (ミズナラ) is the standard Japanese name of Quercus crispula.</span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>Both are standard Japanese common names used in the original dataset metadata.</span>
 <span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
@@ -1256,311 +1256,312 @@ Attaching package: 'Momocs'</code></pre>
 <span id="cb19-90"><a href="#cb19-90" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-91"><a href="#cb19-91" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load oriented true normalized EFD coefficients</span></span>
 <span id="cb19-92"><a href="#cb19-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-93"><a href="#cb19-93" aria-hidden="true" tabindex="-1"></a>these data are obtained by LeafContourEFD.</span>
+<span id="cb19-93"><a href="#cb19-93" aria-hidden="true" tabindex="-1"></a>True normalized EFD coefficients are obtained by <span class="co">[</span><span class="ot">LeafContourEFD</span><span class="co">](https://github.com/maple60/leaf-contour-efd)</span>.</span>
 <span id="cb19-94"><a href="#cb19-94" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-97"><a href="#cb19-97" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-98"><a href="#cb19-98" aria-hidden="true" tabindex="-1"></a>file_paths <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
-<span id="cb19-99"><a href="#cb19-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(data_dir, <span class="st">"data/coefficients_efd_normalized_quercus/"</span>),</span>
-<span id="cb19-100"><a href="#cb19-100" aria-hidden="true" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb19-101"><a href="#cb19-101" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span></span>
-<span id="cb19-102"><a href="#cb19-102" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a>ef_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(file_paths, <span class="cf">function</span>(fp) {</span>
-<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a>  <span class="co">#cat("File:", fp, "\n")</span></span>
-<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(fp)</span>
-<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
-<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a><span class="fu">## Oriented true EFD normalization</span></span>
-<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a>Compare the original contour and the reconstructed contour from **oriented true EFD normalization** for some samples.</span>
-<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a>Leftward examples: samples with indices 1, 2, 3, 4, 5, 181, 182, 183, and 184.</span>
-<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-118"><a href="#cb19-118" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-119"><a href="#cb19-119" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compare_oriented_true_EFD_normalization_leftward</span></span>
-<span id="cb19-120"><a href="#cb19-120" aria-hidden="true" tabindex="-1"></a>idx_left <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">181</span><span class="sc">:</span><span class="dv">184</span>)</span>
-<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a>labels_left <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
-<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_left), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-124"><a href="#cb19-124" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_left)) {</span>
-<span id="cb19-125"><a href="#cb19-125" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
-<span id="cb19-126"><a href="#cb19-126" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list[[idx_left[i]]],</span>
-<span id="cb19-127"><a href="#cb19-127" aria-hidden="true" tabindex="-1"></a>    <span class="at">ef_normalized =</span> ef_list[[idx_left[i]]],</span>
-<span id="cb19-128"><a href="#cb19-128" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-129"><a href="#cb19-129" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb19-130"><a href="#cb19-130" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb19-131"><a href="#cb19-131" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">5</span>,</span>
-<span id="cb19-132"><a href="#cb19-132" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_left[i]</span>
-<span id="cb19-133"><a href="#cb19-133" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-134"><a href="#cb19-134" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-135"><a href="#cb19-135" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-136"><a href="#cb19-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-137"><a href="#cb19-137" aria-hidden="true" tabindex="-1"></a>Rightward examples: samples with indices 322, 374, 375, 376, 378, 595, 596, 746, and 372.</span>
-<span id="cb19-138"><a href="#cb19-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-141"><a href="#cb19-141" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-142"><a href="#cb19-142" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compare_oriented_true_EFD_normalization_rightward</span></span>
-<span id="cb19-143"><a href="#cb19-143" aria-hidden="true" tabindex="-1"></a>idx_right <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">322</span>, <span class="dv">374</span>, <span class="dv">375</span>, <span class="dv">376</span>, <span class="dv">378</span>, <span class="dv">595</span>, <span class="dv">596</span>, <span class="dv">746</span>, <span class="dv">372</span>)</span>
-<span id="cb19-144"><a href="#cb19-144" aria-hidden="true" tabindex="-1"></a>labels_right <span class="ot">&lt;-</span> letters[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
-<span id="cb19-145"><a href="#cb19-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-146"><a href="#cb19-146" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_right), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-147"><a href="#cb19-147" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_right)) {</span>
-<span id="cb19-148"><a href="#cb19-148" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
-<span id="cb19-149"><a href="#cb19-149" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list[[idx_right[i]]],</span>
-<span id="cb19-150"><a href="#cb19-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">ef_normalized =</span> ef_list[[idx_right[i]]],</span>
-<span id="cb19-151"><a href="#cb19-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-152"><a href="#cb19-152" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb19-153"><a href="#cb19-153" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">5</span>,</span>
-<span id="cb19-154"><a href="#cb19-154" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_right[i]</span>
-<span id="cb19-155"><a href="#cb19-155" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-156"><a href="#cb19-156" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-157"><a href="#cb19-157" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-158"><a href="#cb19-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-161"><a href="#cb19-161" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-162"><a href="#cb19-162" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct_contour_oriented_true_EFD_normalization_leftward</span></span>
-<span id="cb19-163"><a href="#cb19-163" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb19-164"><a href="#cb19-164" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb19-165"><a href="#cb19-165" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb19-166"><a href="#cb19-166" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb19-167"><a href="#cb19-167" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-168"><a href="#cb19-168" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig2a_a-i_compare_contours_oriented_true_efd_normalized_quercus_leftward.svg"</span></span>
-<span id="cb19-169"><a href="#cb19-169" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(<span class="fu">file.path</span>(save_dir, save_file_name), <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
-<span id="cb19-170"><a href="#cb19-170" aria-hidden="true" tabindex="-1"></a>idx_left <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">181</span><span class="sc">:</span><span class="dv">184</span>)</span>
-<span id="cb19-171"><a href="#cb19-171" aria-hidden="true" tabindex="-1"></a>labels_left <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
-<span id="cb19-172"><a href="#cb19-172" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_left), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-173"><a href="#cb19-173" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_left)) {</span>
-<span id="cb19-174"><a href="#cb19-174" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
-<span id="cb19-175"><a href="#cb19-175" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list[[idx_left[i]]],</span>
-<span id="cb19-176"><a href="#cb19-176" aria-hidden="true" tabindex="-1"></a>    <span class="at">ef_normalized =</span> ef_list[[idx_left[i]]],</span>
-<span id="cb19-177"><a href="#cb19-177" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-178"><a href="#cb19-178" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb19-179"><a href="#cb19-179" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb19-180"><a href="#cb19-180" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">5</span>,</span>
-<span id="cb19-181"><a href="#cb19-181" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_left[i]</span>
-<span id="cb19-182"><a href="#cb19-182" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-183"><a href="#cb19-183" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-184"><a href="#cb19-184" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb19-185"><a href="#cb19-185" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-186"><a href="#cb19-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-189"><a href="#cb19-189" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-190"><a href="#cb19-190" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct_contour_oriented_true_EFD_normalization_rightward</span></span>
-<span id="cb19-191"><a href="#cb19-191" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb19-192"><a href="#cb19-192" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb19-193"><a href="#cb19-193" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb19-194"><a href="#cb19-194" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb19-195"><a href="#cb19-195" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-196"><a href="#cb19-196" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig2a_j-r_compare_contours_oriented_true_efd_normalized_quercus_rightward.svg"</span></span>
-<span id="cb19-197"><a href="#cb19-197" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(<span class="fu">file.path</span>(save_dir, save_file_name), <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
-<span id="cb19-198"><a href="#cb19-198" aria-hidden="true" tabindex="-1"></a>idx_right <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">322</span>, <span class="dv">374</span>, <span class="dv">375</span>, <span class="dv">376</span>, <span class="dv">378</span>, <span class="dv">595</span>, <span class="dv">596</span>, <span class="dv">746</span>, <span class="dv">372</span>)</span>
-<span id="cb19-199"><a href="#cb19-199" aria-hidden="true" tabindex="-1"></a>labels_right <span class="ot">&lt;-</span> letters[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
-<span id="cb19-200"><a href="#cb19-200" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_right), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-201"><a href="#cb19-201" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_right)) {</span>
-<span id="cb19-202"><a href="#cb19-202" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
-<span id="cb19-203"><a href="#cb19-203" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list[[idx_right[i]]],</span>
-<span id="cb19-204"><a href="#cb19-204" aria-hidden="true" tabindex="-1"></a>    <span class="at">ef_normalized =</span> ef_list[[idx_right[i]]],</span>
-<span id="cb19-205"><a href="#cb19-205" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-206"><a href="#cb19-206" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb19-207"><a href="#cb19-207" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">5</span>,</span>
-<span id="cb19-208"><a href="#cb19-208" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_right[i]</span>
-<span id="cb19-209"><a href="#cb19-209" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-210"><a href="#cb19-210" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-211"><a href="#cb19-211" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb19-212"><a href="#cb19-212" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-213"><a href="#cb19-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-214"><a href="#cb19-214" aria-hidden="true" tabindex="-1"></a><span class="fu">## True EFD normalization</span></span>
-<span id="cb19-215"><a href="#cb19-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-216"><a href="#cb19-216" aria-hidden="true" tabindex="-1"></a>To assess whether the contours reconstructed agter true EFD normalization are oriented consistently with the original contours, the original contours were randomly rotated prior to applyin true EFD normalization.</span>
-<span id="cb19-217"><a href="#cb19-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-220"><a href="#cb19-220" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-221"><a href="#cb19-221" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rotate_contours</span></span>
-<span id="cb19-222"><a href="#cb19-222" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) <span class="co"># set.seed for reproducibility</span></span>
-<span id="cb19-223"><a href="#cb19-223" aria-hidden="true" tabindex="-1"></a>angles <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">360</span>, <span class="fu">length</span>(xy_list), <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="co"># rotation angles in degrees</span></span>
-<span id="cb19-224"><a href="#cb19-224" aria-hidden="true" tabindex="-1"></a><span class="co"># rotate contours</span></span>
-<span id="cb19-225"><a href="#cb19-225" aria-hidden="true" tabindex="-1"></a>xy_list_rotated <span class="ot">&lt;-</span> <span class="fu">mapply</span>(</span>
-<span id="cb19-226"><a href="#cb19-226" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(mat, ang) <span class="fu">rotate_xy_centered</span>(mat, ang),</span>
-<span id="cb19-227"><a href="#cb19-227" aria-hidden="true" tabindex="-1"></a>  xy_list,</span>
-<span id="cb19-228"><a href="#cb19-228" aria-hidden="true" tabindex="-1"></a>  angles,</span>
-<span id="cb19-229"><a href="#cb19-229" aria-hidden="true" tabindex="-1"></a>  <span class="at">SIMPLIFY =</span> <span class="cn">FALSE</span></span>
-<span id="cb19-230"><a href="#cb19-230" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-231"><a href="#cb19-231" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-232"><a href="#cb19-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-233"><a href="#cb19-233" aria-hidden="true" tabindex="-1"></a>Compare the original contour and the reconstructed contour from **true EFD normalization** for samples do not match the original orientation (i.e., samples with indices 1, 2, 3, 4, 5, 181, 182, 183, and 184).</span>
-<span id="cb19-234"><a href="#cb19-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-237"><a href="#cb19-237" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-238"><a href="#cb19-238" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compare_true_EFD_normalization_leftward</span></span>
-<span id="cb19-239"><a href="#cb19-239" aria-hidden="true" tabindex="-1"></a>idx_left <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">181</span><span class="sc">:</span><span class="dv">184</span>)</span>
-<span id="cb19-240"><a href="#cb19-240" aria-hidden="true" tabindex="-1"></a>labels_left <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
-<span id="cb19-241"><a href="#cb19-241" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_left), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-242"><a href="#cb19-242" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_left)) {</span>
-<span id="cb19-243"><a href="#cb19-243" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
-<span id="cb19-244"><a href="#cb19-244" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list_rotated[[idx_left[i]]],</span>
-<span id="cb19-245"><a href="#cb19-245" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_left[i],</span>
-<span id="cb19-246"><a href="#cb19-246" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-247"><a href="#cb19-247" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb19-248"><a href="#cb19-248" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb19-249"><a href="#cb19-249" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">3</span></span>
-<span id="cb19-250"><a href="#cb19-250" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-251"><a href="#cb19-251" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-252"><a href="#cb19-252" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-253"><a href="#cb19-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-256"><a href="#cb19-256" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-257"><a href="#cb19-257" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compare_true_EFD_normalization_rightward</span></span>
-<span id="cb19-258"><a href="#cb19-258" aria-hidden="true" tabindex="-1"></a>idx_right <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">322</span>, <span class="dv">374</span>, <span class="dv">375</span>, <span class="dv">376</span>, <span class="dv">378</span>, <span class="dv">595</span>, <span class="dv">596</span>, <span class="dv">746</span>, <span class="dv">372</span>)</span>
-<span id="cb19-259"><a href="#cb19-259" aria-hidden="true" tabindex="-1"></a>labels_right <span class="ot">&lt;-</span> letters[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
-<span id="cb19-260"><a href="#cb19-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-261"><a href="#cb19-261" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_right), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-262"><a href="#cb19-262" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_right)) {</span>
-<span id="cb19-263"><a href="#cb19-263" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
-<span id="cb19-264"><a href="#cb19-264" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list_rotated[[idx_right[i]]],</span>
-<span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_right[i],</span>
-<span id="cb19-266"><a href="#cb19-266" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb19-269"><a href="#cb19-269" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">3</span></span>
-<span id="cb19-270"><a href="#cb19-270" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-271"><a href="#cb19-271" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-272"><a href="#cb19-272" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-273"><a href="#cb19-273" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-276"><a href="#cb19-276" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-277"><a href="#cb19-277" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct_contour_true_EFD_normalization_leftward</span></span>
-<span id="cb19-278"><a href="#cb19-278" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb19-279"><a href="#cb19-279" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb19-280"><a href="#cb19-280" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb19-281"><a href="#cb19-281" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb19-282"><a href="#cb19-282" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-283"><a href="#cb19-283" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig2b_a-i_compare_contours_true_efd_normalized_quercus_leftward.svg"</span></span>
-<span id="cb19-284"><a href="#cb19-284" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(<span class="fu">file.path</span>(save_dir, save_file_name), <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
-<span id="cb19-285"><a href="#cb19-285" aria-hidden="true" tabindex="-1"></a>idx_left <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">181</span><span class="sc">:</span><span class="dv">184</span>)</span>
-<span id="cb19-286"><a href="#cb19-286" aria-hidden="true" tabindex="-1"></a>labels_left <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
-<span id="cb19-287"><a href="#cb19-287" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_left), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-288"><a href="#cb19-288" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_left)) {</span>
-<span id="cb19-289"><a href="#cb19-289" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
-<span id="cb19-290"><a href="#cb19-290" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list_rotated[[idx_left[i]]],</span>
-<span id="cb19-291"><a href="#cb19-291" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_left[i],</span>
-<span id="cb19-292"><a href="#cb19-292" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-293"><a href="#cb19-293" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb19-294"><a href="#cb19-294" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb19-295"><a href="#cb19-295" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">3</span></span>
-<span id="cb19-296"><a href="#cb19-296" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-297"><a href="#cb19-297" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-298"><a href="#cb19-298" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb19-299"><a href="#cb19-299" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-300"><a href="#cb19-300" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-303"><a href="#cb19-303" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-304"><a href="#cb19-304" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct_contour_true_EFD_normalization_rightward</span></span>
-<span id="cb19-305"><a href="#cb19-305" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb19-306"><a href="#cb19-306" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb19-307"><a href="#cb19-307" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb19-308"><a href="#cb19-308" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb19-309"><a href="#cb19-309" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-310"><a href="#cb19-310" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig2c_j-r_compare_contours_true_efd_normalized_quercus_rightward.svg"</span></span>
-<span id="cb19-311"><a href="#cb19-311" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(<span class="fu">file.path</span>(save_dir, save_file_name), <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
-<span id="cb19-312"><a href="#cb19-312" aria-hidden="true" tabindex="-1"></a>idx_right <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">322</span>, <span class="dv">374</span>, <span class="dv">375</span>, <span class="dv">376</span>, <span class="dv">378</span>, <span class="dv">595</span>, <span class="dv">596</span>, <span class="dv">746</span>, <span class="dv">372</span>)</span>
-<span id="cb19-313"><a href="#cb19-313" aria-hidden="true" tabindex="-1"></a>labels_right <span class="ot">&lt;-</span> letters[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
-<span id="cb19-314"><a href="#cb19-314" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-315"><a href="#cb19-315" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_right), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-316"><a href="#cb19-316" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_right)) {</span>
-<span id="cb19-317"><a href="#cb19-317" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
-<span id="cb19-318"><a href="#cb19-318" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list_rotated[[idx_right[i]]],</span>
-<span id="cb19-319"><a href="#cb19-319" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_right[i],</span>
-<span id="cb19-320"><a href="#cb19-320" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-321"><a href="#cb19-321" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb19-322"><a href="#cb19-322" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb19-323"><a href="#cb19-323" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">3</span></span>
-<span id="cb19-324"><a href="#cb19-324" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-325"><a href="#cb19-325" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-326"><a href="#cb19-326" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb19-327"><a href="#cb19-327" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-328"><a href="#cb19-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-329"><a href="#cb19-329" aria-hidden="true" tabindex="-1"></a><span class="fu">## Supplementary figures</span></span>
-<span id="cb19-330"><a href="#cb19-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-331"><a href="#cb19-331" aria-hidden="true" tabindex="-1"></a>Visualize all the original contours and the contours reconstructed from oriented true EFD normalization for all samples, and save the plots as SVG files.</span>
-<span id="cb19-332"><a href="#cb19-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-335"><a href="#cb19-335" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-336"><a href="#cb19-336" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: comparisons_true_EFD_normalization_all</span></span>
-<span id="cb19-337"><a href="#cb19-337" aria-hidden="true" tabindex="-1"></a>list_id <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb19-338"><a href="#cb19-338" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>,</span>
-<span id="cb19-339"><a href="#cb19-339" aria-hidden="true" tabindex="-1"></a>  <span class="dv">51</span><span class="sc">:</span><span class="dv">100</span>,</span>
-<span id="cb19-340"><a href="#cb19-340" aria-hidden="true" tabindex="-1"></a>  <span class="dv">101</span><span class="sc">:</span><span class="dv">150</span>,</span>
-<span id="cb19-341"><a href="#cb19-341" aria-hidden="true" tabindex="-1"></a>  <span class="dv">151</span><span class="sc">:</span><span class="dv">200</span>,</span>
-<span id="cb19-342"><a href="#cb19-342" aria-hidden="true" tabindex="-1"></a>  <span class="dv">201</span><span class="sc">:</span><span class="dv">250</span>,</span>
-<span id="cb19-343"><a href="#cb19-343" aria-hidden="true" tabindex="-1"></a>  <span class="dv">251</span><span class="sc">:</span><span class="dv">300</span>,</span>
-<span id="cb19-344"><a href="#cb19-344" aria-hidden="true" tabindex="-1"></a>  <span class="dv">301</span><span class="sc">:</span><span class="dv">350</span>,</span>
-<span id="cb19-345"><a href="#cb19-345" aria-hidden="true" tabindex="-1"></a>  <span class="dv">351</span><span class="sc">:</span><span class="dv">400</span>,</span>
-<span id="cb19-346"><a href="#cb19-346" aria-hidden="true" tabindex="-1"></a>  <span class="dv">401</span><span class="sc">:</span><span class="dv">450</span>,</span>
-<span id="cb19-347"><a href="#cb19-347" aria-hidden="true" tabindex="-1"></a>  <span class="dv">451</span><span class="sc">:</span><span class="dv">500</span>,</span>
-<span id="cb19-348"><a href="#cb19-348" aria-hidden="true" tabindex="-1"></a>  <span class="dv">501</span><span class="sc">:</span><span class="dv">550</span>,</span>
-<span id="cb19-349"><a href="#cb19-349" aria-hidden="true" tabindex="-1"></a>  <span class="dv">551</span><span class="sc">:</span><span class="dv">600</span>,</span>
-<span id="cb19-350"><a href="#cb19-350" aria-hidden="true" tabindex="-1"></a>  <span class="dv">601</span><span class="sc">:</span><span class="dv">650</span>,</span>
-<span id="cb19-351"><a href="#cb19-351" aria-hidden="true" tabindex="-1"></a>  <span class="dv">651</span><span class="sc">:</span><span class="dv">700</span>,</span>
-<span id="cb19-352"><a href="#cb19-352" aria-hidden="true" tabindex="-1"></a>  <span class="dv">701</span><span class="sc">:</span><span class="dv">746</span></span>
-<span id="cb19-353"><a href="#cb19-353" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-354"><a href="#cb19-354" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ids <span class="cf">in</span> list_id) {</span>
-<span id="cb19-355"><a href="#cb19-355" aria-hidden="true" tabindex="-1"></a>  ids <span class="ot">&lt;-</span> <span class="fu">unlist</span>(ids)</span>
-<span id="cb19-356"><a href="#cb19-356" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>, <span class="at">nrow =</span> <span class="dv">5</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-357"><a href="#cb19-357" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (id <span class="cf">in</span> ids) {</span>
-<span id="cb19-358"><a href="#cb19-358" aria-hidden="true" tabindex="-1"></a>    <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
-<span id="cb19-359"><a href="#cb19-359" aria-hidden="true" tabindex="-1"></a>      xy_list_rotated[[id]],</span>
-<span id="cb19-360"><a href="#cb19-360" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">names</span>(xy_list_rotated[id]),</span>
-<span id="cb19-361"><a href="#cb19-361" aria-hidden="true" tabindex="-1"></a>      <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-362"><a href="#cb19-362" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb19-363"><a href="#cb19-363" aria-hidden="true" tabindex="-1"></a>      <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb19-364"><a href="#cb19-364" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex.text =</span> <span class="dv">1</span></span>
-<span id="cb19-365"><a href="#cb19-365" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb19-366"><a href="#cb19-366" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb19-367"><a href="#cb19-367" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-368"><a href="#cb19-368" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-369"><a href="#cb19-369" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-372"><a href="#cb19-372" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-373"><a href="#cb19-373" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: save_comparisons_true_EFD_normalization_all</span></span>
-<span id="cb19-374"><a href="#cb19-374" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb19-375"><a href="#cb19-375" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb19-376"><a href="#cb19-376" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb19-377"><a href="#cb19-377" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results/supplementary_compare_contours_true_efd_normalized_quercus/"</span></span>
-<span id="cb19-378"><a href="#cb19-378" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-379"><a href="#cb19-379" aria-hidden="true" tabindex="-1"></a>list_id <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb19-380"><a href="#cb19-380" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>,</span>
-<span id="cb19-381"><a href="#cb19-381" aria-hidden="true" tabindex="-1"></a>  <span class="dv">51</span><span class="sc">:</span><span class="dv">100</span>,</span>
-<span id="cb19-382"><a href="#cb19-382" aria-hidden="true" tabindex="-1"></a>  <span class="dv">101</span><span class="sc">:</span><span class="dv">150</span>,</span>
-<span id="cb19-383"><a href="#cb19-383" aria-hidden="true" tabindex="-1"></a>  <span class="dv">151</span><span class="sc">:</span><span class="dv">200</span>,</span>
-<span id="cb19-384"><a href="#cb19-384" aria-hidden="true" tabindex="-1"></a>  <span class="dv">201</span><span class="sc">:</span><span class="dv">250</span>,</span>
-<span id="cb19-385"><a href="#cb19-385" aria-hidden="true" tabindex="-1"></a>  <span class="dv">251</span><span class="sc">:</span><span class="dv">300</span>,</span>
-<span id="cb19-386"><a href="#cb19-386" aria-hidden="true" tabindex="-1"></a>  <span class="dv">301</span><span class="sc">:</span><span class="dv">350</span>,</span>
-<span id="cb19-387"><a href="#cb19-387" aria-hidden="true" tabindex="-1"></a>  <span class="dv">351</span><span class="sc">:</span><span class="dv">400</span>,</span>
-<span id="cb19-388"><a href="#cb19-388" aria-hidden="true" tabindex="-1"></a>  <span class="dv">401</span><span class="sc">:</span><span class="dv">450</span>,</span>
-<span id="cb19-389"><a href="#cb19-389" aria-hidden="true" tabindex="-1"></a>  <span class="dv">451</span><span class="sc">:</span><span class="dv">500</span>,</span>
-<span id="cb19-390"><a href="#cb19-390" aria-hidden="true" tabindex="-1"></a>  <span class="dv">501</span><span class="sc">:</span><span class="dv">550</span>,</span>
-<span id="cb19-391"><a href="#cb19-391" aria-hidden="true" tabindex="-1"></a>  <span class="dv">551</span><span class="sc">:</span><span class="dv">600</span>,</span>
-<span id="cb19-392"><a href="#cb19-392" aria-hidden="true" tabindex="-1"></a>  <span class="dv">601</span><span class="sc">:</span><span class="dv">650</span>,</span>
-<span id="cb19-393"><a href="#cb19-393" aria-hidden="true" tabindex="-1"></a>  <span class="dv">651</span><span class="sc">:</span><span class="dv">700</span>,</span>
-<span id="cb19-394"><a href="#cb19-394" aria-hidden="true" tabindex="-1"></a>  <span class="dv">701</span><span class="sc">:</span><span class="dv">746</span></span>
-<span id="cb19-395"><a href="#cb19-395" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-396"><a href="#cb19-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-397"><a href="#cb19-397" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ids <span class="cf">in</span> list_id) {</span>
-<span id="cb19-398"><a href="#cb19-398" aria-hidden="true" tabindex="-1"></a>  ids <span class="ot">&lt;-</span> <span class="fu">unlist</span>(ids)</span>
-<span id="cb19-399"><a href="#cb19-399" aria-hidden="true" tabindex="-1"></a>  save_path <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
-<span id="cb19-400"><a href="#cb19-400" aria-hidden="true" tabindex="-1"></a>    save_dir,</span>
-<span id="cb19-401"><a href="#cb19-401" aria-hidden="true" tabindex="-1"></a>    <span class="st">"/compare_contours_true_efd_normalized_quercus_"</span>,</span>
-<span id="cb19-402"><a href="#cb19-402" aria-hidden="true" tabindex="-1"></a>    <span class="fu">min</span>(ids),</span>
-<span id="cb19-403"><a href="#cb19-403" aria-hidden="true" tabindex="-1"></a>    <span class="st">"_"</span>,</span>
-<span id="cb19-404"><a href="#cb19-404" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(ids),</span>
-<span id="cb19-405"><a href="#cb19-405" aria-hidden="true" tabindex="-1"></a>    <span class="st">".svg"</span></span>
-<span id="cb19-406"><a href="#cb19-406" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-407"><a href="#cb19-407" aria-hidden="true" tabindex="-1"></a>  <span class="fu">svg</span>(save_path, <span class="at">width =</span> <span class="dv">10</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
-<span id="cb19-408"><a href="#cb19-408" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>, <span class="at">nrow =</span> <span class="dv">5</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-409"><a href="#cb19-409" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (id <span class="cf">in</span> ids) {</span>
-<span id="cb19-410"><a href="#cb19-410" aria-hidden="true" tabindex="-1"></a>    <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
-<span id="cb19-411"><a href="#cb19-411" aria-hidden="true" tabindex="-1"></a>      <span class="at">original =</span> xy_list_rotated[[id]],</span>
-<span id="cb19-412"><a href="#cb19-412" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">names</span>(xy_list_rotated[id]),</span>
-<span id="cb19-413"><a href="#cb19-413" aria-hidden="true" tabindex="-1"></a>      <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
-<span id="cb19-414"><a href="#cb19-414" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb19-415"><a href="#cb19-415" aria-hidden="true" tabindex="-1"></a>      <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb19-416"><a href="#cb19-416" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex.text =</span> <span class="dv">1</span></span>
-<span id="cb19-417"><a href="#cb19-417" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb19-418"><a href="#cb19-418" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb19-419"><a href="#cb19-419" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
-<span id="cb19-420"><a href="#cb19-420" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-421"><a href="#cb19-421" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-98"><a href="#cb19-98" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load_oriented_true_normalized_coefficients</span></span>
+<span id="cb19-99"><a href="#cb19-99" aria-hidden="true" tabindex="-1"></a>file_paths <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb19-100"><a href="#cb19-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(data_dir, <span class="st">"data/coefficients_efd_normalized_quercus/"</span>),</span>
+<span id="cb19-101"><a href="#cb19-101" aria-hidden="true" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb19-102"><a href="#cb19-102" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span></span>
+<span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a>ef_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(file_paths, <span class="cf">function</span>(fp) {</span>
+<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a>  <span class="co">#cat("File:", fp, "\n")</span></span>
+<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(fp)</span>
+<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a><span class="fu">## Oriented true EFD normalization</span></span>
+<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a>Compare the original contour and the reconstructed contour from **oriented true EFD normalization** for some samples.</span>
+<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a>Leftward examples: samples with indices 1, 2, 3, 4, 5, 181, 182, 183, and 184.</span>
+<span id="cb19-116"><a href="#cb19-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-119"><a href="#cb19-119" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-120"><a href="#cb19-120" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compare_oriented_true_EFD_normalization_leftward</span></span>
+<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a>idx_left <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">181</span><span class="sc">:</span><span class="dv">184</span>)</span>
+<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a>labels_left <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-124"><a href="#cb19-124" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_left), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-125"><a href="#cb19-125" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_left)) {</span>
+<span id="cb19-126"><a href="#cb19-126" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
+<span id="cb19-127"><a href="#cb19-127" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list[[idx_left[i]]],</span>
+<span id="cb19-128"><a href="#cb19-128" aria-hidden="true" tabindex="-1"></a>    <span class="at">ef_normalized =</span> ef_list[[idx_left[i]]],</span>
+<span id="cb19-129"><a href="#cb19-129" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-130"><a href="#cb19-130" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-131"><a href="#cb19-131" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb19-132"><a href="#cb19-132" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">5</span>,</span>
+<span id="cb19-133"><a href="#cb19-133" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_left[i]</span>
+<span id="cb19-134"><a href="#cb19-134" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-135"><a href="#cb19-135" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-136"><a href="#cb19-136" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-137"><a href="#cb19-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-138"><a href="#cb19-138" aria-hidden="true" tabindex="-1"></a>Rightward examples: samples with indices 322, 374, 375, 376, 378, 595, 596, 746, and 372.</span>
+<span id="cb19-139"><a href="#cb19-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-142"><a href="#cb19-142" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-143"><a href="#cb19-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compare_oriented_true_EFD_normalization_rightward</span></span>
+<span id="cb19-144"><a href="#cb19-144" aria-hidden="true" tabindex="-1"></a>idx_right <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">322</span>, <span class="dv">374</span>, <span class="dv">375</span>, <span class="dv">376</span>, <span class="dv">378</span>, <span class="dv">595</span>, <span class="dv">596</span>, <span class="dv">746</span>, <span class="dv">372</span>)</span>
+<span id="cb19-145"><a href="#cb19-145" aria-hidden="true" tabindex="-1"></a>labels_right <span class="ot">&lt;-</span> letters[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
+<span id="cb19-146"><a href="#cb19-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-147"><a href="#cb19-147" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_right), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-148"><a href="#cb19-148" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_right)) {</span>
+<span id="cb19-149"><a href="#cb19-149" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
+<span id="cb19-150"><a href="#cb19-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list[[idx_right[i]]],</span>
+<span id="cb19-151"><a href="#cb19-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">ef_normalized =</span> ef_list[[idx_right[i]]],</span>
+<span id="cb19-152"><a href="#cb19-152" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-153"><a href="#cb19-153" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb19-154"><a href="#cb19-154" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">5</span>,</span>
+<span id="cb19-155"><a href="#cb19-155" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_right[i]</span>
+<span id="cb19-156"><a href="#cb19-156" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-157"><a href="#cb19-157" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-158"><a href="#cb19-158" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-159"><a href="#cb19-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-162"><a href="#cb19-162" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-163"><a href="#cb19-163" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct_contour_oriented_true_EFD_normalization_leftward</span></span>
+<span id="cb19-164"><a href="#cb19-164" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb19-165"><a href="#cb19-165" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb19-166"><a href="#cb19-166" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb19-167"><a href="#cb19-167" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb19-168"><a href="#cb19-168" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-169"><a href="#cb19-169" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig2a_a-i_compare_contours_oriented_true_efd_normalized_quercus_leftward.svg"</span></span>
+<span id="cb19-170"><a href="#cb19-170" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(<span class="fu">file.path</span>(save_dir, save_file_name), <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
+<span id="cb19-171"><a href="#cb19-171" aria-hidden="true" tabindex="-1"></a>idx_left <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">181</span><span class="sc">:</span><span class="dv">184</span>)</span>
+<span id="cb19-172"><a href="#cb19-172" aria-hidden="true" tabindex="-1"></a>labels_left <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb19-173"><a href="#cb19-173" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_left), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-174"><a href="#cb19-174" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_left)) {</span>
+<span id="cb19-175"><a href="#cb19-175" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
+<span id="cb19-176"><a href="#cb19-176" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list[[idx_left[i]]],</span>
+<span id="cb19-177"><a href="#cb19-177" aria-hidden="true" tabindex="-1"></a>    <span class="at">ef_normalized =</span> ef_list[[idx_left[i]]],</span>
+<span id="cb19-178"><a href="#cb19-178" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-179"><a href="#cb19-179" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-180"><a href="#cb19-180" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb19-181"><a href="#cb19-181" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">5</span>,</span>
+<span id="cb19-182"><a href="#cb19-182" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_left[i]</span>
+<span id="cb19-183"><a href="#cb19-183" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-184"><a href="#cb19-184" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-185"><a href="#cb19-185" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb19-186"><a href="#cb19-186" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-187"><a href="#cb19-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-190"><a href="#cb19-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-191"><a href="#cb19-191" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct_contour_oriented_true_EFD_normalization_rightward</span></span>
+<span id="cb19-192"><a href="#cb19-192" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb19-193"><a href="#cb19-193" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb19-194"><a href="#cb19-194" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb19-195"><a href="#cb19-195" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb19-196"><a href="#cb19-196" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-197"><a href="#cb19-197" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig2a_j-r_compare_contours_oriented_true_efd_normalized_quercus_rightward.svg"</span></span>
+<span id="cb19-198"><a href="#cb19-198" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(<span class="fu">file.path</span>(save_dir, save_file_name), <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
+<span id="cb19-199"><a href="#cb19-199" aria-hidden="true" tabindex="-1"></a>idx_right <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">322</span>, <span class="dv">374</span>, <span class="dv">375</span>, <span class="dv">376</span>, <span class="dv">378</span>, <span class="dv">595</span>, <span class="dv">596</span>, <span class="dv">746</span>, <span class="dv">372</span>)</span>
+<span id="cb19-200"><a href="#cb19-200" aria-hidden="true" tabindex="-1"></a>labels_right <span class="ot">&lt;-</span> letters[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
+<span id="cb19-201"><a href="#cb19-201" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_right), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-202"><a href="#cb19-202" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_right)) {</span>
+<span id="cb19-203"><a href="#cb19-203" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_oriented_true_EFD_normalization</span>(</span>
+<span id="cb19-204"><a href="#cb19-204" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list[[idx_right[i]]],</span>
+<span id="cb19-205"><a href="#cb19-205" aria-hidden="true" tabindex="-1"></a>    <span class="at">ef_normalized =</span> ef_list[[idx_right[i]]],</span>
+<span id="cb19-206"><a href="#cb19-206" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-207"><a href="#cb19-207" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb19-208"><a href="#cb19-208" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">5</span>,</span>
+<span id="cb19-209"><a href="#cb19-209" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_right[i]</span>
+<span id="cb19-210"><a href="#cb19-210" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-211"><a href="#cb19-211" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-212"><a href="#cb19-212" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb19-213"><a href="#cb19-213" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-214"><a href="#cb19-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-215"><a href="#cb19-215" aria-hidden="true" tabindex="-1"></a><span class="fu">## True EFD normalization</span></span>
+<span id="cb19-216"><a href="#cb19-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-217"><a href="#cb19-217" aria-hidden="true" tabindex="-1"></a>To assess whether contours reconstructed after true EFD normalization are oriented consistently with the original contours, we randomly rotate the original contours before applying true EFD normalization.</span>
+<span id="cb19-218"><a href="#cb19-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-221"><a href="#cb19-221" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-222"><a href="#cb19-222" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rotate_contours</span></span>
+<span id="cb19-223"><a href="#cb19-223" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) <span class="co"># set.seed for reproducibility</span></span>
+<span id="cb19-224"><a href="#cb19-224" aria-hidden="true" tabindex="-1"></a>angles <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">360</span>, <span class="fu">length</span>(xy_list), <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="co"># rotation angles in degrees</span></span>
+<span id="cb19-225"><a href="#cb19-225" aria-hidden="true" tabindex="-1"></a><span class="co"># rotate contours</span></span>
+<span id="cb19-226"><a href="#cb19-226" aria-hidden="true" tabindex="-1"></a>xy_list_rotated <span class="ot">&lt;-</span> <span class="fu">mapply</span>(</span>
+<span id="cb19-227"><a href="#cb19-227" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(mat, ang) <span class="fu">rotate_xy_centered</span>(mat, ang),</span>
+<span id="cb19-228"><a href="#cb19-228" aria-hidden="true" tabindex="-1"></a>  xy_list,</span>
+<span id="cb19-229"><a href="#cb19-229" aria-hidden="true" tabindex="-1"></a>  angles,</span>
+<span id="cb19-230"><a href="#cb19-230" aria-hidden="true" tabindex="-1"></a>  <span class="at">SIMPLIFY =</span> <span class="cn">FALSE</span></span>
+<span id="cb19-231"><a href="#cb19-231" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-232"><a href="#cb19-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-233"><a href="#cb19-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-234"><a href="#cb19-234" aria-hidden="true" tabindex="-1"></a>Compare the original contour and the reconstructed contour from **true EFD normalization** for samples do not match the original orientation (i.e., samples with indices 1, 2, 3, 4, 5, 181, 182, 183, and 184).</span>
+<span id="cb19-235"><a href="#cb19-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-238"><a href="#cb19-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-239"><a href="#cb19-239" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compare_true_EFD_normalization_leftward</span></span>
+<span id="cb19-240"><a href="#cb19-240" aria-hidden="true" tabindex="-1"></a>idx_left <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">181</span><span class="sc">:</span><span class="dv">184</span>)</span>
+<span id="cb19-241"><a href="#cb19-241" aria-hidden="true" tabindex="-1"></a>labels_left <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb19-242"><a href="#cb19-242" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_left), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-243"><a href="#cb19-243" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_left)) {</span>
+<span id="cb19-244"><a href="#cb19-244" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
+<span id="cb19-245"><a href="#cb19-245" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list_rotated[[idx_left[i]]],</span>
+<span id="cb19-246"><a href="#cb19-246" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_left[i],</span>
+<span id="cb19-247"><a href="#cb19-247" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-248"><a href="#cb19-248" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-249"><a href="#cb19-249" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb19-250"><a href="#cb19-250" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">3</span></span>
+<span id="cb19-251"><a href="#cb19-251" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-252"><a href="#cb19-252" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-253"><a href="#cb19-253" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-254"><a href="#cb19-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-257"><a href="#cb19-257" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-258"><a href="#cb19-258" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compare_true_EFD_normalization_rightward</span></span>
+<span id="cb19-259"><a href="#cb19-259" aria-hidden="true" tabindex="-1"></a>idx_right <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">322</span>, <span class="dv">374</span>, <span class="dv">375</span>, <span class="dv">376</span>, <span class="dv">378</span>, <span class="dv">595</span>, <span class="dv">596</span>, <span class="dv">746</span>, <span class="dv">372</span>)</span>
+<span id="cb19-260"><a href="#cb19-260" aria-hidden="true" tabindex="-1"></a>labels_right <span class="ot">&lt;-</span> letters[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
+<span id="cb19-261"><a href="#cb19-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-262"><a href="#cb19-262" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_right), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-263"><a href="#cb19-263" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_right)) {</span>
+<span id="cb19-264"><a href="#cb19-264" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
+<span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list_rotated[[idx_right[i]]],</span>
+<span id="cb19-266"><a href="#cb19-266" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_right[i],</span>
+<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-269"><a href="#cb19-269" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb19-270"><a href="#cb19-270" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">3</span></span>
+<span id="cb19-271"><a href="#cb19-271" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-272"><a href="#cb19-272" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-273"><a href="#cb19-273" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-274"><a href="#cb19-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-277"><a href="#cb19-277" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-278"><a href="#cb19-278" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct_contour_true_EFD_normalization_leftward</span></span>
+<span id="cb19-279"><a href="#cb19-279" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb19-280"><a href="#cb19-280" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb19-281"><a href="#cb19-281" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb19-282"><a href="#cb19-282" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb19-283"><a href="#cb19-283" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-284"><a href="#cb19-284" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig2b_a-i_compare_contours_true_efd_normalized_quercus_leftward.svg"</span></span>
+<span id="cb19-285"><a href="#cb19-285" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(<span class="fu">file.path</span>(save_dir, save_file_name), <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
+<span id="cb19-286"><a href="#cb19-286" aria-hidden="true" tabindex="-1"></a>idx_left <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">181</span><span class="sc">:</span><span class="dv">184</span>)</span>
+<span id="cb19-287"><a href="#cb19-287" aria-hidden="true" tabindex="-1"></a>labels_left <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb19-288"><a href="#cb19-288" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_left), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-289"><a href="#cb19-289" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_left)) {</span>
+<span id="cb19-290"><a href="#cb19-290" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
+<span id="cb19-291"><a href="#cb19-291" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list_rotated[[idx_left[i]]],</span>
+<span id="cb19-292"><a href="#cb19-292" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_left[i],</span>
+<span id="cb19-293"><a href="#cb19-293" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-294"><a href="#cb19-294" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-295"><a href="#cb19-295" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb19-296"><a href="#cb19-296" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">3</span></span>
+<span id="cb19-297"><a href="#cb19-297" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-298"><a href="#cb19-298" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-299"><a href="#cb19-299" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb19-300"><a href="#cb19-300" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-301"><a href="#cb19-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-304"><a href="#cb19-304" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-305"><a href="#cb19-305" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct_contour_true_EFD_normalization_rightward</span></span>
+<span id="cb19-306"><a href="#cb19-306" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb19-307"><a href="#cb19-307" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb19-308"><a href="#cb19-308" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb19-309"><a href="#cb19-309" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb19-310"><a href="#cb19-310" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-311"><a href="#cb19-311" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig2c_j-r_compare_contours_true_efd_normalized_quercus_rightward.svg"</span></span>
+<span id="cb19-312"><a href="#cb19-312" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(<span class="fu">file.path</span>(save_dir, save_file_name), <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
+<span id="cb19-313"><a href="#cb19-313" aria-hidden="true" tabindex="-1"></a>idx_right <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">322</span>, <span class="dv">374</span>, <span class="dv">375</span>, <span class="dv">376</span>, <span class="dv">378</span>, <span class="dv">595</span>, <span class="dv">596</span>, <span class="dv">746</span>, <span class="dv">372</span>)</span>
+<span id="cb19-314"><a href="#cb19-314" aria-hidden="true" tabindex="-1"></a>labels_right <span class="ot">&lt;-</span> letters[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
+<span id="cb19-315"><a href="#cb19-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-316"><a href="#cb19-316" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">seq_along</span>(idx_right), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-317"><a href="#cb19-317" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(idx_right)) {</span>
+<span id="cb19-318"><a href="#cb19-318" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
+<span id="cb19-319"><a href="#cb19-319" aria-hidden="true" tabindex="-1"></a>    <span class="at">original =</span> xy_list_rotated[[idx_right[i]]],</span>
+<span id="cb19-320"><a href="#cb19-320" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> labels_right[i],</span>
+<span id="cb19-321"><a href="#cb19-321" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-322"><a href="#cb19-322" aria-hidden="true" tabindex="-1"></a>    <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-323"><a href="#cb19-323" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb19-324"><a href="#cb19-324" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex.text =</span> <span class="dv">3</span></span>
+<span id="cb19-325"><a href="#cb19-325" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-326"><a href="#cb19-326" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-327"><a href="#cb19-327" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb19-328"><a href="#cb19-328" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-329"><a href="#cb19-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-330"><a href="#cb19-330" aria-hidden="true" tabindex="-1"></a><span class="fu">## Supplementary figures</span></span>
+<span id="cb19-331"><a href="#cb19-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-332"><a href="#cb19-332" aria-hidden="true" tabindex="-1"></a>Visualize all the original contours and the contours reconstructed from oriented true EFD normalization for all samples, and save the plots as SVG files.</span>
+<span id="cb19-333"><a href="#cb19-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-336"><a href="#cb19-336" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-337"><a href="#cb19-337" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: comparisons_true_EFD_normalization_all</span></span>
+<span id="cb19-338"><a href="#cb19-338" aria-hidden="true" tabindex="-1"></a>list_id <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb19-339"><a href="#cb19-339" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>,</span>
+<span id="cb19-340"><a href="#cb19-340" aria-hidden="true" tabindex="-1"></a>  <span class="dv">51</span><span class="sc">:</span><span class="dv">100</span>,</span>
+<span id="cb19-341"><a href="#cb19-341" aria-hidden="true" tabindex="-1"></a>  <span class="dv">101</span><span class="sc">:</span><span class="dv">150</span>,</span>
+<span id="cb19-342"><a href="#cb19-342" aria-hidden="true" tabindex="-1"></a>  <span class="dv">151</span><span class="sc">:</span><span class="dv">200</span>,</span>
+<span id="cb19-343"><a href="#cb19-343" aria-hidden="true" tabindex="-1"></a>  <span class="dv">201</span><span class="sc">:</span><span class="dv">250</span>,</span>
+<span id="cb19-344"><a href="#cb19-344" aria-hidden="true" tabindex="-1"></a>  <span class="dv">251</span><span class="sc">:</span><span class="dv">300</span>,</span>
+<span id="cb19-345"><a href="#cb19-345" aria-hidden="true" tabindex="-1"></a>  <span class="dv">301</span><span class="sc">:</span><span class="dv">350</span>,</span>
+<span id="cb19-346"><a href="#cb19-346" aria-hidden="true" tabindex="-1"></a>  <span class="dv">351</span><span class="sc">:</span><span class="dv">400</span>,</span>
+<span id="cb19-347"><a href="#cb19-347" aria-hidden="true" tabindex="-1"></a>  <span class="dv">401</span><span class="sc">:</span><span class="dv">450</span>,</span>
+<span id="cb19-348"><a href="#cb19-348" aria-hidden="true" tabindex="-1"></a>  <span class="dv">451</span><span class="sc">:</span><span class="dv">500</span>,</span>
+<span id="cb19-349"><a href="#cb19-349" aria-hidden="true" tabindex="-1"></a>  <span class="dv">501</span><span class="sc">:</span><span class="dv">550</span>,</span>
+<span id="cb19-350"><a href="#cb19-350" aria-hidden="true" tabindex="-1"></a>  <span class="dv">551</span><span class="sc">:</span><span class="dv">600</span>,</span>
+<span id="cb19-351"><a href="#cb19-351" aria-hidden="true" tabindex="-1"></a>  <span class="dv">601</span><span class="sc">:</span><span class="dv">650</span>,</span>
+<span id="cb19-352"><a href="#cb19-352" aria-hidden="true" tabindex="-1"></a>  <span class="dv">651</span><span class="sc">:</span><span class="dv">700</span>,</span>
+<span id="cb19-353"><a href="#cb19-353" aria-hidden="true" tabindex="-1"></a>  <span class="dv">701</span><span class="sc">:</span><span class="dv">746</span></span>
+<span id="cb19-354"><a href="#cb19-354" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-355"><a href="#cb19-355" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ids <span class="cf">in</span> list_id) {</span>
+<span id="cb19-356"><a href="#cb19-356" aria-hidden="true" tabindex="-1"></a>  ids <span class="ot">&lt;-</span> <span class="fu">unlist</span>(ids)</span>
+<span id="cb19-357"><a href="#cb19-357" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>, <span class="at">nrow =</span> <span class="dv">5</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-358"><a href="#cb19-358" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (id <span class="cf">in</span> ids) {</span>
+<span id="cb19-359"><a href="#cb19-359" aria-hidden="true" tabindex="-1"></a>    <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
+<span id="cb19-360"><a href="#cb19-360" aria-hidden="true" tabindex="-1"></a>      xy_list_rotated[[id]],</span>
+<span id="cb19-361"><a href="#cb19-361" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">names</span>(xy_list_rotated[id]),</span>
+<span id="cb19-362"><a href="#cb19-362" aria-hidden="true" tabindex="-1"></a>      <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-363"><a href="#cb19-363" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb19-364"><a href="#cb19-364" aria-hidden="true" tabindex="-1"></a>      <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-365"><a href="#cb19-365" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex.text =</span> <span class="dv">1</span></span>
+<span id="cb19-366"><a href="#cb19-366" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-367"><a href="#cb19-367" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-368"><a href="#cb19-368" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-369"><a href="#cb19-369" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-370"><a href="#cb19-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-373"><a href="#cb19-373" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-374"><a href="#cb19-374" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: save_comparisons_true_EFD_normalization_all</span></span>
+<span id="cb19-375"><a href="#cb19-375" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb19-376"><a href="#cb19-376" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb19-377"><a href="#cb19-377" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb19-378"><a href="#cb19-378" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results/supplementary_compare_contours_true_efd_normalized_quercus/"</span></span>
+<span id="cb19-379"><a href="#cb19-379" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-380"><a href="#cb19-380" aria-hidden="true" tabindex="-1"></a>list_id <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb19-381"><a href="#cb19-381" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>,</span>
+<span id="cb19-382"><a href="#cb19-382" aria-hidden="true" tabindex="-1"></a>  <span class="dv">51</span><span class="sc">:</span><span class="dv">100</span>,</span>
+<span id="cb19-383"><a href="#cb19-383" aria-hidden="true" tabindex="-1"></a>  <span class="dv">101</span><span class="sc">:</span><span class="dv">150</span>,</span>
+<span id="cb19-384"><a href="#cb19-384" aria-hidden="true" tabindex="-1"></a>  <span class="dv">151</span><span class="sc">:</span><span class="dv">200</span>,</span>
+<span id="cb19-385"><a href="#cb19-385" aria-hidden="true" tabindex="-1"></a>  <span class="dv">201</span><span class="sc">:</span><span class="dv">250</span>,</span>
+<span id="cb19-386"><a href="#cb19-386" aria-hidden="true" tabindex="-1"></a>  <span class="dv">251</span><span class="sc">:</span><span class="dv">300</span>,</span>
+<span id="cb19-387"><a href="#cb19-387" aria-hidden="true" tabindex="-1"></a>  <span class="dv">301</span><span class="sc">:</span><span class="dv">350</span>,</span>
+<span id="cb19-388"><a href="#cb19-388" aria-hidden="true" tabindex="-1"></a>  <span class="dv">351</span><span class="sc">:</span><span class="dv">400</span>,</span>
+<span id="cb19-389"><a href="#cb19-389" aria-hidden="true" tabindex="-1"></a>  <span class="dv">401</span><span class="sc">:</span><span class="dv">450</span>,</span>
+<span id="cb19-390"><a href="#cb19-390" aria-hidden="true" tabindex="-1"></a>  <span class="dv">451</span><span class="sc">:</span><span class="dv">500</span>,</span>
+<span id="cb19-391"><a href="#cb19-391" aria-hidden="true" tabindex="-1"></a>  <span class="dv">501</span><span class="sc">:</span><span class="dv">550</span>,</span>
+<span id="cb19-392"><a href="#cb19-392" aria-hidden="true" tabindex="-1"></a>  <span class="dv">551</span><span class="sc">:</span><span class="dv">600</span>,</span>
+<span id="cb19-393"><a href="#cb19-393" aria-hidden="true" tabindex="-1"></a>  <span class="dv">601</span><span class="sc">:</span><span class="dv">650</span>,</span>
+<span id="cb19-394"><a href="#cb19-394" aria-hidden="true" tabindex="-1"></a>  <span class="dv">651</span><span class="sc">:</span><span class="dv">700</span>,</span>
+<span id="cb19-395"><a href="#cb19-395" aria-hidden="true" tabindex="-1"></a>  <span class="dv">701</span><span class="sc">:</span><span class="dv">746</span></span>
+<span id="cb19-396"><a href="#cb19-396" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-397"><a href="#cb19-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-398"><a href="#cb19-398" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ids <span class="cf">in</span> list_id) {</span>
+<span id="cb19-399"><a href="#cb19-399" aria-hidden="true" tabindex="-1"></a>  ids <span class="ot">&lt;-</span> <span class="fu">unlist</span>(ids)</span>
+<span id="cb19-400"><a href="#cb19-400" aria-hidden="true" tabindex="-1"></a>  save_path <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb19-401"><a href="#cb19-401" aria-hidden="true" tabindex="-1"></a>    save_dir,</span>
+<span id="cb19-402"><a href="#cb19-402" aria-hidden="true" tabindex="-1"></a>    <span class="st">"/compare_contours_true_efd_normalized_quercus_"</span>,</span>
+<span id="cb19-403"><a href="#cb19-403" aria-hidden="true" tabindex="-1"></a>    <span class="fu">min</span>(ids),</span>
+<span id="cb19-404"><a href="#cb19-404" aria-hidden="true" tabindex="-1"></a>    <span class="st">"_"</span>,</span>
+<span id="cb19-405"><a href="#cb19-405" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(ids),</span>
+<span id="cb19-406"><a href="#cb19-406" aria-hidden="true" tabindex="-1"></a>    <span class="st">".svg"</span></span>
+<span id="cb19-407"><a href="#cb19-407" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-408"><a href="#cb19-408" aria-hidden="true" tabindex="-1"></a>  <span class="fu">svg</span>(save_path, <span class="at">width =</span> <span class="dv">10</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
+<span id="cb19-409"><a href="#cb19-409" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>, <span class="at">nrow =</span> <span class="dv">5</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-410"><a href="#cb19-410" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (id <span class="cf">in</span> ids) {</span>
+<span id="cb19-411"><a href="#cb19-411" aria-hidden="true" tabindex="-1"></a>    <span class="fu">compare_contour_true_EFD_normalization</span>(</span>
+<span id="cb19-412"><a href="#cb19-412" aria-hidden="true" tabindex="-1"></a>      <span class="at">original =</span> xy_list_rotated[[id]],</span>
+<span id="cb19-413"><a href="#cb19-413" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">names</span>(xy_list_rotated[id]),</span>
+<span id="cb19-414"><a href="#cb19-414" aria-hidden="true" tabindex="-1"></a>      <span class="at">nb.h =</span> <span class="dv">35</span>,</span>
+<span id="cb19-415"><a href="#cb19-415" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb19-416"><a href="#cb19-416" aria-hidden="true" tabindex="-1"></a>      <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-417"><a href="#cb19-417" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex.text =</span> <span class="dv">1</span></span>
+<span id="cb19-418"><a href="#cb19-418" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-419"><a href="#cb19-419" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-420"><a href="#cb19-420" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
+<span id="cb19-421"><a href="#cb19-421" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-422"><a href="#cb19-422" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

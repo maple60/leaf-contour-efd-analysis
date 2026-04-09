@@ -245,7 +245,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Purposes of this notebook are: 1. To check the original contour data of <em>Triadica sebifera</em>. 2. To check the reconstructed contour from Oriented True EFD normalization for all samples.</p>
+</header><p>The goals of this notebook are:<br>
+1. To check the original contour data of <em>Triadica sebifera</em>.<br>
+2. To check contours reconstructed from oriented true EFD normalization for all samples.</p>
 <p>Output figures of this notebook are not included in the manuscript, but they are saved in the <code>results/</code> directory.</p>
 <section id="setup" class="level2"><h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <div class="cell">
@@ -296,7 +298,7 @@ Attaching package: 'Momocs'</code></pre>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">xy_list</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">id_name</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="load-oriented-true-normalized-efd-coefficients" class="level2"><h2 class="anchored" data-anchor-id="load-oriented-true-normalized-efd-coefficients">Load oriented true normalized EFD coefficients</h2>
-<p>Load the oriented true normalized EFD coefficients from the CSV files in the <code>data/coefficients_efd_normalized_triadica_sebifera/</code> directory. These data are obtained(calculated) from LeafContourEFD.</p>
+<p>Load the oriented true normalized EFD coefficients from the CSV files in the <code>data/coefficients_efd_normalized_triadica_sebifera/</code> directory. These data are generated with LeafContourEFD.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># file paths of EFD coefficient CSV files</span></span>
 <span><span class="va">file_paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span></span>
@@ -823,9 +825,9 @@ Attaching package: 'Momocs'</code></pre>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Contour check for *Triadica sebifera*"</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>Purposes of this notebook are:</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>To check the original contour data of *Triadica sebifera*.</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To check the reconstructed contour from Oriented True EFD normalization for all samples.</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>The goals of this notebook are:  </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>To check the original contour data of *Triadica sebifera*.  </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To check contours reconstructed from oriented true EFD normalization for all samples.  </span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>Output figures of this notebook are not included in the manuscript, but they are saved in the <span class="in">`results/`</span> directory.</span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
@@ -879,7 +881,7 @@ Attaching package: 'Momocs'</code></pre>
 <span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load oriented true normalized EFD coefficients</span></span>
 <span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>Load the oriented true normalized EFD coefficients from the CSV files in the <span class="in">`data/coefficients_efd_normalized_triadica_sebifera/`</span> directory.</span>
-<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>These data are obtained(calculated) from LeafContourEFD.</span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>These data are generated with LeafContourEFD.</span>
 <span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load_coefficients</span></span>

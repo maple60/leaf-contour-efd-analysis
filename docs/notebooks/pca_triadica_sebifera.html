@@ -55,7 +55,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
@@ -227,6 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#pca-using-conventional-normalization" id="toc-pca-using-conventional-normalization" class="nav-link" data-scroll-target="#pca-using-conventional-normalization">PCA using conventional normalization</a></li>
   <li><a href="#true-efd-normalization" id="toc-true-efd-normalization" class="nav-link" data-scroll-target="#true-efd-normalization">True EFD normalization</a></li>
   <li><a href="#pca-using-oriented-true-efd-normalization" id="toc-pca-using-oriented-true-efd-normalization" class="nav-link" data-scroll-target="#pca-using-oriented-true-efd-normalization">PCA using oriented true EFD normalization</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></nav>
     </div>
 <!-- main -->
@@ -245,9 +265,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Purposes of this notebook are:<br>
+</header><p>The goals of this notebook are:<br>
 1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.<br>
-2. To compare the PCA results among these three methods.</p>
+2. To compare PCA results across these three methods.</p>
 <section id="setup-preprocessing" class="level2"><h2 class="anchored" data-anchor-id="setup-preprocessing">Setup &amp; preprocessing</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tools</span><span class="op">)</span></span>
@@ -269,7 +289,7 @@ Attaching package: 'Momocs'</code></pre>
 <span><span class="co"># set the data directory from environment variable (.Renviron)</span></span>
 <span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">"PROJECT_DATA_DIR"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Load contours</p>
+<p>Load contours from the CSV files in the <code>data/contour_triadica_sebifera/</code> directory.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">file_paths_xy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"data/contour_triadica_sebifera/"</span><span class="op">)</span>,</span>
@@ -290,7 +310,8 @@ Attaching package: 'Momocs'</code></pre>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="pca-using-conventional-normalization" class="level2"><h2 class="anchored" data-anchor-id="pca-using-conventional-normalization">PCA using conventional normalization</h2>
-<p>PCA using normalized EFD coefficients (conventional method) Momocs側で正規化を行います。</p>
+<p>PCA using normalized EFD coefficients (conventional method <span class="citation" data-cites="kuhl1982">(<a href="../index.html#ref-kuhl1982" role="doc-biblioref">Kuhl and Giardina 1982</a>)</span>).<br>
+Normalization is performed using <a href="https://momx.github.io/Momocs/">Momocs</a> <span class="citation" data-cites="bonhomme2014">(<a href="../index.html#ref-bonhomme2014" role="doc-biblioref">Bonhomme et al. 2014</a>)</span>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nb_h</span> <span class="op">&lt;-</span> <span class="fl">5</span> <span class="co"># Number of harmonics</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://momx.github.io/Momocs/reference/Out.html">Out</a></span><span class="op">(</span><span class="va">xy_list</span><span class="op">)</span> <span class="co"># convert to Momocs Out object</span></span>
@@ -318,6 +339,8 @@ Attaching package: 'Momocs'</code></pre>
 </details>
 </div>
 </section><section id="true-efd-normalization" class="level2"><h2 class="anchored" data-anchor-id="true-efd-normalization">True EFD normalization</h2>
+<p>PCA using coefficients obtained by true EFD normalization.<br>
+Normalization is performed using the <code>efourier_true_norm()</code> function implemented in this project (see <a href="https://github.com/maple60/leaf-contour-efd-analysis/blob/main/R/normalization.R"><code>R/normalization.R</code></a> for details).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nb_h</span> <span class="op">&lt;-</span> <span class="fl">5</span> <span class="co"># Number of harmonics</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://momx.github.io/Momocs/reference/Out.html">Out</a></span><span class="op">(</span><span class="va">xy_list</span><span class="op">)</span> <span class="co"># convert to Momocs Out object</span></span>
@@ -352,9 +375,9 @@ Attaching package: 'Momocs'</code></pre>
 </details>
 </div>
 </section><section id="pca-using-oriented-true-efd-normalization" class="level2"><h2 class="anchored" data-anchor-id="pca-using-oriented-true-efd-normalization">PCA using oriented true EFD normalization</h2>
-<p>(後で英語に直す) LeafContourEFDで得られた輪郭はすでに開始点、回転が標準化されています。 この輪郭にtrue EFD noramlizationのx対照補正のみを行うことで、oriente true EFD normalizationを実現します。</p>
-<p>LeafContourEFDで得られたフーリエ係数を使用しても同じ結果が得られますが、今回はMomocsの関数を利用して、PC値の変化に応じた再構築輪郭の変化を簡単にPCAプロット上に可視化できるようにします。</p>
-<p>将来的にはMomocsに依存しない方法も提供する予定です。</p>
+<p>Contours obtained from <a href="https://github.com/maple60/leaf-contour-efd">LeafContourEFD</a> already have standardized starting points and rotation. Therefore, we apply only the x-axis symmetry correction step from <strong>true EFD normalization</strong> to implement oriented <strong>true EFD normalization</strong>.</p>
+<p>Although the same results can be obtained from the Fourier coefficients exported by <a href="https://github.com/maple60/leaf-contour-efd">LeafContourEFD</a>, we use <a href="https://momx.github.io/Momocs/">Momocs</a> here so we can easily visualize reconstructed contour changes associated with principal component score shifts.</p>
+<p>In a future update, we plan to provide a workflow that does not depend on <a href="https://momx.github.io/Momocs/">Momocs</a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nb_h</span> <span class="op">&lt;-</span> <span class="fl">5</span> <span class="co"># Number of harmonics</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://momx.github.io/Momocs/reference/Out.html">Out</a></span><span class="op">(</span><span class="va">xy_list</span><span class="op">)</span> <span class="co"># convert to Momocs Out object</span></span>
@@ -365,40 +388,8 @@ Attaching package: 'Momocs'</code></pre>
 <span>  x_sy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  y_sy <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  skip_rotation <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE
-skip_rotation is TRUE</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pca_true_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://momx.github.io/Momocs/reference/PCA.html">PCA</a></span><span class="op">(</span><span class="va">ef_true_norm</span>, center <span class="op">=</span> <span class="cn">TRUE</span>, scale. <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="co"># PCA with Momocs</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pca_true_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://momx.github.io/Momocs/reference/PCA.html">PCA</a></span><span class="op">(</span><span class="va">ef_true_norm</span>, center <span class="op">=</span> <span class="cn">TRUE</span>, scale. <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="co"># PCA with Momocs</span></span>
 <span><span class="fu">pca_plot</span><span class="op">(</span><span class="va">pca_true_norm</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
@@ -408,7 +399,7 @@ skip_rotation is TRUE</code></pre>
 </div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Save the plot as SVG file</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="st">"results"</span></span>
+<details class="code-fold"><summary>Save the plot as SVG file</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="st">"results"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="va">save_dir</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">save_file_name</span> <span class="op">&lt;-</span> <span class="st">"fig4f_pca_oriented_true_efd_normalized.svg"</span></span>
 <span><span class="va">save_file_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">save_dir</span>, <span class="va">save_file_name</span><span class="op">)</span></span>
@@ -419,6 +410,15 @@ skip_rotation is TRUE</code></pre>
 <span><span class="fu">pca_plot</span><span class="op">(</span><span class="va">pca_true_norm</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+</div>
+</section><section id="references" class="level2"><h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-bonhomme2014" class="csl-entry" role="listitem">
+Bonhomme, Vincent, Sandrine Picq, Cédric Gaucherel, and Julien Claude. 2014. <span>“<span><strong>Momocs</strong></span> : Outline Analysis Using <span><em>R</em></span>.”</span> <em>Journal of Statistical Software</em> 56 (13). <a href="https://doi.org/10.18637/jss.v056.i13">https://doi.org/10.18637/jss.v056.i13</a>.
+</div>
+<div id="ref-kuhl1982" class="csl-entry" role="listitem">
+Kuhl, Frank P, and Charles R Giardina. 1982. <span>“Elliptic Fourier Features of a Closed Contour.”</span> <em>Computer Graphics and Image Processing</em> 18 (3): 236–58. <a href="https://doi.org/10.1016/0146-664X(82)90034-X">https://doi.org/10.1016/0146-664X(82)90034-X</a>.
+</div>
 </div>
 
 
@@ -885,160 +885,170 @@ skip_rotation is TRUE</code></pre>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "PCA of *Triadica sebifera* leaf contours"</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>Purposes of this notebook are:  </span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.  </span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To compare the PCA results among these three methods.</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Setup &amp; preprocessing</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tools)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Momocs)</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/geometry.R"</span>)</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/normalization.R"</span>)</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/pca_plot.R"</span>)</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co"># color palette for colorblind-friendly visualization</span></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="fu">palette</span>(<span class="st">"Okabe-Ito"</span>)</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co"># set the data directory from environment variable (.Renviron)</span></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"PROJECT_DATA_DIR"</span>)</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>Load contours</span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load_contours</span></span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>file_paths_xy <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(data_dir, <span class="st">"data/contour_triadica_sebifera/"</span>),</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span></span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>xy_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(file_paths_xy, <span class="cf">function</span>(fp) {</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>  <span class="co">#cat("File:", fp, "\n")</span></span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(fp)</span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)]</span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df)</span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage.mode</span>(df) <span class="ot">&lt;-</span> <span class="st">"double"</span></span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure the contour is closed by checking if the first and last points are the same. If not, append the first point to the end of the matrix.</span></span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(df[<span class="dv">1</span>, ] <span class="sc">==</span> df[<span class="fu">nrow</span>(df), ])) {</span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, df[<span class="dv">1</span>, ])</span>
-<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
-<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using conventional normalization</span></span>
-<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>PCA using normalized EFD coefficients (conventional method)</span>
-<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>Momocs側で正規化を行います。</span>
-<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_efd_normalized</span></span>
-<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># Number of harmonics</span></span>
-<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(xy_list) <span class="co"># convert to Momocs Out object</span></span>
-<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>ef_norm <span class="ot">&lt;-</span> <span class="fu">efourier</span>(out, <span class="at">nb.h =</span> nb_h, <span class="at">norm =</span> <span class="cn">TRUE</span>, <span class="at">start =</span> <span class="cn">FALSE</span>) <span class="co"># EFD with normalization</span></span>
-<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a>pca_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>) <span class="co"># PCA with Momocs</span></span>
-<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_norm)</span>
-<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_efd_normalized_save</span></span>
-<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4d_pca_efd_normalized.svg"</span></span>
-<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
-<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
-<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
-<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
-<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_norm)</span>
-<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a><span class="fu">## True EFD normalization</span></span>
-<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_true_efd_normalized</span></span>
-<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># Number of harmonics</span></span>
-<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(xy_list) <span class="co"># convert to Momocs Out object</span></span>
-<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a><span class="co"># oriented true EFD normalization</span></span>
-<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a>ef_true_norm <span class="ot">&lt;-</span> <span class="fu">efourier_true_norm</span>(</span>
-<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a>  out,</span>
-<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> nb_h,</span>
-<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">FALSE</span></span>
-<span id="cb14-101"><a href="#cb14-101" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_true_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>) <span class="co"># PCA with Momocs</span></span>
-<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
-<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_true_efd_normalized_save</span></span>
-<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4e_pca_true_efd_normalized.svg"</span></span>
-<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
-<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
-<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
-<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
-<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
-<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using oriented true EFD normalization</span></span>
-<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a>(後で英語に直す)</span>
-<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a>LeafContourEFDで得られた輪郭はすでに開始点、回転が標準化されています。</span>
-<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a>この輪郭にtrue EFD noramlizationのx対照補正のみを行うことで、oriente true EFD normalizationを実現します。</span>
-<span id="cb14-130"><a href="#cb14-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-131"><a href="#cb14-131" aria-hidden="true" tabindex="-1"></a>LeafContourEFDで得られたフーリエ係数を使用しても同じ結果が得られますが、今回はMomocsの関数を利用して、PC値の変化に応じた再構築輪郭の変化を簡単にPCAプロット上に可視化できるようにします。</span>
-<span id="cb14-132"><a href="#cb14-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-133"><a href="#cb14-133" aria-hidden="true" tabindex="-1"></a>将来的にはMomocsに依存しない方法も提供する予定です。</span>
-<span id="cb14-134"><a href="#cb14-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-137"><a href="#cb14-137" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-138"><a href="#cb14-138" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized</span></span>
-<span id="cb14-139"><a href="#cb14-139" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># Number of harmonics</span></span>
-<span id="cb14-140"><a href="#cb14-140" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(xy_list) <span class="co"># convert to Momocs Out object</span></span>
-<span id="cb14-141"><a href="#cb14-141" aria-hidden="true" tabindex="-1"></a><span class="co"># oriented true EFD normalization</span></span>
-<span id="cb14-142"><a href="#cb14-142" aria-hidden="true" tabindex="-1"></a>ef_true_norm <span class="ot">&lt;-</span> <span class="fu">efourier_true_norm</span>(</span>
-<span id="cb14-143"><a href="#cb14-143" aria-hidden="true" tabindex="-1"></a>  out,</span>
-<span id="cb14-144"><a href="#cb14-144" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> nb_h,</span>
-<span id="cb14-145"><a href="#cb14-145" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb14-146"><a href="#cb14-146" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb14-147"><a href="#cb14-147" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">TRUE</span></span>
-<span id="cb14-148"><a href="#cb14-148" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-149"><a href="#cb14-149" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_true_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>) <span class="co"># PCA with Momocs</span></span>
-<span id="cb14-150"><a href="#cb14-150" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
-<span id="cb14-151"><a href="#cb14-151" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-152"><a href="#cb14-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-155"><a href="#cb14-155" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-156"><a href="#cb14-156" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized_save</span></span>
-<span id="cb14-157"><a href="#cb14-157" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb14-158"><a href="#cb14-158" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb14-159"><a href="#cb14-159" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
-<span id="cb14-160"><a href="#cb14-160" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
-<span id="cb14-161"><a href="#cb14-161" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb14-162"><a href="#cb14-162" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4f_pca_oriented_true_efd_normalized.svg"</span></span>
-<span id="cb14-163"><a href="#cb14-163" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
-<span id="cb14-164"><a href="#cb14-164" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
-<span id="cb14-165"><a href="#cb14-165" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
-<span id="cb14-166"><a href="#cb14-166" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
-<span id="cb14-167"><a href="#cb14-167" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-168"><a href="#cb14-168" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
-<span id="cb14-169"><a href="#cb14-169" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb14-170"><a href="#cb14-170" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "PCA of *Triadica sebifera* leaf contours"</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>The goals of this notebook are:  </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.  </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To compare PCA results across these three methods.</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Setup &amp; preprocessing</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tools)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Momocs)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/geometry.R"</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/normalization.R"</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/pca_plot.R"</span>)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co"># color palette for colorblind-friendly visualization</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="fu">palette</span>(<span class="st">"Okabe-Ito"</span>)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co"># set the data directory from environment variable (.Renviron)</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"PROJECT_DATA_DIR"</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>Load contours from the CSV files in the <span class="in">`data/contour_triadica_sebifera/`</span> directory.</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load_contours</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>file_paths_xy <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(data_dir, <span class="st">"data/contour_triadica_sebifera/"</span>),</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>xy_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(file_paths_xy, <span class="cf">function</span>(fp) {</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>  <span class="co">#cat("File:", fp, "\n")</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(fp)</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)]</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df)</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage.mode</span>(df) <span class="ot">&lt;-</span> <span class="st">"double"</span></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure the contour is closed by checking if the first and last points are the same. If not, append the first point to the end of the matrix.</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(df[<span class="dv">1</span>, ] <span class="sc">==</span> df[<span class="fu">nrow</span>(df), ])) {</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, df[<span class="dv">1</span>, ])</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using conventional normalization</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>PCA using normalized EFD coefficients (conventional method <span class="co">[</span><span class="ot">@kuhl1982</span><span class="co">]</span>).  </span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>Normalization is performed using <span class="co">[</span><span class="ot">Momocs</span><span class="co">](https://momx.github.io/Momocs/)</span> <span class="co">[</span><span class="ot">@bonhomme2014</span><span class="co">]</span>.</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_efd_normalized</span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># Number of harmonics</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(xy_list) <span class="co"># convert to Momocs Out object</span></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>ef_norm <span class="ot">&lt;-</span> <span class="fu">efourier</span>(out, <span class="at">nb.h =</span> nb_h, <span class="at">norm =</span> <span class="cn">TRUE</span>, <span class="at">start =</span> <span class="cn">FALSE</span>) <span class="co"># EFD with normalization</span></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>pca_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>) <span class="co"># PCA with Momocs</span></span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_norm)</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_efd_normalized_save</span></span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4d_pca_efd_normalized.svg"</span></span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_norm)</span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a><span class="fu">## True EFD normalization</span></span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a>PCA using coefficients obtained by true EFD normalization.  </span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a>Normalization is performed using the <span class="in">`efourier_true_norm()`</span> function implemented in this project (see <span class="co">[</span><span class="ot">`R/normalization.R`</span><span class="co">](https://github.com/maple60/leaf-contour-efd-analysis/blob/main/R/normalization.R)</span> for details).</span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_true_efd_normalized</span></span>
+<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># Number of harmonics</span></span>
+<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(xy_list) <span class="co"># convert to Momocs Out object</span></span>
+<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a><span class="co"># oriented true EFD normalization</span></span>
+<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a>ef_true_norm <span class="ot">&lt;-</span> <span class="fu">efourier_true_norm</span>(</span>
+<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>  out,</span>
+<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> nb_h,</span>
+<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_true_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>) <span class="co"># PCA with Momocs</span></span>
+<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
+<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-112"><a href="#cb12-112" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_true_efd_normalized_save</span></span>
+<span id="cb12-113"><a href="#cb12-113" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb12-116"><a href="#cb12-116" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb12-117"><a href="#cb12-117" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-118"><a href="#cb12-118" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4e_pca_true_efd_normalized.svg"</span></span>
+<span id="cb12-119"><a href="#cb12-119" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
+<span id="cb12-120"><a href="#cb12-120" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
+<span id="cb12-121"><a href="#cb12-121" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
+<span id="cb12-122"><a href="#cb12-122" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
+<span id="cb12-123"><a href="#cb12-123" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
+<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA using oriented true EFD normalization</span></span>
+<span id="cb12-129"><a href="#cb12-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-130"><a href="#cb12-130" aria-hidden="true" tabindex="-1"></a>Contours obtained from <span class="co">[</span><span class="ot">LeafContourEFD</span><span class="co">](https://github.com/maple60/leaf-contour-efd)</span> already have standardized starting points and rotation.</span>
+<span id="cb12-131"><a href="#cb12-131" aria-hidden="true" tabindex="-1"></a>Therefore, we apply only the x-axis symmetry correction step from **true EFD normalization**</span>
+<span id="cb12-132"><a href="#cb12-132" aria-hidden="true" tabindex="-1"></a>to implement oriented **true EFD normalization**.</span>
+<span id="cb12-133"><a href="#cb12-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-134"><a href="#cb12-134" aria-hidden="true" tabindex="-1"></a>Although the same results can be obtained from the Fourier coefficients exported by</span>
+<span id="cb12-135"><a href="#cb12-135" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">LeafContourEFD</span><span class="co">](https://github.com/maple60/leaf-contour-efd)</span>, we use <span class="co">[</span><span class="ot">Momocs</span><span class="co">](https://momx.github.io/Momocs/)</span> here so we can easily visualize reconstructed contour</span>
+<span id="cb12-136"><a href="#cb12-136" aria-hidden="true" tabindex="-1"></a>changes associated with principal component score shifts.</span>
+<span id="cb12-137"><a href="#cb12-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-138"><a href="#cb12-138" aria-hidden="true" tabindex="-1"></a>In a future update, we plan to provide a workflow that does not depend on <span class="co">[</span><span class="ot">Momocs</span><span class="co">](https://momx.github.io/Momocs/)</span>.</span>
+<span id="cb12-139"><a href="#cb12-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-142"><a href="#cb12-142" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-143"><a href="#cb12-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized</span></span>
+<span id="cb12-144"><a href="#cb12-144" aria-hidden="true" tabindex="-1"></a>nb_h <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># Number of harmonics</span></span>
+<span id="cb12-145"><a href="#cb12-145" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">Out</span>(xy_list) <span class="co"># convert to Momocs Out object</span></span>
+<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a><span class="co"># oriented true EFD normalization</span></span>
+<span id="cb12-147"><a href="#cb12-147" aria-hidden="true" tabindex="-1"></a>ef_true_norm <span class="ot">&lt;-</span> <span class="fu">efourier_true_norm</span>(</span>
+<span id="cb12-148"><a href="#cb12-148" aria-hidden="true" tabindex="-1"></a>  out,</span>
+<span id="cb12-149"><a href="#cb12-149" aria-hidden="true" tabindex="-1"></a>  <span class="at">nb_h =</span> nb_h,</span>
+<span id="cb12-150"><a href="#cb12-150" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_sy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-151"><a href="#cb12-151" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_sy =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip_rotation =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>pca_true_norm <span class="ot">&lt;-</span> <span class="fu">PCA</span>(ef_true_norm, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale. =</span> <span class="cn">FALSE</span>) <span class="co"># PCA with Momocs</span></span>
+<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
+<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pca_oriented_true_efd_normalized_save</span></span>
+<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Save the plot as SVG file"</span></span>
+<span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a>save_dir <span class="ot">&lt;-</span> <span class="st">"results"</span></span>
+<span id="cb12-166"><a href="#cb12-166" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(save_dir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-167"><a href="#cb12-167" aria-hidden="true" tabindex="-1"></a>save_file_name <span class="ot">&lt;-</span> <span class="st">"fig4f_pca_oriented_true_efd_normalized.svg"</span></span>
+<span id="cb12-168"><a href="#cb12-168" aria-hidden="true" tabindex="-1"></a>save_file_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(save_dir, save_file_name)</span>
+<span id="cb12-169"><a href="#cb12-169" aria-hidden="true" tabindex="-1"></a><span class="fu">svg</span>(</span>
+<span id="cb12-170"><a href="#cb12-170" aria-hidden="true" tabindex="-1"></a>  save_file_path,</span>
+<span id="cb12-171"><a href="#cb12-171" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"transparent"</span></span>
+<span id="cb12-172"><a href="#cb12-172" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-173"><a href="#cb12-173" aria-hidden="true" tabindex="-1"></a><span class="fu">pca_plot</span>(pca_true_norm)</span>
+<span id="cb12-174"><a href="#cb12-174" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb12-175"><a href="#cb12-175" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-176"><a href="#cb12-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-177"><a href="#cb12-177" aria-hidden="true" tabindex="-1"></a><span class="fu">## References</span></span>
+<span id="cb12-178"><a href="#cb12-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-179"><a href="#cb12-179" aria-hidden="true" tabindex="-1"></a>::: {#refs}</span>
+<span id="cb12-180"><a href="#cb12-180" aria-hidden="true" tabindex="-1"></a>:::</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
