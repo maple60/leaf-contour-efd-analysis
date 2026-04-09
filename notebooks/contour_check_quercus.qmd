@@ -34,7 +34,7 @@ We will determine the species name based on which column has a value of 1 for ea
 ## Species name
 
 `konara` means Quercus serrata, and `mizunara` means Quercus crispula.
-`konara` (コナラ) represents the standard Japanese name of Quercus serrata, while `mizunara` (ミズナラ) is the standard Japanese name of Quercus crispula.
+Both are standard Japanese common names used in the original dataset metadata.
 :::
 
 ```{r}

@@ -1,5 +1,5 @@
 
-## ライブラリの読み込み
+## Load libraries
 
 ```{r}
 #| label: setup
@@ -9,7 +9,7 @@ source("scripts/load_functions.R")
 palette("Okabe-Ito")
 ```
 
-種名
+Species names
 
 ```{r}
 #| label: species_name
@@ -21,9 +21,9 @@ df_sp_name$species <- ifelse(
 )
 ```
 
-## ランドマークデータ
+## Landmark data
 
-基部と先端の座標データを読み込みます。
+Load base and tip coordinates.
 
 ```{r}
 #| label: landmark_data
@@ -36,7 +36,7 @@ file_paths_meta <- list.files(
 df_meta_list <- lapply(file_paths_meta, read.csv) # make a list of data frames
 df_meta <- do.call(rbind, df_meta_list) # combine data frames into one
 df_meta <- df_meta[, c("id", "leaf_id", "base_x", "base_y", "tip_x", "tip_y")]
-names(df_meta) <- c("id", "leaf_id", "base_y", "base_x", "tip_y", "tip_x") # xy反対だった
+names(df_meta) <- c("id", "leaf_id", "base_y", "base_x", "tip_y", "tip_x") # x/y were reversed in source
 
 df_meta$label <- paste0(
   df_meta$id,
@@ -45,7 +45,7 @@ df_meta$label <- paste0(
 )
 ```
 
-## 輪郭データ
+## Contour data
 
 ```{r}
 #| label: load_contours
@@ -61,7 +61,7 @@ id_name_head <- lapply(id_name, function(x) {
   return(parts[1])
 })
 id_name_head <- unlist(id_name_head)
-# 種名の対応付け
+# match species names
 sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
 
 xy_list <- lapply(file_paths_xy, function(fp) {
@@ -70,7 +70,7 @@ xy_list <- lapply(file_paths_xy, function(fp) {
   df <- df[, c("x", "y")]
   df <- as.matrix(df)
   storage.mode(df) <- "double"
-  # 輪郭が閉じていない場合、最初の点を最後に追加して閉じる
+  # If the contour is not closed, append the first point to the end.
   if (!all(df[1, ] == df[nrow(df), ])) {
     df <- rbind(df, df[1, ])
   }
@@ -78,16 +78,17 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 })
 names(xy_list) <- id_name
 length(xy_list)
-out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # MomocsのOutオブジェクトに変換
+out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
 names(out) <- id_name
 ```
 
-確認
+Quick check
 
 ```{r}
-stack(out) # 全部重ねる
+#| label: check_contours_and_landmarks
+stack(out) # overlay all contours
 plot(out$coo$S0186_01, type = "l", asp = 1)
-# 基部と先端のプロット
+# plot base and tip landmarks
 points(
   df_meta$base_x[1],
   df_meta$base_y[1],
@@ -105,7 +106,7 @@ points(
 ```
 
 
-## 回転関数の作成
+## Create contour rotation workflow
 
 ```{r}
 #| label: rotate_contours
@@ -123,7 +124,7 @@ out_rotated <- mapply(
 out_rotated <- Out(out_rotated, fac = out$fac)
 #stack(out_rotated)
 
-# 基部と先端のプロットも回転
+# rotate base and tip landmark plots as well
 df_base <- data.frame(
   x = df_meta$base_x,
   y = df_meta$base_y
@@ -140,7 +141,7 @@ df_tip_rotated <- rotate_xy_custom_origin(df_tip, angles, cog)
 
 for (i in 1:5) {
   plot(out$coo[[i]], type = "l", asp = 1)
-  # 元の基部と先端
+  # original base and tip landmarks
   points(
     df_base$x[i],
     df_base$y[i],
@@ -174,9 +175,9 @@ for (i in 1:5) {
 plot(out_rotated$coo[[1]], type = "l", asp = 1)
 ```
 
-## EFDの計算
+## Calculate EFD
 
-回転後の輪郭座標からEFDを計算します。
+Calculate EFD from the rotated contour coordinates.
 
 ```{r}
 #| label: efd_rotation_contours
@@ -190,9 +191,10 @@ ef_rotated_true_norm <- efourier_true_norm(
 pca_rotated <- PCA(ef_rotated_true_norm, center = TRUE, scale. = FALSE)
 ```
 
-## PCAプロットの作成
+## Create PCA plot
 
 ```{r}
+#| label: plot_pca_rotated_true_normalized
 svg(
   "assets/pca_momocs_efd_normalized_rotation.svg",
   bg = "transparent",
@@ -222,7 +224,7 @@ pca_plot(pca_rotated)
 dev.off()
 ```
 
-## 輪郭の再構築
+## Reconstruct contours
 
 ```{r}
 #| label: reconstruct_rotated_contours
@@ -258,7 +260,7 @@ reconst_list <- lapply(seq_len(dim(coef_list$A)[1]), function(row) {
 out_reconstructed <- Out(
   reconst_list,
   fac = data.frame(species = factor(sp_name))
-) # MomocsのOutオブジェクトに変換
+) # convert to Momocs Out object
 names(out_reconstructed) <- id_name
 
 save_dir <- "assets/reconstructed_contours/"
@@ -302,9 +304,10 @@ for (i in seq_along(idx)) {
 }
 ```
 
-## 回転後の輪郭と再構築輪郭の比較
+## Compare rotated and reconstructed contours
 
 ```{r}
+#| label: compare_rotated_and_reconstructed_contours
 save_dir <- "assets/contours_rotated/"
 dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
 idx <- list(
@@ -349,11 +352,11 @@ for (i in seq_along(idx)) {
 }
 ```
 
-## ランドマーク点との対応
+## Landmark correspondence
 
-### ランドマークの回転
+### Rotate landmarks
 
-True EFD normalization のパラメータを使用して、ランドマークを回転します。
+Rotate landmarks using the parameters estimated during true EFD normalization.
 
 ```{r}
 #| label: rotate_landmarks
@@ -368,9 +371,10 @@ nb_h <- sum(grepl("^A", colnames(ef$coe))) # number of harmonics
 ef_true_norm_rotated <- true_normalize(ef, output_meta = TRUE)
 ```
 
-landmark は (x,y)の順に与えられるデータフレームとします。
+Assume `landmark` is a data frame with coordinates ordered as `(x, y)`.
 
 ```{r}
+#| label: transform_landmarks_with_true_normalization
 landmark_transform <- function(landmark, ef_true_norm_rotated) {
   # scalling
   lm <- landmark / ef_true_norm_rotated$E
@@ -399,7 +403,7 @@ landmark_transform <- function(landmark, ef_true_norm_rotated) {
   return(lm_rotated)
 }
 
-# 回転後のランドマーク点の変換
+# transform rotated landmark points
 base_transformed <- landmark_transform(
   df_base_rotated[n, c("x", "y")],
   ef_true_norm_rotated
@@ -410,9 +414,10 @@ tip_transformed <- landmark_transform(
 )
 ```
 
-回転後の輪郭とランドマーク
+Rotated contour and landmarks
 
 ```{r}
+#| label: plot_rotated_contour_and_landmarks
 df_base_rotated <- rotate_xy_custom_origin(df_base, angles, cog)
 df_tip_rotated <- rotate_xy_custom_origin(df_tip, angles, cog)
 plot(out_rotated$coo[[n]], type = "l", asp = 1)
@@ -433,10 +438,11 @@ points(
 )
 ```
 
-回転後の輪郭をTrue EFD normalizationした後とランドマーク
+Contour and landmarks after true EFD normalization of the rotated contour
 
 
 ```{r}
+#| label: plot_true_normalized_contour_and_landmarks
 nb_h = 35
 contour_reconstructed <- efourier_i(ef_true_norm_rotated$ef, nb.pts = 120)
 plot(contour_reconstructed, type = "l", asp = 1) # reconstructed contour
@@ -458,7 +464,7 @@ points(
   pch = 19,
   cex = 3
 )
-# 第1楕円
+# first ellipse
 #first_ecllipse <- efourier_i(ef_true_norm_rotated$ef, nb.h = 1)
 #lines(first_ecllipse, col = 6)
 
@@ -466,6 +472,7 @@ points(
 
 
 ```{r}
+#| label: plot_transformed_landmarks_on_reconstructed_contour
 xlim = range(c(base_transformed[1, 1], tip_transformed[1, 1]))
 ylim = range(c(base_transformed[1, 2], tip_transformed[1, 2]))
 plot(

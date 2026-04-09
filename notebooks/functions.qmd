@@ -15,6 +15,7 @@ The second function `compare_contour_true_EFD_normalization` compares the origin
 ### `compare_contour_oriented_true_EFD_normalization()`
 
 ```{r}
+#| label: function_compare_contour_oriented_true_efd_normalization
 compare_contour_oriented_true_EFD_normalization <- function(
   original,
   ef_normalized,
@@ -109,6 +110,7 @@ compare_contour_oriented_true_EFD_normalization <- function(
 ### `compare_contour_true_EFD_normalization()`
 
 ```{r}
+#| label: function_compare_contour_true_efd_normalization
 compare_contour_true_EFD_normalization <- function(
   original,
   label = NULL,
@@ -184,6 +186,7 @@ compare_contour_true_EFD_normalization <- function(
 ### `rotate_xy()`
 
 ```{r}
+#| label: function_rotate_xy
 rotate_xy <- function(df, angle_deg, origin = c(0, 0)) {
   theta <- angle_deg * pi / 180
 
@@ -200,6 +203,7 @@ rotate_xy <- function(df, angle_deg, origin = c(0, 0)) {
 ### `rotate_xy_centered()`
 
 ```{r}
+#| label: function_rotate_xy_centered
 rotate_xy_centered <- function(df, angle_deg) {
   origin <- c(mean(df[, 1]), mean(df[, 2]))
   rotate_xy(df, angle_deg, origin)
@@ -209,6 +213,7 @@ rotate_xy_centered <- function(df, angle_deg) {
 ### `rotate_xy_custom_origin()`
 
 ```{r}
+#| label: function_rotate_xy_custom_origin
 rotate_xy_custom_origin <- function(df, angle_deg, origins) {
   l <- lapply(seq_along(origins), function(i) {
     rotate_xy(df[i, ], angle_deg[i], origins[[i]])
@@ -224,6 +229,7 @@ rotate_xy_custom_origin <- function(df, angle_deg, origins) {
 ### `true_normalize_coe()`
 
 ```{r}
+#| label: function_true_normalize_coe
 true_normalize_coe <- function(
   ef_coe,
   EPS = 1e-10,
@@ -294,6 +300,7 @@ true_normalize_coe <- function(
 ### `efourier_true_norm()`
 
 ```{r}
+#| label: function_efourier_true_norm
 efourier_true_norm <- function(
   coo_out,
   nb_h = 35,
@@ -312,6 +319,7 @@ efourier_true_norm <- function(
 `R/pca_plot.R` contains a function to plot PCA results.
 
 ```{r}
+#| label: function_pca_plot
 pca_plot <- function(x, group = "species", palette = NULL, ...) {
   fac_names <- names(x$fac)
   has_group <- !is.null(fac_names) && group %in% fac_names
