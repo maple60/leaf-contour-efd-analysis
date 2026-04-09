@@ -2,7 +2,7 @@
 title: "Direction check for *Triadica sebifera*"
 ---
 
-This notebook compares the original contour and the reconstructed contour from oriented true EFD normalization and true EFD normalization for *Triadica sebifera*.
+This notebook compares original contours and contours reconstructed from oriented true EFD normalization and true EFD normalization for *Triadica sebifera*.
 
 Output figures in this notebook are used in **Figure 3** of the manuscript.
 

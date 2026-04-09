@@ -175,17 +175,19 @@ true_normalize <- function(
 #' @param y_sy Logical; whether to enforce y-axis symmetry convention.
 #' @param x_sy Logical; whether to enforce x-axis symmetry convention.
 #' @param skip_rotation Logical; whether to skip orientation normalization.
+#' @param verbose Logical; if `TRUE`, emit progress messages.
 #'
 #' @return Numeric matrix with the same row count and normalized
 #'   `A/B/C/D` harmonic columns.
 #'
-#' @sideeffects Emits a message when `skip_rotation = TRUE`.
+#' @sideeffects May emit warnings from `true_normalize()`.
 true_normalize_coe <- function(
   ef_coe,
   EPS = 1e-10,
   y_sy = TRUE,
   x_sy = TRUE,
-  skip_rotation = FALSE
+  skip_rotation = FALSE,
+  verbose = FALSE
 ) {
   ef_mat <- as.matrix(ef_coe)
   storage.mode(ef_mat) <- "double"
@@ -225,7 +227,7 @@ true_normalize_coe <- function(
       skip_rotation = skip_rotation
     )
 
-    if (skip_rotation) {
+    if (verbose && skip_rotation) {
       message("skip_rotation is TRUE")
     }
 
