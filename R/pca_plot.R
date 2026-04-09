@@ -1,7 +1,7 @@
 pca_plot <- function(x, group = "species", palette = NULL, ...) {
   fac_names <- names(x$fac)
   has_group <- !is.null(fac_names) && group %in% fac_names
-  grouping_formula <- if (has_group) stats::as.formula(paste0("~", group)) else NULL
+  grouping_formula <- if (has_group) stats::reformulate(group) else NULL
 
   if (is.null(palette)) {
     palette <- if (has_group && exists("my_palette", inherits = TRUE)) {
