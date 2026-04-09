@@ -1,0 +1,338 @@
+---
+title: "Functions used in the analysis"
+---
+
+Purpose of this notebook is to introduce the functions used in the analysis of this study.
+
+## `R/compare_contours.R`
+
+`R/compare_contours.R` contains two functions to compare the original contour with the reconstructed contour from EFD coefficients. 
+
+The first function `compare_contour_oriented_true_EFD_normalization` compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method. 
+
+The second function `compare_contour_true_EFD_normalization` compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method without orientation.
+
+### `compare_contour_oriented_true_EFD_normalization()`
+
+```{r}
+compare_contour_oriented_true_EFD_normalization <- function(
+  original,
+  ef_normalized,
+  label = NULL,
+  nb.h = 35,
+  mar = c(0, 0, 0, 0),
+  cex.text = 2,
+  ...
+) {
+  # Fuction to compute E* from EFD coefficients
+  compute_E_star <- function(ef) {
+    A1 <- ef$an[1]
+    B1 <- ef$bn[1]
+    C1 <- ef$cn[1]
+    D1 <- ef$dn[1]
+    # Calculate theta
+    theta <- 0.5 *
+      atan2(
+        2 * (A1 * B1 + C1 * D1),
+        (A1^2 + C1^2 - B1^2 - D1^2)
+      )
+
+    # Calculate a* and c*
+    a_star <- A1 * cos(theta) + B1 * sin(theta)
+    c_star <- C1 * cos(theta) + D1 * sin(theta)
+
+    # E*
+    E_star <- sqrt(a_star^2 + c_star^2)
+    return(E_star)
+  }
+
+  center <- coo_centpos(original) # center position
+  original_centered <- sweep(original, 2, center, "-") # center the contour
+  ef <- efourier(
+    original_centered,
+    nb.h = nb.h,
+    norm = FALSE
+  )
+  E <- compute_E_star(ef)
+  true_ef_coef <- list(
+    ao = unique(ef_normalized$ao),
+    co = unique(ef_normalized$co),
+    an = ef_normalized$an,
+    bn = ef_normalized$bn,
+    cn = ef_normalized$cn,
+    dn = ef_normalized$dn
+  )
+  # reonstruct contour from true EFD coefficients
+  reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
+  df_reconstruct <- as.data.frame(reconstruct)
+  df_reconstruct <- df_reconstruct * E
+  xlim <- range(c(df_reconstruct$x, original_centered[, 1]))
+  ylim <- range(c(df_reconstruct$y, original_centered[, 2]))
+  par(mar = mar)
+  # original centered contour
+  plot(
+    original_centered,
+    type = "l",
+    asp = 1,
+    col = adjustcolor("black", red = 0.7, green = 0.7, blue = 0.7),
+    xlim = xlim,
+    ylim = ylim,
+    bty = "n",
+    xaxt = "n",
+    yaxt = "n",
+    xlab = "",
+    ylab = "",
+    ...
+  )
+
+  # reconstructed contour
+  lines(
+    df_reconstruct,
+    asp = 1,
+    col = adjustcolor("#FF4B00", alpha.f = 0.9),
+    ...
+  )
+
+  # label
+  if (!is.null(label)) {
+    text(
+      x = mean(par("usr")[1:2]),
+      y = mean(par("usr")[3:4]),
+      labels = label,
+      cex = cex.text,
+      col = "black"
+    )
+  }
+}
+```
+
+### `compare_contour_true_EFD_normalization()`
+
+```{r}
+compare_contour_true_EFD_normalization <- function(
+  original,
+  label = NULL,
+  nb.h = 35,
+  mar = c(0, 0, 0, 0),
+  cex.text = 2,
+  ...
+) {
+  center <- coo_centpos(original) # center position
+  original_centered <- sweep(original, 2, center, "-") # center the contour
+
+  ef <- efourier(
+    original_centered,
+    nb.h = nb.h,
+    norm = FALSE
+  )
+  true_ef <- true_normalize(ef, output_meta = TRUE)
+  true_ef_coef <- true_ef$ef
+  true_ef_coef <- list(
+    ao = unique(true_ef_coef$ao),
+    co = unique(true_ef_coef$co),
+    an = true_ef_coef$an,
+    bn = true_ef_coef$bn,
+    cn = true_ef_coef$cn,
+    dn = true_ef_coef$dn
+  )
+  # reonstruct contour from true EFD coefficients
+  reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
+  df_reconstruct <- as.data.frame(reconstruct)
+  df_reconstruct <- df_reconstruct * true_ef$E
+
+  xlim <- range(c(df_reconstruct$x, original_centered[, 1]))
+
+  par(mar = mar)
+  # original centered contour
+  plot(
+    original_centered,
+    type = "l",
+    asp = 1,
+    col = adjustcolor("black", red = 0.7, green = 0.7, blue = 0.7),
+    xlim = xlim,
+    bty = "n",
+    xaxt = "n",
+    yaxt = "n",
+    xlab = "",
+    ylab = "",
+    ...
+  )
+
+  # reconstructed contour
+  lines(
+    df_reconstruct,
+    asp = 1,
+    col = adjustcolor("#FF4B00", alpha.f = 0.9),
+    ...
+  )
+  if (!is.null(label)) {
+    text(
+      x = mean(par("usr")[1:2]),
+      y = mean(par("usr")[3:4]),
+      labels = label,
+      cex = cex.text,
+      col = "black"
+    )
+  }
+}
+```
+
+## `R/geometry.R`
+
+`R/geometry.R` contains three functions to rotate the contour.
+
+### `rotate_xy()`
+
+```{r}
+rotate_xy <- function(df, angle_deg, origin = c(0, 0)) {
+  theta <- angle_deg * pi / 180
+
+  x <- df[, 1] - origin[1]
+  y <- df[, 2] - origin[2]
+
+  x_new <- x * cos(theta) - y * sin(theta)
+  y_new <- x * sin(theta) + y * cos(theta)
+
+  data.frame(x = x_new + origin[1], y = y_new + origin[2])
+}
+```
+
+### `rotate_xy_centered()`
+
+```{r}
+rotate_xy_centered <- function(df, angle_deg) {
+  origin <- c(mean(df[, 1]), mean(df[, 2]))
+  rotate_xy(df, angle_deg, origin)
+}
+```
+
+### `rotate_xy_custom_origin()`
+
+```{r}
+rotate_xy_custom_origin <- function(df, angle_deg, origins) {
+  l <- lapply(seq_along(origins), function(i) {
+    rotate_xy(df[i, ], angle_deg[i], origins[[i]])
+  })
+  do.call(rbind, l)
+}
+```
+
+## `R/normalization.R`
+
+`R/normalization.R` contains two functions to normalize EFD coefficients by the true normalization method.
+
+### `true_normalize_coe()`
+
+```{r}
+true_normalize_coe <- function(
+  ef_coe,
+  EPS = 1e-10,
+  y_sy = TRUE,
+  x_sy = TRUE,
+  skip_rotation = FALSE
+) {
+  ef_mat <- as.matrix(ef_coe)
+  storage.mode(ef_mat) <- "double"
+
+  get_H <- function(cn) {
+    idx <- grep("^[ABCD][0-9]+$", cn)
+    if (!length(idx)) {
+      stop("A/B/C/D indexed columns were not found.")
+    }
+    max(as.integer(sub("^[ABCD]", "", cn[idx])))
+  }
+
+  H <- get_H(colnames(ef_mat))
+  nmA <- paste0("A", 1:H)
+  nmB <- paste0("B", 1:H)
+  nmC <- paste0("C", 1:H)
+  nmD <- paste0("D", 1:H)
+
+  need <- c(nmA, nmB, nmC, nmD)
+  stopifnot(all(need %in% colnames(ef_mat)))
+
+  norm_one <- function(row) {
+    ef <- list(
+      an = as.numeric(row[nmA]),
+      bn = as.numeric(row[nmB]),
+      cn = as.numeric(row[nmC]),
+      dn = as.numeric(row[nmD]),
+      ao = 0,
+      co = 0
+    )
+
+    ef_true <- true_normalize(
+      ef,
+      EPS = EPS,
+      y_sy = y_sy,
+      x_sy = x_sy,
+      skip_rotation = skip_rotation
+    )
+
+    if (skip_rotation) {
+      message("skip_rotation is TRUE")
+    }
+
+    c(
+      setNames(ef_true$an, nmA),
+      setNames(ef_true$bn, nmB),
+      setNames(ef_true$cn, nmC),
+      setNames(ef_true$dn, nmD)
+    )
+  }
+
+  ef_mat_norm <- t(apply(ef_mat, 1, norm_one))
+
+  rownames(ef_mat_norm) <- rownames(ef_mat)
+  ef_mat_norm <- ef_mat_norm[, need, drop = FALSE]
+  storage.mode(ef_mat_norm) <- "double"
+  ef_mat_norm
+}
+```
+
+### `efourier_true_norm()`
+
+```{r}
+efourier_true_norm <- function(
+  coo_out,
+  nb_h = 35,
+  x_sy = TRUE,
+  y_sy = TRUE,
+  ...
+) {
+  ef <- efourier(coo_out, nb.h = nb_h, norm = FALSE)
+  ef$coe <- true_normalize_coe(ef$coe, y_sy = y_sy, x_sy = x_sy, ...)
+  ef
+}
+```
+
+## `R/pca_plot.R`
+
+`R/pca_plot.R` contains a function to plot PCA results.
+
+```{r}
+pca_plot <- function(x, ...) {
+  plt <- plot_PCA(
+    x,
+    f = ~species,
+    palette = my_palette,
+    points = FALSE,
+    morphospace = FALSE,
+    morphospace_position = "range",
+    chull = TRUE, # convex hull
+    #chullfilled = TRUE,
+    zoom = 1,
+    eigen = FALSE,
+    box = FALSE,
+    axesnames = FALSE,
+    axesvar = FALSE,
+    ...
+  )
+  plt <- layer_axes(plt, col = "black", lwd = 1)
+  plt <- layer_ticks(plt, col = "black", lwd = 1)
+  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
+  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
+  plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
+  plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
+}
+```
