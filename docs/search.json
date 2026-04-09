@@ -1,0 +1,449 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "LeafContourEFD Analysis",
+    "section": "",
+    "text": "Requirements\nThis repository contains analysis code and reproducibility materials for the LeafContourEFD manuscript. The software itself is available at: leaf-contour-efd\nTo reproduce the analysis, you need:\nIf you install renv, you can install the required R packages by executing renv::restore() (see below). All analysis code is written in R version 4.3.1 (R 2026).",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Notebooks for analysis</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#requirements",
+    "href": "index.html#requirements",
+    "title": "LeafContourEFD Analysis",
+    "section": "",
+    "text": "R (recommended version: 4.3.1 or higher)\nQuarto\nthe R packages required by this project\n\n\n\nOptional tools\n\nAir: R code formatter.\nPositron: IDE used for all analyses in this project, but not required to run the code.\n\n\n\nR environment setup\nIn this repository, I use renv to manage R package dependencies. Please execute command below after installing renv.\n# install.packages(\"renv\") # if not installed\nrenv::restore()",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Notebooks for analysis</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#data",
+    "href": "index.html#data",
+    "title": "LeafContourEFD Analysis",
+    "section": "Data",
+    "text": "Data\nRaw data are available on Dryad (DOI: in preparation).\nTracked-vs-external data policy is documented in data/README.md.\nThis project may require setting a local data directory via environment variable. Create a .Renviron file in the project root and add:\n\n\n.Renviron\n\nPROJECT_DATA_DIR=/path/to/your/data\n\nFor example:\n\nmacOS: /Users/yourname/Dropbox/project_data\nWindows: C:/Users/yourname/Dropbox/project_data",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Notebooks for analysis</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "LeafContourEFD Analysis",
+    "section": "References",
+    "text": "References\n\n\nR: A Language and Environment for Statistical Computing. 2026.\nVienna, Austria. https://www.R-project.org/.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Notebooks for analysis</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_quercus.html",
+    "href": "notebooks/contour_check_quercus.html",
+    "title": "Contour check for Quercus serrata and Quercus crispula",
+    "section": "",
+    "text": "Setup\nPurposes of this notebook are:\n1. To check the original contour data of Quercus serrata and Quercus crispula.\n2. To check the reconstructed contour from Oriented True EFD normalization for all samples.\nOutput figures of this notebook are not included in the manuscript, but they are saved in the results/ directory.\nlibrary(tools)\nlibrary(Momocs)\n\n\nAttaching package: 'Momocs'\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nsource(\"R/normalization.R\")\nsource(\"R/compare_contours.R\")\n# color palette for colorblind-friendly visualization\npalette(\"Okabe-Ito\")\n# set the data directory from environment variable (.Renviron)\ndata_dir &lt;- Sys.getenv(\"PROJECT_DATA_DIR\")",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Contour check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_quercus.html#load-species-names",
+    "href": "notebooks/contour_check_quercus.html#load-species-names",
+    "title": "Contour check for Quercus serrata and Quercus crispula",
+    "section": "Load species names",
+    "text": "Load species names\nLoad the species names from the CSV file.\nThis file contains three columns: id, konara, and mizunara. The id column corresponds to the sample ID, while the konara and mizunara columns contain binary values indicating the species classification. We will determine the species name based on which column has a value of 1 for each sample.\n\n\n\n\n\n\nNoteSpecies name\n\n\n\nkonara means Quercus serrata, and mizunara means Quercus crispula. konara (コナラ) represents the standard Japanese name of Quercus serrata, while mizunara (ミズナラ) is the standard Japanese name of Quercus crispula.\n\n\n\n# load species names from CSV file\ndf_sp_name &lt;- read.csv(file.path(data_dir, \"data/species_name.csv\"))\ndf_sp_name$species &lt;- ifelse(\n  df_sp_name$konara &lt; df_sp_name$mizunara,\n  \"mizunara\", # Quercus crispula\n  \"konara\" # Quercus serrata\n)\nhead(df_sp_name, 10) # display the first 10 rows\n\n      id konara mizunara  species\n1  S0186      1        0   konara\n2  S0187      1        0   konara\n3  S0188      1        0   konara\n4  S0189      1        0   konara\n5  S0190      1        0   konara\n6  S0191      1        0   konara\n7  S0192      1        0   konara\n8  S0193      0        1 mizunara\n9  S0194      1        0   konara\n10 S0195      1        0   konara",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Contour check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_quercus.html#load-contour-data",
+    "href": "notebooks/contour_check_quercus.html#load-contour-data",
+    "title": "Contour check for Quercus serrata and Quercus crispula",
+    "section": "Load contour data",
+    "text": "Load contour data\nLoad the contour data from the CSV files in the data/contour_quercus/ directory.\n\n# load contour data from CSV files\nfile_paths_xy &lt;- list.files(\n  file.path(\n    data_dir,\n    \"data/contour_quercus/\"\n  ),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\n# extract sample IDs from file names\nid_name &lt;- file_path_sans_ext(basename(file_paths_xy))\n# extract individual IDs\nid_name_head &lt;- lapply(id_name, function(x) {\n  parts &lt;- unlist(strsplit(x, \"_\"))\n  return(parts[1])\n})\nid_name_head &lt;- unlist(id_name_head)\n\n# Match species names\nsp_name &lt;- df_sp_name$species[match(id_name_head, df_sp_name$id)]\n\n# load contour data into a list of matrices\nxy_list &lt;- lapply(file_paths_xy, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  df &lt;- df[, c(\"x\", \"y\")]\n  df &lt;- as.matrix(df)\n  storage.mode(df) &lt;- \"double\"\n  # if the contour is not closed, add the first point to the end to close it\n  if (!all(df[1, ] == df[nrow(df), ])) {\n    df &lt;- rbind(df, df[1, ])\n  }\n  return(df)\n})\nnames(xy_list) &lt;- id_name",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Contour check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_quercus.html#load-oriented-true-normalized-efd-coefficients",
+    "href": "notebooks/contour_check_quercus.html#load-oriented-true-normalized-efd-coefficients",
+    "title": "Contour check for Quercus serrata and Quercus crispula",
+    "section": "Load oriented true normalized EFD coefficients",
+    "text": "Load oriented true normalized EFD coefficients\nLoad the oriented true normalized EFD coefficients from the CSV files in the data/coefficients_efd_normalized_quercus/ directory. These data are obtained(calculated) from LeafContourEFD.\n\nfile_paths &lt;- list.files(\n  file.path(\n    data_dir,\n    \"data/coefficients_efd_normalized_quercus/\"\n  ),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\nef_list &lt;- lapply(file_paths, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  return(df)\n})",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Contour check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_quercus.html#visualize-the-original-contours-and-the-contours-reconstructed-from-oriented-true-efd-normalization",
+    "href": "notebooks/contour_check_quercus.html#visualize-the-original-contours-and-the-contours-reconstructed-from-oriented-true-efd-normalization",
+    "title": "Contour check for Quercus serrata and Quercus crispula",
+    "section": "Visualize the original contours and the contours reconstructed from oriented true EFD normalization",
+    "text": "Visualize the original contours and the contours reconstructed from oriented true EFD normalization\nOverlay the original contour and the reconstructed contour from Oriented True EFD normalization.\n\nlist_id &lt;- list(\n  1:50,\n  51:100,\n  101:150,\n  151:200,\n  201:250,\n  251:300,\n  301:350,\n  351:400,\n  401:450,\n  451:500,\n  501:550,\n  551:600,\n  601:650,\n  651:700,\n  701:746\n)\nfor (ids in list_id) {\n  layout(matrix(1:50, nrow = 5, byrow = TRUE))\n  for (id in ids) {\n    compare_contour_oriented_true_EFD_normalization(\n      original = xy_list[[id]],\n      ef_normalized = ef_list[[id]],\n      label = names(xy_list)[id],\n      nb.h = 35,\n      mar = c(0, 0, 0, 0),\n      lwd = 2,\n      cex.text = 1\n    )\n  }\n}",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Contour check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_quercus.html#save-all-comparisons",
+    "href": "notebooks/contour_check_quercus.html#save-all-comparisons",
+    "title": "Contour check for Quercus serrata and Quercus crispula",
+    "section": "Save all comparisons",
+    "text": "Save all comparisons\n\nSave the plot as SVG filesave_dir &lt;- \"results/supplementary_compare_contours_oriented_true_efd_normalized_quercus\"\ndir.create(save_dir, recursive = TRUE, showWarnings = FALSE)\nlist_id &lt;- list(\n  1:50,\n  51:100,\n  101:150,\n  151:200,\n  201:250,\n  251:300,\n  301:350,\n  351:400,\n  401:450,\n  451:500,\n  501:550,\n  551:600,\n  601:650,\n  651:700,\n  701:746\n)\n\nfor (ids in list_id) {\n  ids &lt;- unlist(ids)\n  save_path &lt;- paste0(\n    save_dir,\n    \"/compare_contours_oriented_true_efd_normalized_quercus_\",\n    min(ids),\n    \"_\",\n    max(ids),\n    \".svg\"\n  )\n  svg(save_path, width = 10, height = 5, bg = \"transparent\")\n  layout(matrix(1:50, nrow = 5, byrow = TRUE))\n  for (id in ids) {\n    compare_contour_oriented_true_EFD_normalization(\n      original = xy_list[[id]],\n      ef_normalized = ef_list[[id]],\n      label = names(xy_list)[id],\n      nb.h = 35,\n      mar = c(0, 0, 0, 0),\n      lwd = 2,\n      cex.text = 1\n    )\n  }\n  dev.off()\n}\n\n\nThis results in 15 SVG files, each containing 50 comparisons of original and reconstructed contours.",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Contour check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_triadica_sebifera.html",
+    "href": "notebooks/contour_check_triadica_sebifera.html",
+    "title": "Contour check for Triadica sebifera",
+    "section": "",
+    "text": "Setup\nPurposes of this notebook are: 1. To check the original contour data of Triadica sebifera. 2. To check the reconstructed contour from Oriented True EFD normalization for all samples.\nOutput figures of this notebook are not included in the manuscript, but they are saved in the results/ directory.\nlibrary(tools)\nlibrary(Momocs)\n\n\nAttaching package: 'Momocs'\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nsource(\"R/normalization.R\")\nsource(\"R/compare_contours.R\")\n# color palette for colorblind-friendly visualization\npalette(\"Okabe-Ito\")\n# set the data directory from environment variable (.Renviron)\ndata_dir &lt;- Sys.getenv(\"PROJECT_DATA_DIR\")",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Contour check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_triadica_sebifera.html#load-contour-data",
+    "href": "notebooks/contour_check_triadica_sebifera.html#load-contour-data",
+    "title": "Contour check for Triadica sebifera",
+    "section": "Load contour data",
+    "text": "Load contour data\nLoad the contour data from the CSV files in the data/contour_triadica_sebifera/ directory. There are 30 samples.\n\n# file paths of contour CSV files\nfile_paths_xy &lt;- list.files(\n  file.path(data_dir, \"data/contour_triadica_sebifera\"),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\n# extract sample IDs from file names\nid_name &lt;- file_path_sans_ext(basename(file_paths_xy))\n\n# load contour data into a list of matrices\nxy_list &lt;- lapply(file_paths_xy, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  df &lt;- df[, c(\"x\", \"y\")]\n  df &lt;- as.matrix(df)\n  storage.mode(df) &lt;- \"double\"\n  # if the contour is not closed, add the first point to the end to close it\n  if (!all(df[1, ] == df[nrow(df), ])) {\n    df &lt;- rbind(df, df[1, ])\n  }\n  return(df)\n})\n# assign names to the list of contours\nnames(xy_list) &lt;- id_name",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Contour check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_triadica_sebifera.html#load-oriented-true-normalized-efd-coefficients",
+    "href": "notebooks/contour_check_triadica_sebifera.html#load-oriented-true-normalized-efd-coefficients",
+    "title": "Contour check for Triadica sebifera",
+    "section": "Load oriented true normalized EFD coefficients",
+    "text": "Load oriented true normalized EFD coefficients\nLoad the oriented true normalized EFD coefficients from the CSV files in the data/coefficients_efd_normalized_triadica_sebifera/ directory. These data are obtained(calculated) from LeafContourEFD.\n\n# file paths of EFD coefficient CSV files\nfile_paths &lt;- list.files(\n  file.path(data_dir, \"data/coefficients_efd_normalized_triadica_sebifera\"),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\n\n# load EFD coefficients into a list of data frames\nef_list &lt;- lapply(file_paths, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  return(df)\n})",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Contour check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/contour_check_triadica_sebifera.html#visualize-the-original-contours-and-the-contours-reconstructed-from-oriented-true-efd-normalization",
+    "href": "notebooks/contour_check_triadica_sebifera.html#visualize-the-original-contours-and-the-contours-reconstructed-from-oriented-true-efd-normalization",
+    "title": "Contour check for Triadica sebifera",
+    "section": "Visualize the original contours and the contours reconstructed from oriented true EFD normalization",
+    "text": "Visualize the original contours and the contours reconstructed from oriented true EFD normalization\nOverlay the original contour and the reconstructed contour from Oriented True EFD normalization.\n\nlayout(matrix(seq_along(xy_list), nrow = 5, byrow = TRUE))\nfor (i in seq_along(xy_list)) {\n  compare_contour_oriented_true_EFD_normalization(\n    original = xy_list[[i]],\n    ef_normalized = ef_list[[i]],\n    label = i,\n    nb.h = 5,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5\n  )\n}\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE)\nsave_file_name &lt;- \"supplementary_compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg\"\nsvg(file.path(save_dir, save_file_name), bg = \"transparent\")\nlayout(matrix(seq_along(xy_list), nrow = 5, byrow = TRUE))\nfor (i in seq_along(xy_list)) {\n  compare_contour_oriented_true_EFD_normalization(\n    original = xy_list[[i]],\n    ef_normalized = ef_list[[i]],\n    label = i,\n    nb.h = 5,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5\n  )\n}\ndev.off()",
+    "crumbs": [
+      "Contour check",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Contour check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_quercus.html",
+    "href": "notebooks/direction_check_quercus.html",
+    "title": "Direction check for Quercus serrata and Quercus crispula",
+    "section": "",
+    "text": "Setup\nThis notebook compares the original contour and the reconstructed contour from oriented true EFD normalization and true EFD normalization for Quercus serrata and Quercus crispula.\nOutput figures in this notebook are used in Figure 2 of the manuscript.\nlibrary(tools)\nlibrary(Momocs)\n\n\nAttaching package: 'Momocs'\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nsource(\"R/geometry.R\")\nsource(\"R/normalization.R\")\nsource(\"R/compare_contours.R\")\n# color palette for colorblind-friendly visualization\npalette(\"Okabe-Ito\")\n# set the data directory from environment variable (.Renviron)\ndata_dir &lt;- Sys.getenv(\"PROJECT_DATA_DIR\")",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Direction check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_quercus.html#load-species-names",
+    "href": "notebooks/direction_check_quercus.html#load-species-names",
+    "title": "Direction check for Quercus serrata and Quercus crispula",
+    "section": "Load species names",
+    "text": "Load species names\nLoad the species names from the CSV file.\nThis file contains three columns: id, konara, and mizunara. The id column corresponds to the sample ID, while the konara and mizunara columns contain binary values indicating the species classification. We will determine the species name based on which column has a value of 1 for each sample.\n\n\n\n\n\n\nNoteSpecies name\n\n\n\nkonara means Quercus serrata, and mizunara means Quercus crispula. konara (コナラ) represents the standard Japanese name of Quercus serrata, while mizunara (ミズナラ) is the standard Japanese name of Quercus crispula.\n\n\n\ndf_sp_name &lt;- read.csv(file.path(data_dir, \"data/species_name.csv\"))\ndf_sp_name$species &lt;- ifelse(\n  df_sp_name$konara &lt; df_sp_name$mizunara,\n  \"mizunara\", # Quercus crispula\n  \"konara\" # Quercus serrata\n)",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Direction check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_quercus.html#load-contour-data",
+    "href": "notebooks/direction_check_quercus.html#load-contour-data",
+    "title": "Direction check for Quercus serrata and Quercus crispula",
+    "section": "Load contour data",
+    "text": "Load contour data\nLoad the contour data from the CSV files in the data/contour_quercus/ directory.\n\nfile_paths_xy &lt;- list.files(\n  file.path(data_dir, \"data/contour_quercus/\"),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\nid_name &lt;- file_path_sans_ext(basename(file_paths_xy))\nid_name_head &lt;- lapply(id_name, function(x) {\n  parts &lt;- unlist(strsplit(x, \"_\"))\n  return(parts[1])\n})\nid_name_head &lt;- unlist(id_name_head)\n# match species names to contour data\nsp_name &lt;- df_sp_name$species[match(id_name_head, df_sp_name$id)]\n\n# load contour data into a list of matrices\nxy_list &lt;- lapply(file_paths_xy, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  df &lt;- df[, c(\"x\", \"y\")]\n  df &lt;- as.matrix(df)\n  storage.mode(df) &lt;- \"double\"\n  # If the contour is not closed, add the first point to the end to close it\n  if (!all(df[1, ] == df[nrow(df), ])) {\n    df &lt;- rbind(df, df[1, ])\n  }\n  return(df)\n})\nnames(xy_list) &lt;- id_name",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Direction check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_quercus.html#load-oriented-true-normalized-efd-coefficients",
+    "href": "notebooks/direction_check_quercus.html#load-oriented-true-normalized-efd-coefficients",
+    "title": "Direction check for Quercus serrata and Quercus crispula",
+    "section": "Load oriented true normalized EFD coefficients",
+    "text": "Load oriented true normalized EFD coefficients\nthese data are obtained by LeafContourEFD.\n\nfile_paths &lt;- list.files(\n  file.path(data_dir, \"data/coefficients_efd_normalized_quercus/\"),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\nef_list &lt;- lapply(file_paths, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  return(df)\n})",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Direction check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_quercus.html#oriented-true-efd-normalization",
+    "href": "notebooks/direction_check_quercus.html#oriented-true-efd-normalization",
+    "title": "Direction check for Quercus serrata and Quercus crispula",
+    "section": "Oriented true EFD normalization",
+    "text": "Oriented true EFD normalization\nCompare the original contour and the reconstructed contour from oriented true EFD normalization for some samples.\nLeftward examples: samples with indices 1, 2, 3, 4, 5, 181, 182, 183, and 184.\n\nidx_left &lt;- c(1:5, 181:184)\nlabels_left &lt;- letters[1:9]\n\nlayout(matrix(seq_along(idx_left), nrow = 3, byrow = TRUE))\nfor (i in seq_along(idx_left)) {\n  compare_contour_oriented_true_EFD_normalization(\n    original = xy_list[[idx_left[i]]],\n    ef_normalized = ef_list[[idx_left[i]]],\n    nb.h = 35,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5,\n    label = labels_left[i]\n  )\n}\n\n\n\n\n\n\n\nRightward examples: samples with indices 322, 374, 375, 376, 378, 595, 596, 746, and 372.\n\nidx_right &lt;- c(322, 374, 375, 376, 378, 595, 596, 746, 372)\nlabels_right &lt;- letters[10:18]\n\nlayout(matrix(seq_along(idx_right), nrow = 3, byrow = TRUE))\nfor (i in seq_along(idx_right)) {\n  compare_contour_oriented_true_EFD_normalization(\n    original = xy_list[[idx_right[i]]],\n    ef_normalized = ef_list[[idx_right[i]]],\n    nb.h = 35,\n    lwd = 3,\n    cex.text = 5,\n    label = labels_right[i]\n  )\n}\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE)\nsave_file_name &lt;- \"fig2a_a-i_compare_contours_oriented_true_efd_normalized_quercus_leftward.svg\"\nsvg(file.path(save_dir, save_file_name), bg = \"transparent\")\nidx_left &lt;- c(1:5, 181:184)\nlabels_left &lt;- letters[1:9]\nlayout(matrix(seq_along(idx_left), nrow = 3, byrow = TRUE))\nfor (i in seq_along(idx_left)) {\n  compare_contour_oriented_true_EFD_normalization(\n    original = xy_list[[idx_left[i]]],\n    ef_normalized = ef_list[[idx_left[i]]],\n    nb.h = 35,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5,\n    label = labels_left[i]\n  )\n}\ndev.off()\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE)\nsave_file_name &lt;- \"fig2a_j-r_compare_contours_oriented_true_efd_normalized_quercus_rightward.svg\"\nsvg(file.path(save_dir, save_file_name), bg = \"transparent\")\nidx_right &lt;- c(322, 374, 375, 376, 378, 595, 596, 746, 372)\nlabels_right &lt;- letters[10:18]\nlayout(matrix(seq_along(idx_right), nrow = 3, byrow = TRUE))\nfor (i in seq_along(idx_right)) {\n  compare_contour_oriented_true_EFD_normalization(\n    original = xy_list[[idx_right[i]]],\n    ef_normalized = ef_list[[idx_right[i]]],\n    nb.h = 35,\n    lwd = 3,\n    cex.text = 5,\n    label = labels_right[i]\n  )\n}\ndev.off()",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Direction check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_quercus.html#true-efd-normalization",
+    "href": "notebooks/direction_check_quercus.html#true-efd-normalization",
+    "title": "Direction check for Quercus serrata and Quercus crispula",
+    "section": "True EFD normalization",
+    "text": "True EFD normalization\nTo assess whether the contours reconstructed agter true EFD normalization are oriented consistently with the original contours, the original contours were randomly rotated prior to applyin true EFD normalization.\n\nset.seed(123) # set.seed for reproducibility\nangles &lt;- sample(0:360, length(xy_list), replace = TRUE) # rotation angles in degrees\n# rotate contours\nxy_list_rotated &lt;- mapply(\n  function(mat, ang) rotate_xy_centered(mat, ang),\n  xy_list,\n  angles,\n  SIMPLIFY = FALSE\n)\n\nCompare the original contour and the reconstructed contour from true EFD normalization for samples do not match the original orientation (i.e., samples with indices 1, 2, 3, 4, 5, 181, 182, 183, and 184).\n\nidx_left &lt;- c(1:5, 181:184)\nlabels_left &lt;- letters[1:9]\nlayout(matrix(seq_along(idx_left), nrow = 3, byrow = TRUE))\nfor (i in seq_along(idx_left)) {\n  compare_contour_true_EFD_normalization(\n    original = xy_list_rotated[[idx_left[i]]],\n    label = labels_left[i],\n    nb.h = 35,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 3\n  )\n}\n\n\n\n\n\n\n\n\nidx_right &lt;- c(322, 374, 375, 376, 378, 595, 596, 746, 372)\nlabels_right &lt;- letters[10:18]\n\nlayout(matrix(seq_along(idx_right), nrow = 3, byrow = TRUE))\nfor (i in seq_along(idx_right)) {\n  compare_contour_true_EFD_normalization(\n    original = xy_list_rotated[[idx_right[i]]],\n    label = labels_right[i],\n    nb.h = 35,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 3\n  )\n}\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE)\nsave_file_name &lt;- \"fig2b_a-i_compare_contours_true_efd_normalized_quercus_leftward.svg\"\nsvg(file.path(save_dir, save_file_name), bg = \"transparent\")\nidx_left &lt;- c(1:5, 181:184)\nlabels_left &lt;- letters[1:9]\nlayout(matrix(seq_along(idx_left), nrow = 3, byrow = TRUE))\nfor (i in seq_along(idx_left)) {\n  compare_contour_true_EFD_normalization(\n    original = xy_list_rotated[[idx_left[i]]],\n    label = labels_left[i],\n    nb.h = 35,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 3\n  )\n}\ndev.off()\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE)\nsave_file_name &lt;- \"fig2c_j-r_compare_contours_true_efd_normalized_quercus_rightward.svg\"\nsvg(file.path(save_dir, save_file_name), bg = \"transparent\")\nidx_right &lt;- c(322, 374, 375, 376, 378, 595, 596, 746, 372)\nlabels_right &lt;- letters[10:18]\n\nlayout(matrix(seq_along(idx_right), nrow = 3, byrow = TRUE))\nfor (i in seq_along(idx_right)) {\n  compare_contour_true_EFD_normalization(\n    original = xy_list_rotated[[idx_right[i]]],\n    label = labels_right[i],\n    nb.h = 35,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 3\n  )\n}\ndev.off()",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Direction check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_quercus.html#supplementary-figures",
+    "href": "notebooks/direction_check_quercus.html#supplementary-figures",
+    "title": "Direction check for Quercus serrata and Quercus crispula",
+    "section": "Supplementary figures",
+    "text": "Supplementary figures\nVisualize all the original contours and the contours reconstructed from oriented true EFD normalization for all samples, and save the plots as SVG files.\n\nlist_id &lt;- list(\n  1:50,\n  51:100,\n  101:150,\n  151:200,\n  201:250,\n  251:300,\n  301:350,\n  351:400,\n  401:450,\n  451:500,\n  501:550,\n  551:600,\n  601:650,\n  651:700,\n  701:746\n)\nfor (ids in list_id) {\n  ids &lt;- unlist(ids)\n  layout(matrix(1:50, nrow = 5, byrow = TRUE))\n  for (id in ids) {\n    compare_contour_true_EFD_normalization(\n      xy_list_rotated[[id]],\n      label = names(xy_list_rotated[id]),\n      nb.h = 35,\n      lwd = 2,\n      mar = c(0, 0, 0, 0),\n      cex.text = 1\n    )\n  }\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results/supplementary_compare_contours_true_efd_normalized_quercus/\"\ndir.create(save_dir, recursive = TRUE, showWarnings = FALSE)\nlist_id &lt;- list(\n  1:50,\n  51:100,\n  101:150,\n  151:200,\n  201:250,\n  251:300,\n  301:350,\n  351:400,\n  401:450,\n  451:500,\n  501:550,\n  551:600,\n  601:650,\n  651:700,\n  701:746\n)\n\nfor (ids in list_id) {\n  ids &lt;- unlist(ids)\n  save_path &lt;- paste0(\n    save_dir,\n    \"/compare_contours_true_efd_normalized_quercus_\",\n    min(ids),\n    \"_\",\n    max(ids),\n    \".svg\"\n  )\n  svg(save_path, width = 10, height = 5, bg = \"transparent\")\n  layout(matrix(1:50, nrow = 5, byrow = TRUE))\n  for (id in ids) {\n    compare_contour_true_EFD_normalization(\n      original = xy_list_rotated[[id]],\n      label = names(xy_list_rotated[id]),\n      nb.h = 35,\n      lwd = 2,\n      mar = c(0, 0, 0, 0),\n      cex.text = 1\n    )\n  }\n  dev.off()\n}",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Direction check for *Quercus serrata* and *Quercus crispula*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_triadica_sebifera.html",
+    "href": "notebooks/direction_check_triadica_sebifera.html",
+    "title": "Direction check for Triadica sebifera",
+    "section": "",
+    "text": "Setup\nThis notebook compares the original contour and the reconstructed contour from oriented true EFD normalization and true EFD normalization for Triadica sebifera.\nOutput figures in this notebook are used in Figure 3 of the manuscript.\nlibrary(tools)\nlibrary(Momocs)\n\n\nAttaching package: 'Momocs'\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nsource(\"R/geometry.R\")\nsource(\"R/normalization.R\")\nsource(\"R/compare_contours.R\")\npalette(\"Okabe-Ito\")\n\n# set the data directory from environment variable (.Renviron)\ndata_dir &lt;- Sys.getenv(\"PROJECT_DATA_DIR\")",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Direction check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_triadica_sebifera.html#load-contour-data",
+    "href": "notebooks/direction_check_triadica_sebifera.html#load-contour-data",
+    "title": "Direction check for Triadica sebifera",
+    "section": "Load contour data",
+    "text": "Load contour data\nLoad the contour data from the CSV files in the data/contour_triadica_sebifera/ directory.\n\nfile_paths_xy &lt;- list.files(\n  file.path(data_dir, \"data/contour_triadica_sebifera\"),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\nid_name &lt;- file_path_sans_ext(basename(file_paths_xy))\n\nxy_list &lt;- lapply(file_paths_xy, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  df &lt;- df[, c(\"x\", \"y\")]\n  df &lt;- as.matrix(df)\n  storage.mode(df) &lt;- \"double\"\n  # if the contour is not closed, add the first point to the end to close it\n  if (!all(df[1, ] == df[nrow(df), ])) {\n    df &lt;- rbind(df, df[1, ])\n  }\n  return(df)\n})\nnames(xy_list) &lt;- id_name",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Direction check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_triadica_sebifera.html#load-oriented-true-normalized-efd-coefficients",
+    "href": "notebooks/direction_check_triadica_sebifera.html#load-oriented-true-normalized-efd-coefficients",
+    "title": "Direction check for Triadica sebifera",
+    "section": "Load oriented true normalized EFD coefficients",
+    "text": "Load oriented true normalized EFD coefficients\nthese data are obtained by LeafContourEFD.\n\nfile_paths &lt;- list.files(\n  file.path(data_dir, \"data/coefficients_efd_normalized_triadica_sebifera\"),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\nef_list &lt;- lapply(file_paths, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  return(df)\n})",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Direction check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_triadica_sebifera.html#oriented-true-efd-normalization",
+    "href": "notebooks/direction_check_triadica_sebifera.html#oriented-true-efd-normalization",
+    "title": "Direction check for Triadica sebifera",
+    "section": "Oriented true EFD normalization",
+    "text": "Oriented true EFD normalization\nCompare the original contour and the reconstructed contour from oriented true EFD normalization for the first 9 samples.\n\nxy_list_example &lt;- xy_list[1:9]\nlabels &lt;- letters[seq_along(xy_list_example)]\nlayout(matrix(seq_along(xy_list_example), nrow = 3, byrow = TRUE))\nfor (i in seq_along(xy_list_example)) {\n  compare_contour_oriented_true_EFD_normalization(\n    original = xy_list[[i]],\n    ef_normalized = ef_list[[i]],\n    nb.h = 5,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5,\n    label = labels[i]\n  )\n}\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE)\nsave_file_name &lt;- \"fig3a_compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg\"\nsvg(file.path(save_dir, save_file_name), bg = \"transparent\")\nxy_list_example &lt;- xy_list[1:9]\nlabels &lt;- letters[seq_along(xy_list_example)]\nlayout(matrix(seq_along(xy_list_example), nrow = 3, byrow = TRUE))\nfor (i in seq_along(xy_list_example)) {\n  compare_contour_oriented_true_EFD_normalization(\n    original = xy_list[[i]],\n    ef_normalized = ef_list[[i]],\n    nb.h = 5,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5,\n    label = labels[i]\n  )\n}\ndev.off()",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Direction check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_triadica_sebifera.html#true-efd-normalization",
+    "href": "notebooks/direction_check_triadica_sebifera.html#true-efd-normalization",
+    "title": "Direction check for Triadica sebifera",
+    "section": "True EFD normalization",
+    "text": "True EFD normalization\nTo assess whether the contours reconstructed agter true EFD normalization are oriented consistently with the original contours, the original contours were randomly rotated prior to applyin true EFD normalization.\n\nset.seed(123) # set.seed for reproducibility\n# rotation angles in degrees\nangles &lt;- sample(0:360, length(xy_list), replace = TRUE)\n# rotate contours\nxy_list_rotated &lt;- mapply(\n  function(mat, ang) rotate_xy_centered(mat, ang),\n  xy_list,\n  angles,\n  SIMPLIFY = FALSE\n)\n\nCompare the original contour and the reconstructed contour from true EFD normalization for the first 9 samples.\n\nxy_list_rotated_example &lt;- xy_list_rotated[1:9]\nlabels &lt;- letters[seq_along(xy_list_rotated_example)]\nlayout(matrix(seq_along(xy_list_rotated_example), nrow = 3, byrow = TRUE))\nfor (i in seq_along(xy_list_rotated_example)) {\n  compare_contour_true_EFD_normalization(\n    original = xy_list_rotated_example[[i]],\n    nb.h = 5,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5,\n    label = labels[i]\n  )\n}\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE)\nsave_file_name &lt;- \"fig3b_compare_contours_true_efd_normalized_triadica_sebifera.svg\"\nsvg(file.path(save_dir, save_file_name), bg = \"transparent\")\nxy_list_rotated_example &lt;- xy_list_rotated[1:9]\nlabels &lt;- letters[seq_along(xy_list_rotated_example)]\nlayout(matrix(seq_along(xy_list_rotated_example), nrow = 3, byrow = TRUE))\nfor (i in seq_along(xy_list_rotated_example)) {\n  compare_contour_true_EFD_normalization(\n    original = xy_list_rotated_example[[i]],\n    nb.h = 5,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5,\n    label = labels[i]\n  )\n}\ndev.off()",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Direction check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/direction_check_triadica_sebifera.html#supplementary-figures",
+    "href": "notebooks/direction_check_triadica_sebifera.html#supplementary-figures",
+    "title": "Direction check for Triadica sebifera",
+    "section": "Supplementary figures",
+    "text": "Supplementary figures\nVisualize all the original contours and the contours reconstructed from oriented true EFD normalization for all samples, and save the plots as SVG files.\n\nlayout(matrix(seq_along(xy_list_rotated), nrow = 5, byrow = TRUE))\nfor (i in seq_along(xy_list_rotated)) {\n  compare_contour_true_EFD_normalization(\n    original = xy_list_rotated[[i]],\n    nb.h = 5,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5,\n    label = i\n  )\n}\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE)\nsave_file_name &lt;- \"supplementary_compare_contours_true_efd_normalized_all_triadica_sebifera.svg\"\nsvg(file.path(save_dir, save_file_name), bg = \"transparent\")\nlayout(matrix(seq_along(xy_list_rotated), nrow = 5, byrow = TRUE))\nfor (i in seq_along(xy_list_rotated)) {\n  compare_contour_true_EFD_normalization(\n    original = xy_list_rotated[[i]],\n    nb.h = 5,\n    mar = c(0, 0, 0, 0),\n    lwd = 3,\n    cex.text = 5,\n    label = i\n  )\n}\ndev.off()",
+    "crumbs": [
+      "Direction check",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Direction check for *Triadica sebifera*</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_quercus.html",
+    "href": "notebooks/pca_quercus.html",
+    "title": "PCA of Quercus serrata and Quercus crispula leaf contours",
+    "section": "",
+    "text": "Setup & preprocessing\nPurposes of this notebook are:\n1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.\n2. To compare the PCA results among these three methods.\nOutput figures in this notebook are used in Figure 4A-C of the manuscript.\nlibrary(tools)\nlibrary(Momocs)\n\n\nAttaching package: 'Momocs'\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nsource(\"R/geometry.R\")\nsource(\"R/normalization.R\")\nsource(\"R/pca_plot.R\")\n# color palette for colorblind-friendly visualization\npalette(\"Okabe-Ito\")\n# Quercus serrata and Q. crispula colors\nmy_palette &lt;- pal_manual(c(\"#FF4B00\", \"#005AFF\"), transp = 0)\n# set the data directory from environment variable (.Renviron)\ndata_dir &lt;- Sys.getenv(\"PROJECT_DATA_DIR\")\nLoad the species names from the CSV file.\nThis file contains three columns: id, konara, and mizunara. The id column corresponds to the sample ID, while the konara and mizunara columns contain binary values indicating the species classification. We will determine the species name based on which column has a value of 1 for each sample.\ndf_sp_name &lt;- read.csv(file.path(data_dir, \"data/species_name.csv\"))\ndf_sp_name$species &lt;- ifelse(\n  df_sp_name$konara &lt; df_sp_name$mizunara,\n  \"Quercus crispula\",\n  \"Quercus serrata\"\n)\ndf_sp_name$species &lt;- factor(\n  df_sp_name$species,\n  levels = c(\"Quercus serrata\", \"Quercus crispula\")\n)\nLoad contours\nfile_paths_xy &lt;- list.files(\n  file.path(data_dir, \"data/contour_quercus/\"),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\nxy_list &lt;- lapply(file_paths_xy, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  df &lt;- df[, c(\"x\", \"y\")]\n  df &lt;- as.matrix(df)\n  storage.mode(df) &lt;- \"double\"\n  # 輪郭が閉じていない場合、最初の点を最後に追加して閉じる\n  if (!all(df[1, ] == df[nrow(df), ])) {\n    df &lt;- rbind(df, df[1, ])\n  }\n  return(df)\n})\nnames(xy_list) &lt;- file_path_sans_ext(basename(file_paths_xy))\nRotate contour\nset.seed(123) # set.seed for reproducibility\nangles &lt;- sample(0:360, length(xy_list), replace = TRUE) # rotation angles in degrees\n# rotate contours\nxy_list_rotated &lt;- mapply(\n  function(mat, ang) rotate_xy_centered(mat, ang),\n  xy_list,\n  angles,\n  SIMPLIFY = FALSE\n)\nTo evaluate the normalization methods without bias from the contour’s initial point, we randomize the starting point of each contour.\nThis is necessary because the contours obtained with LeafContourEFD already have a standardized starting point.\nTo randomize the starting point, we reorder the points in each contour by selecting a starting point at random and rearranging the sequence accordingly.\nset.seed(123)\nxy_list_rotated_reordered &lt;- lapply(xy_list_rotated, function(xy_rotated) {\n  # rotation angles in degrees\n  idx_start &lt;- sample(seq_len(nrow(xy_rotated)), 1)\n  xy_rotated_reordered &lt;- xy_rotated[\n    c(idx_start:nrow(xy_rotated), 1:(idx_start - 1)),\n  ]\n  return(xy_rotated_reordered)\n})\nSpecies names corresponding to individual IDs\nid_name &lt;- file_path_sans_ext(basename(file_paths_xy)) # IDs with suffixes\n# individual IDs without suffixes\nid_name_head &lt;- lapply(id_name, function(x) {\n  parts &lt;- unlist(strsplit(x, \"_\"))\n  return(parts[1])\n})\nid_name_head &lt;- unlist(id_name_head)\n# species names corresponding to individual IDs\nsp_name &lt;- df_sp_name$species[match(id_name_head, df_sp_name$id)]",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>PCA of *Quercus serrata* and *Quercus crispula* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_quercus.html#setup-preprocessing",
+    "href": "notebooks/pca_quercus.html#setup-preprocessing",
+    "title": "PCA of Quercus serrata and Quercus crispula leaf contours",
+    "section": "",
+    "text": "NoteSpecies name\n\n\n\nkonara means Quercus serrata, and mizunara means Quercus crispula. konara (コナラ) represents the standard Japanese name of Quercus serrata, while mizunara (ミズナラ) is the standard Japanese name of Quercus crispula.",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>PCA of *Quercus serrata* and *Quercus crispula* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_quercus.html#pca-using-conventional-normalization",
+    "href": "notebooks/pca_quercus.html#pca-using-conventional-normalization",
+    "title": "PCA of Quercus serrata and Quercus crispula leaf contours",
+    "section": "PCA using conventional normalization",
+    "text": "PCA using conventional normalization\nPCA using normalized EFD coefficients (conventional method) Momocs側で正規化を行います。\n\nnb_h &lt;- 35 # Number of harmonics\nout &lt;- Out(\n  xy_list_rotated_reordered,\n  fac = data.frame(species = factor(sp_name))\n) # convert to Momocs Out object\n# EFD with normalization\nef_norm &lt;- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE)\npca_norm &lt;- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs\n\nidx_max &lt;- which.max(pca_norm$x[, 2])\nidx_min &lt;- which.min(pca_norm$x[, 2])\n\npca_plot(pca_norm) # visualize PCA results\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE, recursive = TRUE)\nsave_file_name &lt;- \"fig4a_pca_efd_normalized_quercus.svg\"\nsave_file_path &lt;- file.path(save_dir, save_file_name)\nsvg(\n  save_file_path,\n  bg = \"transparent\"\n)\npca_plot(pca_norm)\ndev.off()",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>PCA of *Quercus serrata* and *Quercus crispula* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_quercus.html#pca-using-true-efd-normalization",
+    "href": "notebooks/pca_quercus.html#pca-using-true-efd-normalization",
+    "title": "PCA of Quercus serrata and Quercus crispula leaf contours",
+    "section": "PCA using true EFD normalization",
+    "text": "PCA using true EFD normalization\n\nnb_h &lt;- 35 # Number of harmonics\n# convert to Momocs Out object\nout &lt;- Out(\n  xy_list_rotated_reordered,\n  fac = data.frame(species = factor(sp_name))\n)\n# oriented true EFD normalization\nef_true_norm &lt;- efourier_true_norm(\n  out,\n  nb_h = nb_h,\n  x_sy = TRUE,\n  y_sy = TRUE,\n  skip_rotation = FALSE\n)\n# PCA with Momocs\npca_true_norm &lt;- PCA(ef_true_norm, center = TRUE, scale. = FALSE)\n# flip PC axes for better visualization\npca_true_norm &lt;- flip_PCaxes(pca_true_norm, 1)\npca_plot(pca_true_norm)\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE, recursive = TRUE)\nsave_file_name &lt;- \"fig4b_pca_true_efd_normalized.svg\"\nsave_file_path &lt;- file.path(save_dir, save_file_name)\nsvg(\n  save_file_path,\n  bg = \"transparent\"\n)\npca_plot(pca_true_norm)\ndev.off()",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>PCA of *Quercus serrata* and *Quercus crispula* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_quercus.html#pca-using-oriented-true-efd-normalization",
+    "href": "notebooks/pca_quercus.html#pca-using-oriented-true-efd-normalization",
+    "title": "PCA of Quercus serrata and Quercus crispula leaf contours",
+    "section": "PCA using oriented true EFD normalization",
+    "text": "PCA using oriented true EFD normalization\n(後で英語に直す) LeafContourEFDで得られた輪郭はすでに開始点、回転が標準化されています。 この輪郭にtrue EFD noramlizationのx対照補正のみを行うことで、oriente true EFD normalizationを実現します。\nLeafContourEFDで得られたフーリエ係数を使用しても同じ結果が得られますが、今回はMomocsの関数を利用して、PC値の変化に応じた再構築輪郭の変化を簡単にPCAプロット上に可視化できるようにします。\n将来的にはMomocsに依存しない方法も提供する予定です。\n\nnb_h &lt;- 35 # Number of harmonics\nout &lt;- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object\n# oriented true EFD normalization\nef_true_norm &lt;- efourier_true_norm(\n  out,\n  nb_h = nb_h,\n  x_sy = TRUE,\n  y_sy = FALSE,\n  skip_rotation = TRUE\n)\n\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\n\n# PCA with Momocs\npca_true_norm &lt;- PCA(ef_true_norm, center = TRUE, scale. = FALSE)\n\nVisualize PCA results\n\npca_plot(pca_true_norm)\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE, recursive = TRUE)\nsave_file_name &lt;- \"fig4c_pca_oriented_true_efd_normalized.svg\"\nsave_file_path &lt;- file.path(save_dir, save_file_name)\nsvg(\n  save_file_path,\n  bg = \"transparent\"\n)\npca_plot(pca_true_norm)\ndev.off()",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>PCA of *Quercus serrata* and *Quercus crispula* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_triadica_sebifera.html",
+    "href": "notebooks/pca_triadica_sebifera.html",
+    "title": "PCA of Triadica sebifera leaf contours",
+    "section": "",
+    "text": "Setup & preprocessing\nPurposes of this notebook are:\n1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.\n2. To compare the PCA results among these three methods.\nlibrary(tools)\nlibrary(Momocs)\n\n\nAttaching package: 'Momocs'\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nsource(\"R/geometry.R\")\nsource(\"R/normalization.R\")\nsource(\"R/pca_plot.R\")\n# color palette for colorblind-friendly visualization\npalette(\"Okabe-Ito\")\n# set the data directory from environment variable (.Renviron)\ndata_dir &lt;- Sys.getenv(\"PROJECT_DATA_DIR\")\nLoad contours\nfile_paths_xy &lt;- list.files(\n  file.path(data_dir, \"data/contour_triadica_sebifera/\"),\n  full.names = TRUE,\n  pattern = \"\\\\.csv$\"\n)\nxy_list &lt;- lapply(file_paths_xy, function(fp) {\n  #cat(\"File:\", fp, \"\\n\")\n  df &lt;- read.csv(fp)\n  df &lt;- df[, c(\"x\", \"y\")]\n  df &lt;- as.matrix(df)\n  storage.mode(df) &lt;- \"double\"\n  # Ensure the contour is closed by checking if the first and last points are the same. If not, append the first point to the end of the matrix.\n  if (!all(df[1, ] == df[nrow(df), ])) {\n    df &lt;- rbind(df, df[1, ])\n  }\n  return(df)\n})",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>PCA of *Triadica sebifera* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_triadica_sebifera.html#pca-using-conventional-normalization",
+    "href": "notebooks/pca_triadica_sebifera.html#pca-using-conventional-normalization",
+    "title": "PCA of Triadica sebifera leaf contours",
+    "section": "PCA using conventional normalization",
+    "text": "PCA using conventional normalization\nPCA using normalized EFD coefficients (conventional method) Momocs側で正規化を行います。\n\nnb_h &lt;- 5 # Number of harmonics\nout &lt;- Out(xy_list) # convert to Momocs Out object\nef_norm &lt;- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE) # EFD with normalization\npca_norm &lt;- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs\npca_plot(pca_norm)\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE, recursive = TRUE)\nsave_file_name &lt;- \"fig4d_pca_efd_normalized.svg\"\nsave_file_path &lt;- file.path(save_dir, save_file_name)\nsvg(\n  save_file_path,\n  bg = \"transparent\"\n)\npca_plot(pca_norm)\ndev.off()",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>PCA of *Triadica sebifera* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_triadica_sebifera.html#true-efd-normalization",
+    "href": "notebooks/pca_triadica_sebifera.html#true-efd-normalization",
+    "title": "PCA of Triadica sebifera leaf contours",
+    "section": "True EFD normalization",
+    "text": "True EFD normalization\n\nnb_h &lt;- 5 # Number of harmonics\nout &lt;- Out(xy_list) # convert to Momocs Out object\n# oriented true EFD normalization\nef_true_norm &lt;- efourier_true_norm(\n  out,\n  nb_h = nb_h,\n  x_sy = TRUE,\n  y_sy = TRUE,\n  skip_rotation = FALSE\n)\npca_true_norm &lt;- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs\npca_plot(pca_true_norm)\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE, recursive = TRUE)\nsave_file_name &lt;- \"fig4e_pca_true_efd_normalized.svg\"\nsave_file_path &lt;- file.path(save_dir, save_file_name)\nsvg(\n  save_file_path,\n  bg = \"transparent\"\n)\npca_plot(pca_true_norm)\ndev.off()",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>PCA of *Triadica sebifera* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/pca_triadica_sebifera.html#pca-using-oriented-true-efd-normalization",
+    "href": "notebooks/pca_triadica_sebifera.html#pca-using-oriented-true-efd-normalization",
+    "title": "PCA of Triadica sebifera leaf contours",
+    "section": "PCA using oriented true EFD normalization",
+    "text": "PCA using oriented true EFD normalization\n(後で英語に直す) LeafContourEFDで得られた輪郭はすでに開始点、回転が標準化されています。 この輪郭にtrue EFD noramlizationのx対照補正のみを行うことで、oriente true EFD normalizationを実現します。\nLeafContourEFDで得られたフーリエ係数を使用しても同じ結果が得られますが、今回はMomocsの関数を利用して、PC値の変化に応じた再構築輪郭の変化を簡単にPCAプロット上に可視化できるようにします。\n将来的にはMomocsに依存しない方法も提供する予定です。\n\nnb_h &lt;- 5 # Number of harmonics\nout &lt;- Out(xy_list) # convert to Momocs Out object\n# oriented true EFD normalization\nef_true_norm &lt;- efourier_true_norm(\n  out,\n  nb_h = nb_h,\n  x_sy = TRUE,\n  y_sy = FALSE,\n  skip_rotation = TRUE\n)\n\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\nskip_rotation is TRUE\n\npca_true_norm &lt;- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs\npca_plot(pca_true_norm)\n\n\n\n\n\n\n\n\nSave the plot as SVG filesave_dir &lt;- \"results\"\ndir.create(save_dir, showWarnings = FALSE, recursive = TRUE)\nsave_file_name &lt;- \"fig4f_pca_oriented_true_efd_normalized.svg\"\nsave_file_path &lt;- file.path(save_dir, save_file_name)\nsvg(\n  save_file_path,\n  bg = \"transparent\"\n)\npca_plot(pca_true_norm)\ndev.off()",
+    "crumbs": [
+      "Principal component analysis",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>PCA of *Triadica sebifera* leaf contours</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/functions.html",
+    "href": "notebooks/functions.html",
+    "title": "Appendix A — Functions used in the analysis",
+    "section": "",
+    "text": "R/compare_contours.R\nPurpose of this notebook is to introduce the functions used in the analysis of this study.\nR/compare_contours.R contains two functions to compare the original contour with the reconstructed contour from EFD coefficients.\nThe first function compare_contour_oriented_true_EFD_normalization compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method.\nThe second function compare_contour_true_EFD_normalization compares the original contour with the reconstructed contour from EFD coefficients normalized by the true normalization method without orientation.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Functions used in the analysis</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/functions.html#rcompare_contours.r",
+    "href": "notebooks/functions.html#rcompare_contours.r",
+    "title": "Appendix A — Functions used in the analysis",
+    "section": "",
+    "text": "compare_contour_oriented_true_EFD_normalization()\n\ncompare_contour_oriented_true_EFD_normalization &lt;- function(\n  original,\n  ef_normalized,\n  label = NULL,\n  nb.h = 35,\n  mar = c(0, 0, 0, 0),\n  cex.text = 2,\n  ...\n) {\n  # Fuction to compute E* from EFD coefficients\n  compute_E_star &lt;- function(ef) {\n    A1 &lt;- ef$an[1]\n    B1 &lt;- ef$bn[1]\n    C1 &lt;- ef$cn[1]\n    D1 &lt;- ef$dn[1]\n    # Calculate theta\n    theta &lt;- 0.5 *\n      atan2(\n        2 * (A1 * B1 + C1 * D1),\n        (A1^2 + C1^2 - B1^2 - D1^2)\n      )\n\n    # Calculate a* and c*\n    a_star &lt;- A1 * cos(theta) + B1 * sin(theta)\n    c_star &lt;- C1 * cos(theta) + D1 * sin(theta)\n\n    # E*\n    E_star &lt;- sqrt(a_star^2 + c_star^2)\n    return(E_star)\n  }\n\n  center &lt;- coo_centpos(original) # center position\n  original_centered &lt;- sweep(original, 2, center, \"-\") # center the contour\n  ef &lt;- efourier(\n    original_centered,\n    nb.h = nb.h,\n    norm = FALSE\n  )\n  E &lt;- compute_E_star(ef)\n  true_ef_coef &lt;- list(\n    ao = unique(ef_normalized$ao),\n    co = unique(ef_normalized$co),\n    an = ef_normalized$an,\n    bn = ef_normalized$bn,\n    cn = ef_normalized$cn,\n    dn = ef_normalized$dn\n  )\n  # reonstruct contour from true EFD coefficients\n  reconstruct &lt;- efourier_i(true_ef_coef, nb.h = nb.h)\n  df_reconstruct &lt;- as.data.frame(reconstruct)\n  df_reconstruct &lt;- df_reconstruct * E\n  xlim &lt;- range(c(df_reconstruct$x, original_centered[, 1]))\n  ylim &lt;- range(c(df_reconstruct$y, original_centered[, 2]))\n  par(mar = mar)\n  # original centered contour\n  plot(\n    original_centered,\n    type = \"l\",\n    asp = 1,\n    col = adjustcolor(\"black\", red = 0.7, green = 0.7, blue = 0.7),\n    xlim = xlim,\n    ylim = ylim,\n    bty = \"n\",\n    xaxt = \"n\",\n    yaxt = \"n\",\n    xlab = \"\",\n    ylab = \"\",\n    ...\n  )\n\n  # reconstructed contour\n  lines(\n    df_reconstruct,\n    asp = 1,\n    col = adjustcolor(\"#FF4B00\", alpha.f = 0.9),\n    ...\n  )\n\n  # label\n  if (!is.null(label)) {\n    text(\n      x = mean(par(\"usr\")[1:2]),\n      y = mean(par(\"usr\")[3:4]),\n      labels = label,\n      cex = cex.text,\n      col = \"black\"\n    )\n  }\n}\n\ncompare_contour_true_EFD_normalization()\n\ncompare_contour_true_EFD_normalization &lt;- function(\n  original,\n  label = NULL,\n  nb.h = 35,\n  mar = c(0, 0, 0, 0),\n  cex.text = 2,\n  ...\n) {\n  center &lt;- coo_centpos(original) # center position\n  original_centered &lt;- sweep(original, 2, center, \"-\") # center the contour\n\n  ef &lt;- efourier(\n    original_centered,\n    nb.h = nb.h,\n    norm = FALSE\n  )\n  true_ef &lt;- true_normalize(ef, output_meta = TRUE)\n  true_ef_coef &lt;- true_ef$ef\n  true_ef_coef &lt;- list(\n    ao = unique(true_ef_coef$ao),\n    co = unique(true_ef_coef$co),\n    an = true_ef_coef$an,\n    bn = true_ef_coef$bn,\n    cn = true_ef_coef$cn,\n    dn = true_ef_coef$dn\n  )\n  # reonstruct contour from true EFD coefficients\n  reconstruct &lt;- efourier_i(true_ef_coef, nb.h = nb.h)\n  df_reconstruct &lt;- as.data.frame(reconstruct)\n  df_reconstruct &lt;- df_reconstruct * true_ef$E\n\n  xlim &lt;- range(c(df_reconstruct$x, original_centered[, 1]))\n\n  par(mar = mar)\n  # original centered contour\n  plot(\n    original_centered,\n    type = \"l\",\n    asp = 1,\n    col = adjustcolor(\"black\", red = 0.7, green = 0.7, blue = 0.7),\n    xlim = xlim,\n    bty = \"n\",\n    xaxt = \"n\",\n    yaxt = \"n\",\n    xlab = \"\",\n    ylab = \"\",\n    ...\n  )\n\n  # reconstructed contour\n  lines(\n    df_reconstruct,\n    asp = 1,\n    col = adjustcolor(\"#FF4B00\", alpha.f = 0.9),\n    ...\n  )\n  if (!is.null(label)) {\n    text(\n      x = mean(par(\"usr\")[1:2]),\n      y = mean(par(\"usr\")[3:4]),\n      labels = label,\n      cex = cex.text,\n      col = \"black\"\n    )\n  }\n}",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Functions used in the analysis</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/functions.html#rgeometry.r",
+    "href": "notebooks/functions.html#rgeometry.r",
+    "title": "Appendix A — Functions used in the analysis",
+    "section": "R/geometry.R",
+    "text": "R/geometry.R\nR/geometry.R contains three functions to rotate the contour.\nrotate_xy()\n\nrotate_xy &lt;- function(df, angle_deg, origin = c(0, 0)) {\n  theta &lt;- angle_deg * pi / 180\n\n  x &lt;- df[, 1] - origin[1]\n  y &lt;- df[, 2] - origin[2]\n\n  x_new &lt;- x * cos(theta) - y * sin(theta)\n  y_new &lt;- x * sin(theta) + y * cos(theta)\n\n  data.frame(x = x_new + origin[1], y = y_new + origin[2])\n}\n\nrotate_xy_centered()\n\nrotate_xy_centered &lt;- function(df, angle_deg) {\n  origin &lt;- c(mean(df[, 1]), mean(df[, 2]))\n  rotate_xy(df, angle_deg, origin)\n}\n\nrotate_xy_custom_origin()\n\nrotate_xy_custom_origin &lt;- function(df, angle_deg, origins) {\n  l &lt;- lapply(seq_along(origins), function(i) {\n    rotate_xy(df[i, ], angle_deg[i], origins[[i]])\n  })\n  do.call(rbind, l)\n}",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Functions used in the analysis</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/functions.html#rnormalization.r",
+    "href": "notebooks/functions.html#rnormalization.r",
+    "title": "Appendix A — Functions used in the analysis",
+    "section": "R/normalization.R",
+    "text": "R/normalization.R\nR/normalization.R contains two functions to normalize EFD coefficients by the true normalization method.\ntrue_normalize_coe()\n\ntrue_normalize_coe &lt;- function(\n  ef_coe,\n  EPS = 1e-10,\n  y_sy = TRUE,\n  x_sy = TRUE,\n  skip_rotation = FALSE\n) {\n  ef_mat &lt;- as.matrix(ef_coe)\n  storage.mode(ef_mat) &lt;- \"double\"\n\n  get_H &lt;- function(cn) {\n    idx &lt;- grep(\"^[ABCD][0-9]+$\", cn)\n    if (!length(idx)) {\n      stop(\"A/B/C/D indexed columns were not found.\")\n    }\n    max(as.integer(sub(\"^[ABCD]\", \"\", cn[idx])))\n  }\n\n  H &lt;- get_H(colnames(ef_mat))\n  nmA &lt;- paste0(\"A\", 1:H)\n  nmB &lt;- paste0(\"B\", 1:H)\n  nmC &lt;- paste0(\"C\", 1:H)\n  nmD &lt;- paste0(\"D\", 1:H)\n\n  need &lt;- c(nmA, nmB, nmC, nmD)\n  stopifnot(all(need %in% colnames(ef_mat)))\n\n  norm_one &lt;- function(row) {\n    ef &lt;- list(\n      an = as.numeric(row[nmA]),\n      bn = as.numeric(row[nmB]),\n      cn = as.numeric(row[nmC]),\n      dn = as.numeric(row[nmD]),\n      ao = 0,\n      co = 0\n    )\n\n    ef_true &lt;- true_normalize(\n      ef,\n      EPS = EPS,\n      y_sy = y_sy,\n      x_sy = x_sy,\n      skip_rotation = skip_rotation\n    )\n\n    if (skip_rotation) {\n      message(\"skip_rotation is TRUE\")\n    }\n\n    c(\n      setNames(ef_true$an, nmA),\n      setNames(ef_true$bn, nmB),\n      setNames(ef_true$cn, nmC),\n      setNames(ef_true$dn, nmD)\n    )\n  }\n\n  ef_mat_norm &lt;- t(apply(ef_mat, 1, norm_one))\n\n  rownames(ef_mat_norm) &lt;- rownames(ef_mat)\n  ef_mat_norm &lt;- ef_mat_norm[, need, drop = FALSE]\n  storage.mode(ef_mat_norm) &lt;- \"double\"\n  ef_mat_norm\n}\n\nefourier_true_norm()\n\nefourier_true_norm &lt;- function(\n  coo_out,\n  nb_h = 35,\n  x_sy = TRUE,\n  y_sy = TRUE,\n  ...\n) {\n  ef &lt;- efourier(coo_out, nb.h = nb_h, norm = FALSE)\n  ef$coe &lt;- true_normalize_coe(ef$coe, y_sy = y_sy, x_sy = x_sy, ...)\n  ef\n}",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Functions used in the analysis</span>"
+    ]
+  },
+  {
+    "objectID": "notebooks/functions.html#rpca_plot.r",
+    "href": "notebooks/functions.html#rpca_plot.r",
+    "title": "Appendix A — Functions used in the analysis",
+    "section": "R/pca_plot.R",
+    "text": "R/pca_plot.R\nR/pca_plot.R contains a function to plot PCA results.\n\npca_plot &lt;- function(x, group = \"species\", palette = NULL, ...) {\n  fac_names &lt;- names(x$fac)\n  has_group &lt;- !is.null(fac_names) && group %in% fac_names\n  grouping_formula &lt;- if (has_group) stats::reformulate(group) else NULL\n\n  if (is.null(palette)) {\n    palette &lt;- if (has_group && exists(\"my_palette\", inherits = TRUE)) {\n      get(\"my_palette\", inherits = TRUE)\n    } else {\n      \"grey30\"\n    }\n  }\n\n  plt &lt;- plot_PCA(\n    x,\n    f = grouping_formula,\n    palette = palette,\n    points = FALSE,\n    morphospace = FALSE,\n    morphospace_position = \"range\",\n    chull = TRUE, # convex hull\n    #chullfilled = TRUE,\n    zoom = 1,\n    eigen = FALSE,\n    box = FALSE,\n    axesnames = FALSE,\n    axesvar = FALSE,\n    ...\n  )\n  plt &lt;- layer_axes(plt, col = \"black\", lwd = 1)\n  plt &lt;- layer_ticks(plt, col = \"black\", lwd = 1)\n  plt &lt;- layer_points(plt, pch = 19, cex = 1, transp = 0.5)\n  plt &lt;- layer_morphospace_PCA(plt, size = 1, col = \"black\")\n  plt &lt;- layer_axesnames(plt, cex = 1.5, name = \"PC\") # add axes names\n  plt &lt;- layer_axesvar(plt, cex = 1.5) # add axes variance\n}",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Functions used in the analysis</span>"
+    ]
+  }
+]

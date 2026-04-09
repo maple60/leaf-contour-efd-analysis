@@ -1,0 +1,35 @@
+project:
+  type: book
+  execute-dir: project
+  output-dir: docs # for GitHub Pages
+
+book:
+  title: "LeafContourEFD Analysis"
+  author: "Kaede Konrai"
+  date: "2026-04-08"
+  chapters:
+    - index.qmd
+    - part: "Contour check"
+      chapters:
+        - notebooks/contour_check_quercus.qmd
+        - notebooks/contour_check_triadica_sebifera.qmd
+    - part: "Direction check"
+      chapters:
+        - notebooks/direction_check_quercus.qmd
+        - notebooks/direction_check_triadica_sebifera.qmd
+    - part: "Principal component analysis"
+      chapters:
+        - notebooks/pca_quercus.qmd
+        - notebooks/pca_triadica_sebifera.qmd
+  appendices:
+    - notebooks/functions.qmd
+
+bibliography: references.bib
+number-sections: false
+
+format:
+  html:
+    code-overflow: wrap
+    code-tools: true
+    code-link: true
+    theme: cosmo

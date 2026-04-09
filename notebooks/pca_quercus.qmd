@@ -2,9 +2,9 @@
 title: "PCA of *Quercus serrata* and *Quercus crispula* leaf contours"
 ---
 
-Purposes of this notebook are:
-1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.
-2. To compare the PCA results among these three methods.
+Purposes of this notebook are:  
+1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.  
+2. To compare the PCA results among these three methods.  
 
 Output figures in this notebook are used in **Figure 4A-C** of the manuscript.
 
