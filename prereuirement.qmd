@@ -1,0 +1,14 @@
+---
+title: "Prerequisite Setup"
+---
+
+In the analyses, `Momocs` and `tools` packages are used.
+Make sure to install these packages before running the notebooks.
+
+```{r}
+# latest Momocs was archived, so install the archived version
+renv::install("Momocs@1.5.0")
+renv::install("tools")
+```
+
+If you execue `renv::restore()` as described in the index.qmd, these packages will be automatically installed.

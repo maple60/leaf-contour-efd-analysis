@@ -1,0 +1,53 @@
+---
+title: "Notebooks for analysis"
+---
+
+This repository contains analysis code and reproducibility materials for the LeafContourEFD manuscript. The software itself is available at: [leaf-contour-efd](https://github.com/maple60/leaf-contour-efd)
+
+## Requirements
+
+To reproduce the analysis, you need:
+
+- [R](https://www.r-project.org/) (recommended version: 4.3.1 or higher)
+- [Quarto](https://quarto.org/)
+- the R packages required by this project
+
+If you install [renv](https://rstudio.github.io/renv/), you can install the required R packages by executing `renv::restore()` (see below). All analysis code is written in R version 4.3.1 [@r:alan2026].
+
+### Optional tools
+
+- [Air](https://posit-dev.github.io/air/): R code formatter.
+- [Positron](https://positron.posit.co/): IDE used for all analyses in this project, but not required to run the code.
+
+### R environment setup
+
+In this repository, I use [renv](https://rstudio.github.io/renv/) to manage R package dependencies. Please execute command below after installing renv.
+
+``` r
+# install.packages("renv") # if not installed
+renv::restore()
+```
+
+## Data
+
+Raw data are available on [Dryad](https://datadryad.org/) (DOI: in
+preparation).
+
+Tracked-vs-external data policy is documented in `data/README.md`.
+
+This project may require setting a local data directory via environment
+variable. Create a `.Renviron` file in the project root and add:
+
+``` {filename=".Renviron"}
+PROJECT_DATA_DIR=/path/to/your/data
+```
+
+For example:
+
+- macOS: /Users/yourname/Dropbox/project_data
+- Windows: C:/Users/yourname/Dropbox/project_data
+
+## References
+
+::: {#refs}
+:::

@@ -1,28 +1,46 @@
+---
+title: "Contour check for *Triadica sebifera*"
+---
+
+Purposes of this notebook are:
+1. To check the original contour data of *Triadica sebifera*.
+2. To check the reconstructed contour from Oriented True EFD normalization for all samples.
+
+Output figures of this notebook are not included in the manuscript, but they are saved in the `results/` directory.
+
 ## Setup
 
 ```{r}
 #| label: setup
-
 library(tools)
 library(Momocs)
-source("scripts/functions.R")
+source("R/normalization.R")
+source("R/compare_contours.R")
+# color palette for colorblind-friendly visualization
 palette("Okabe-Ito")
+# set the data directory from environment variable (.Renviron)
+data_dir <- Sys.getenv("PROJECT_DATA_DIR")
 ```
 
 ## Load contour data
 
+Load the contour data from the CSV files in the `data/contour_triadica_sebifera/` directory.
+There are 30 samples.
+
 ```{r}
 #| label: load_contours
-
+# file paths of contour CSV files
 file_paths_xy <- list.files(
-  "data/contour_triadica_sebifera//",
+  file.path(data_dir, "data/contour_triadica_sebifera"),
   full.names = TRUE,
   pattern = "\\.csv$"
 )
+# extract sample IDs from file names
 id_name <- file_path_sans_ext(basename(file_paths_xy))
 
+# load contour data into a list of matrices
 xy_list <- lapply(file_paths_xy, function(fp) {
-  cat("File:", fp, "\n")
+  #cat("File:", fp, "\n")
   df <- read.csv(fp)
   df <- df[, c("x", "y")]
   df <- as.matrix(df)
@@ -33,293 +51,71 @@ xy_list <- lapply(file_paths_xy, function(fp) {
   }
   return(df)
 })
+# assign names to the list of contours
 names(xy_list) <- id_name
 ```
 
+## Load oriented true normalized EFD coefficients
+
+Load the oriented true normalized EFD coefficients from the CSV files in the `data/coefficients_efd_normalized_triadica_sebifera/` directory.
+These data are obtained(calculated) from LeafContourEFD.
+
 ```{r} 
+#| label: load_coefficients
+# file paths of EFD coefficient CSV files
 file_paths <- list.files(
-  "data/coefficients_efd_normalized_triadica_sebifera",
+  file.path(data_dir, "data/coefficients_efd_normalized_triadica_sebifera"),
   full.names = TRUE,
   pattern = "\\.csv$"
 )
+
+# load EFD coefficients into a list of data frames
 ef_list <- lapply(file_paths, function(fp) {
-  cat("File:", fp, "\n")
+  #cat("File:", fp, "\n")
   df <- read.csv(fp)
   return(df)
 })
 ```
 
-## Define function to compare original contour and reconstructed contour from Oriented True EFD normalization
-
-```{r}
-compare_contour_oriented_ture_EFD_normalization <- function(
-  original,
-  ef_normalized,
-  label = NULL,
-  nb.h = 35,
-  mar = c(0, 0, 0, 0),
-  cex.text = 2,
-  ...
-) {
-  # Fuction to compute E* from EFD coefficients
-  compute_E_star <- function(ef) {
-    A1 <- ef$an[1]
-    B1 <- ef$bn[1]
-    C1 <- ef$cn[1]
-    D1 <- ef$dn[1]
-    # Calculate theta
-    theta <- 0.5 *
-      atan2(
-        2 * (A1 * B1 + C1 * D1),
-        (A1^2 + C1^2 - B1^2 - D1^2)
-      )
-
-    # Calculate a* and c*
-    a_star <- A1 * cos(theta) + B1 * sin(theta)
-    c_star <- C1 * cos(theta) + D1 * sin(theta)
-
-    # E*
-    E_star <- sqrt(a_star^2 + c_star^2)
-    return(E_star)
-  }
-
-  center <- coo_centpos(original) # center position
-  original_centered <- sweep(original, 2, center, "-") # center the contour
-  ef <- efourier(
-    original_centered,
-    nb.h = nb.h,
-    norm = FALSE
-  )
-  E <- compute_E_star(ef)
-  true_ef_coef <- list(
-    ao = unique(ef_normalized$ao),
-    co = unique(ef_normalized$co),
-    an = ef_normalized$an,
-    bn = ef_normalized$bn,
-    cn = ef_normalized$cn,
-    dn = ef_normalized$dn
-  )
-  # reonstruct contour from true EFD coefficients
-  reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
-  df_reconstruct <- as.data.frame(reconstruct)
-  df_reconstruct <- df_reconstruct * E
-  xlim <- range(c(df_reconstruct$x, original_centered[, 1]))
-  ylim <- range(c(df_reconstruct$y, original_centered[, 2]))
-  par(mar = mar)
-  # original centered contour
-  plot(
-    original_centered,
-    type = "l",
-    asp = 1,
-    col = adjustcolor("black", red = 0.7, green = 0.7, blue = 0.7),
-    xlim = xlim,
-    ylim = ylim,
-    bty = "n",
-    xaxt = "n",
-    yaxt = "n",
-    xlab = "",
-    ylab = "",
-    ...
-  )
-
-  # reconstructed contour
-  lines(
-    df_reconstruct,
-    asp = 1,
-    col = adjustcolor("#FF4B00", alpha.f = 0.9),
-    ...
-  )
-
-  # label
-  if (!is.null(label)) {
-    text(
-      x = mean(par("usr")[1:2]),
-      y = mean(par("usr")[3:4]),
-      labels = label,
-      cex = cex.text,
-      col = "black"
-    )
-  }
-}
-```
-
-## Save all comparisons
+## Visualize the original contours and the contours reconstructed from oriented true EFD normalization
 
 Overlay the original contour and the reconstructed contour from Oriented True EFD normalization.
 
 ```{r}
+#| label: compare_contours
+layout(matrix(seq_along(xy_list), nrow = 5, byrow = TRUE))
+for (i in seq_along(xy_list)) {
+  compare_contour_oriented_true_EFD_normalization(
+    original = xy_list[[i]],
+    ef_normalized = ef_list[[i]],
+    label = i,
+    nb.h = 5,
+    mar = c(0, 0, 0, 0),
+    lwd = 3,
+    cex.text = 5
+  )
+}
+```
+
+```{r}
+#| label: save_comparison_plots
+#| eval: false
+#| code-fold: true
+#| code-summary: "Save the plot as SVG file"
 save_dir <- "results"
 dir.create(save_dir, showWarnings = FALSE)
-save_file_name <- "compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg"
+save_file_name <- "supplementary_compare_contours_oriented_true_efd_normalized_triadica_sebifera.svg"
 svg(file.path(save_dir, save_file_name), bg = "transparent")
 layout(matrix(seq_along(xy_list), nrow = 5, byrow = TRUE))
 for (i in seq_along(xy_list)) {
-  compare_contour_oriented_ture_EFD_normalization(
+  compare_contour_oriented_true_EFD_normalization(
     original = xy_list[[i]],
     ef_normalized = ef_list[[i]],
-    label = names(xy_list)[i],
-    nb.h = 5,
-    mar = c(0, 0, 0, 0),
-    lwd = 2,
-    cex.text = 1
-  )
-}
-dev.off()
-```
-
-## Save a subset of comparisons
-
-```{r}
-save_dir <- "results"
-dir.create(save_dir, showWarnings = FALSE)
-save_file_name <- "compare_contours_oriented_true_efd_normalized_triadica_sebifera_example.svg"
-svg(file.path(save_dir, save_file_name), bg = "transparent")
-xy_list_example <- xy_list[1:9]
-labels <- letters[seq_along(xy_list_example)]
-layout(matrix(seq_along(xy_list_example), nrow = 3, byrow = TRUE))
-for (i in seq_along(xy_list_example)) {
-  compare_contour_oriented_ture_EFD_normalization(
-    original = xy_list[[i]],
-    ef_normalized = ef_list[[i]],
+    label = i,
     nb.h = 5,
     mar = c(0, 0, 0, 0),
     lwd = 3,
-    cex.text = 5,
-    label = labels[i]
-  )
-}
-dev.off()
-```
-
-## True EFD normalization
-
-Because the contours are rotated to align the major axis to the x-axis, the orientations may not be consistent among samples.
-
-### Define function to compare original contour and reconstructed contour from True EFD normalization
-
-```{r}
-compare_contour <- function(
-  original,
-  label = NULL,
-  nb.h = 35,
-  mar = c(0, 0, 0, 0),
-  cex.text = 2,
-  ...
-) {
-  center <- coo_centpos(original) # center position
-  original_centered <- sweep(original, 2, center, "-") # center the contour
-
-  ef <- efourier(
-    original_centered,
-    nb.h = nb.h,
-    norm = FALSE
-  )
-  true_ef <- true_normalize(ef, output_meta = TRUE)
-  true_ef_coef <- true_ef$ef
-  true_ef_coef <- list(
-    ao = unique(true_ef_coef$ao),
-    co = unique(true_ef_coef$co),
-    an = true_ef_coef$an,
-    bn = true_ef_coef$bn,
-    cn = true_ef_coef$cn,
-    dn = true_ef_coef$dn
-  )
-  # reonstruct contour from true EFD coefficients
-  reconstruct <- efourier_i(true_ef_coef, nb.h = nb.h)
-  df_reconstruct <- as.data.frame(reconstruct)
-  df_reconstruct <- df_reconstruct * true_ef$E
-
-  xlim <- range(c(df_reconstruct$x, original_centered[, 1]))
-
-  par(mar = mar)
-  # original centered contour
-  plot(
-    original_centered,
-    type = "l",
-    asp = 1,
-    col = adjustcolor("black", red = 0.7, green = 0.7, blue = 0.7),
-    xlim = xlim,
-    bty = "n",
-    xaxt = "n",
-    yaxt = "n",
-    xlab = "",
-    ylab = "",
-    ...
-  )
-
-  # reconstructed contour
-  lines(
-    df_reconstruct,
-    asp = 1,
-    col = adjustcolor("#FF4B00", alpha.f = 0.9),
-    ...
-  )
-  if (!is.null(label)) {
-    text(
-      x = mean(par("usr")[1:2]),
-      y = mean(par("usr")[3:4]),
-      labels = label,
-      cex = cex.text,
-      col = "black"
-    )
-  }
-}
-```
-
-### Save all comparisons with rotated contours
-
-```{r}
-# ratation
-set.seed(123) # set.seed for reproducibility
-angles <- sample(0:360, length(xy_list), replace = TRUE) # rotation angles in degrees
-# rotate contours
-xy_list_rotated <- mapply(
-  function(mat, ang) rotate_xy_centered(mat, ang),
-  xy_list,
-  angles,
-  SIMPLIFY = FALSE
-)
-
-save_dir <- "results"
-dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
-save_path <- file.path(
-  save_dir,
-  "contour_rotation_reconstrucsion_triadica_sebifera.svg"
-)
-svg(save_path, width = 10, height = 5, bg = "transparent")
-layout(matrix(seq_along(xy_list_rotated), nrow = 5, byrow = TRUE))
-for (i in seq_along(xy_list_rotated)) {
-  compare_contour(
-    original = xy_list_rotated[[i]],
-    nb.h = 5,
-    mar = c(0, 0, 0, 0),
-    lwd = 2,
-    cex.text = 1,
-    label = names(xy_list_rotated)[i]
-  )
-}
-dev.off()
-```
-
-## Save a subset of comparisons with rotated contours
-
-```{r}
-save_dir <- "results"
-dir.create(save_dir, showWarnings = FALSE)
-save_file_name <- "compare_contours_true_efd_normalized_triadica_sebifera_example.svg"
-svg(file.path(save_dir, save_file_name), bg = "transparent")
-
-xy_list_rotated_example <- xy_list_rotated[1:9]
-labels <- letters[seq_along(xy_list_rotated_example)]
-layout(matrix(seq_along(xy_list_rotated_example), nrow = 3, byrow = TRUE))
-for (i in seq_along(xy_list_rotated_example)) {
-  compare_contour(
-    original = xy_list_rotated_example[[i]],
-    nb.h = 5,
-    mar = c(0, 0, 0, 0),
-    lwd = 3,
-    cex.text = 5,
-    label = labels[i]
+    cex.text = 5
   )
 }
 dev.off()

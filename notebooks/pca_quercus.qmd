@@ -1,23 +1,46 @@
-## Setup
+---
+title: "PCA of *Quercus serrata* and *Quercus crispula* leaf contours"
+---
+
+Purposes of this notebook are:  
+1. To perform PCA using the coefficients obtained by conventional normalization, oriented true EFD normalization and normalized EFD.  
+2. To compare the PCA results among these three methods.  
+
+Output figures in this notebook are used in **Figure 4A-C** of the manuscript.
+
+## Setup & preprocessing
 
 ```{r}
 #| label: setup
-
 library(tools)
 library(Momocs)
-source("scripts/functions.R")
+source("R/geometry.R")
+source("R/normalization.R")
+source("R/pca_plot.R")
+# color palette for colorblind-friendly visualization
 palette("Okabe-Ito")
-my_palette <- pal_manual(c("#FF4B00", "#005AFF"), transp = 0) # Quercus serrata and Q. crispula colors
+# Quercus serrata and Q. crispula colors
+my_palette <- pal_manual(c("#FF4B00", "#005AFF"), transp = 0)
+# set the data directory from environment variable (.Renviron)
+data_dir <- Sys.getenv("PROJECT_DATA_DIR")
 ```
 
-## Load species names
+Load the species names from the CSV file.
+
+This file contains three columns: `id`, `konara`, and `mizunara`. 
+The `id` column corresponds to the sample ID, while the `konara` and `mizunara` columns contain binary values indicating the species classification. 
+We will determine the species name based on which column has a value of 1 for each sample.
+
+::: {.callout-note}
+## Species name
+
+`konara` means Quercus serrata, and `mizunara` means Quercus crispula.
+`konara` (コナラ) represents the standard Japanese name of Quercus serrata, while `mizunara` (ミズナラ) is the standard Japanese name of Quercus crispula.
+:::
 
 ```{r}
 #| label: species_name
-
-df_sp_name <- read.csv("data/species_name.csv")
-# konara: Quercus settata
-# mizunara: Quercus crispula
+df_sp_name <- read.csv(file.path(data_dir, "data/species_name.csv"))
 df_sp_name$species <- ifelse(
   df_sp_name$konara < df_sp_name$mizunara,
   "Quercus crispula",
@@ -29,20 +52,17 @@ df_sp_name$species <- factor(
 )
 ```
 
-## Principal Component Analysis (PCA) using Momocs
-
 Load contours
 
 ```{r}
 #| label: load_contours
-
 file_paths_xy <- list.files(
-  "data/contour/",
+  file.path(data_dir, "data/contour_quercus/"),
   full.names = TRUE,
   pattern = "\\.csv$"
 )
 xy_list <- lapply(file_paths_xy, function(fp) {
-  cat("File:", fp, "\n")
+  #cat("File:", fp, "\n")
   df <- read.csv(fp)
   df <- df[, c("x", "y")]
   df <- as.matrix(df)
@@ -56,9 +76,10 @@ xy_list <- lapply(file_paths_xy, function(fp) {
 names(xy_list) <- file_path_sans_ext(basename(file_paths_xy))
 ```
 
-## rotate contour
+Rotate contour
 
 ```{r}
+#| label: rotate_contours
 set.seed(123) # set.seed for reproducibility
 angles <- sample(0:360, length(xy_list), replace = TRUE) # rotation angles in degrees
 # rotate contours
@@ -70,12 +91,18 @@ xy_list_rotated <- mapply(
 )
 ```
 
-## 開始点もランダムにする
+To evaluate the normalization methods without bias from the contour’s initial point, we randomize the starting point of each contour. 
+
+This is necessary because the contours obtained with LeafContourEFD already have a standardized starting point. 
+
+To randomize the starting point, we reorder the points in each contour by selecting a starting point at random and rearranging the sequence accordingly.
 
 ```{r}
+#| label: randomize_starting_point
 set.seed(123)
 xy_list_rotated_reordered <- lapply(xy_list_rotated, function(xy_rotated) {
-  idx_start <- sample(seq_len(nrow(xy_rotated)), 1) # rotation angles in degrees
+  # rotation angles in degrees
+  idx_start <- sample(seq_len(nrow(xy_rotated)), 1)
   xy_rotated_reordered <- xy_rotated[
     c(idx_start:nrow(xy_rotated), 1:(idx_start - 1)),
   ]
@@ -83,11 +110,10 @@ xy_list_rotated_reordered <- lapply(xy_list_rotated, function(xy_rotated) {
 })
 ```
 
-## species names corresponding to individual IDs
+Species names corresponding to individual IDs
 
 ```{r}
 #| label: prepare_ids_species
-
 id_name <- file_path_sans_ext(basename(file_paths_xy)) # IDs with suffixes
 # individual IDs without suffixes
 id_name_head <- lapply(id_name, function(x) {
@@ -99,11 +125,99 @@ id_name_head <- unlist(id_name_head)
 sp_name <- df_sp_name$species[match(id_name_head, df_sp_name$id)]
 ```
 
+## PCA using conventional normalization
+
+PCA using normalized EFD coefficients (conventional method)
+Momocs側で正規化を行います。
+
+```{r}
+#| label: pca_efd_normalized
+nb_h <- 35 # Number of harmonics
+out <- Out(
+  xy_list_rotated_reordered,
+  fac = data.frame(species = factor(sp_name))
+) # convert to Momocs Out object
+# EFD with normalization
+ef_norm <- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE)
+pca_norm <- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+
+idx_max <- which.max(pca_norm$x[, 2])
+idx_min <- which.min(pca_norm$x[, 2])
+
+pca_plot(pca_norm) # visualize PCA results
+```
+
+```{r}
+#| label: pca_efd_normalized_save
+#| eval: false
+#| code-fold: true
+#| code-summary: "Save the plot as SVG file"
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+save_file_name <- "fig4a_pca_efd_normalized_quercus.svg"
+save_file_path <- file.path(save_dir, save_file_name)
+svg(
+  save_file_path,
+  bg = "transparent"
+)
+pca_plot(pca_norm)
+dev.off()
+```
+
+## PCA using true EFD normalization
+
+```{r}
+#| label: pca_true_efd_normalized
+nb_h <- 35 # Number of harmonics
+# convert to Momocs Out object
+out <- Out(
+  xy_list_rotated_reordered,
+  fac = data.frame(species = factor(sp_name))
+)
+# oriented true EFD normalization
+ef_true_norm <- efourier_true_norm(
+  out,
+  nb_h = nb_h,
+  x_sy = TRUE,
+  y_sy = TRUE,
+  skip_rotation = FALSE
+)
+# PCA with Momocs
+pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE)
+# flip PC axes for better visualization
+pca_true_norm <- flip_PCaxes(pca_true_norm, 1)
+pca_plot(pca_true_norm)
+```
+
+```{r}
+#| label: pca_true_efd_normalized_save
+#| eval: false
+#| code-fold: true
+#| code-summary: "Save the plot as SVG file"
+save_dir <- "results"
+dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+save_file_name <- "fig4b_pca_true_efd_normalized.svg"
+save_file_path <- file.path(save_dir, save_file_name)
+svg(
+  save_file_path,
+  bg = "transparent"
+)
+pca_plot(pca_true_norm)
+dev.off()
+```
+
 ## PCA using oriented true EFD normalization
+
+(後で英語に直す)
+LeafContourEFDで得られた輪郭はすでに開始点、回転が標準化されています。
+この輪郭にtrue EFD noramlizationのx対照補正のみを行うことで、oriente true EFD normalizationを実現します。
+
+LeafContourEFDで得られたフーリエ係数を使用しても同じ結果が得られますが、今回はMomocsの関数を利用して、PC値の変化に応じた再構築輪郭の変化を簡単にPCAプロット上に可視化できるようにします。
+
+将来的にはMomocsに依存しない方法も提供する予定です。
 
 ```{r}
 #| label: pca_oriented_true_efd_normalized
-
 nb_h <- 35 # Number of harmonics
 out <- Out(xy_list, fac = data.frame(species = factor(sp_name))) # convert to Momocs Out object
 # oriented true EFD normalization
@@ -114,203 +228,30 @@ ef_true_norm <- efourier_true_norm(
   y_sy = FALSE,
   skip_rotation = TRUE
 )
-pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
+# PCA with Momocs
+pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE)
 ```
 
-#### 保存
+Visualize PCA results
 
 ```{r}
-save_dir <- "results/pca_quercus"
-dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-save_file_name <- "pca_oriented_true_efd_normalized.svg"
-save_file_path <- file.path(save_dir, save_file_name)
-svg(
-  save_file_path,
-  bg = "transparent"
-)
-pca_plot <- function(x, ...) {
-  plt <- plot_PCA(
-    x,
-    f = ~species,
-    palette = my_palette,
-    points = FALSE,
-    morphospace = FALSE,
-    morphospace_position = "range",
-    chull = TRUE, # convex hull
-    #chullfilled = TRUE,
-    zoom = 1,
-    eigen = FALSE,
-    box = FALSE,
-    axesnames = FALSE,
-    axesvar = FALSE,
-    ...
-  )
-  plt <- layer_axes(plt, col = "black", lwd = 1)
-  plt <- layer_ticks(plt, col = "black", lwd = 1)
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
-  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
-  plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
-}
+#| label: pca_oriented_true_efd_normalized_plot
 pca_plot(pca_true_norm)
-dev.off()
 ```
 
-## PCA using normalized EFD
-
-PCA using normalized EFD coefficients (traditional method)
-Momocs側で正規化を行います。
-
 ```{r}
-#| label: pca_efd_normalized
-
-nb_h <- 35 # Number of harmonics
-out <- Out(
-  xy_list_rotated_reordered,
-  fac = data.frame(species = factor(sp_name))
-) # convert to Momocs Out object
-ef_norm <- efourier(out, nb.h = nb_h, norm = TRUE, start = FALSE) # EFD with normalization
-pca_norm <- PCA(ef_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
-
-idx_max <- which.max(pca_norm$x[, 2])
-idx_min <- which.min(pca_norm$x[, 2])
-
-pca_plot(pca_norm)
-
-# PC2が最大の点と最小の点を赤で強調表示
-points(
-  pca_norm$x[idx_max, 1],
-  pca_norm$x[idx_max, 2],
-  col = "red",
-  pch = 19,
-  cex = 2
-)
-points(
-  pca_norm$x[idx_min, 1],
-  pca_norm$x[idx_min, 2],
-  col = "red",
-  pch = 19,
-  cex = 2
-)
-
-ef_norm_coef <- ef_norm$coe[idx_max, ]
-ef <- list(
-  ao = 0,
-  co = 0,
-  an = ef_norm_coef[grep("A", names(ef_norm_coef))],
-  bn = ef_norm_coef[grep("B", names(ef_norm_coef))],
-  cn = ef_norm_coef[grep("C", names(ef_norm_coef))],
-  dn = ef_norm_coef[grep("D", names(ef_norm_coef))]
-)
-df_reconstruct <- as.data.frame(efourier_i(ef, nb.h = nb_h))
-plot(df_reconstruct, type = "l", asp = 1)
-
-ef_norm_coef <- ef_norm$coe[idx_min, ]
-ef <- list(
-  ao = 0,
-  co = 0,
-  an = ef_norm_coef[grep("A", names(ef_norm_coef))],
-  bn = ef_norm_coef[grep("B", names(ef_norm_coef))],
-  cn = ef_norm_coef[grep("C", names(ef_norm_coef))],
-  dn = ef_norm_coef[grep("D", names(ef_norm_coef))]
-)
-df_reconstruct <- as.data.frame(efourier_i(ef, nb.h = nb_h))
-plot(df_reconstruct, type = "l", asp = 1)
-```
-
-### Save plot
-
-```{r}
-save_dir <- "results/pca_quercus"
+#| label: pca_oriented_true_efd_normalized_save
+#| eval: false
+#| code-fold: true
+#| code-summary: "Save the plot as SVG file"
+save_dir <- "results"
 dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-save_file_name <- "pca_efd_normalized.svg"
+save_file_name <- "fig4c_pca_oriented_true_efd_normalized.svg"
 save_file_path <- file.path(save_dir, save_file_name)
 svg(
   save_file_path,
   bg = "transparent"
 )
-pca_plot <- function(x, ...) {
-  plt <- plot_PCA(
-    x,
-    f = ~species,
-    palette = my_palette,
-    points = FALSE,
-    morphospace = FALSE,
-    morphospace_position = "range",
-    chull = TRUE, # convex hull
-    #chullfilled = TRUE,
-    labelgroups = FALSE,
-    zoom = 1,
-    eigen = FALSE,
-    box = FALSE,
-    axesnames = FALSE,
-    axesvar = FALSE,
-    ...
-  )
-  plt <- layer_axes(plt, col = "black", lwd = 1)
-  plt <- layer_ticks(plt, col = "black", lwd = 1)
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
-  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
-  plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
-}
-pca_plot(pca_norm)
-dev.off()
-```
-
-## True EFD normalization
-
-```{r}
-#| label: pca_oriented_true_efd_normalized
-
-nb_h <- 35 # Number of harmonics
-out <- Out(
-  xy_list_rotated_reordered,
-  fac = data.frame(species = factor(sp_name))
-) # convert to Momocs Out object
-# oriented true EFD normalization
-ef_true_norm <- efourier_true_norm(
-  out,
-  nb_h = nb_h,
-  x_sy = TRUE,
-  y_sy = TRUE,
-  skip_rotation = FALSE
-)
-pca_true_norm <- PCA(ef_true_norm, center = TRUE, scale. = FALSE) # PCA with Momocs
-pca_true_norm <- flip_PCaxes(pca_true_norm, 1) # flip PC axes for better visualization
-
-save_dir <- "results/pca_quercus"
-dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-save_file_name <- "pca_true_efd_normalized.svg"
-save_file_path <- file.path(save_dir, save_file_name)
-svg(
-  save_file_path,
-  bg = "transparent"
-)
-pca_plot <- function(x, ...) {
-  plt <- plot_PCA(
-    x,
-    f = ~species,
-    palette = my_palette,
-    points = FALSE,
-    morphospace = FALSE,
-    morphospace_position = "range",
-    chull = TRUE, # convex hull
-    #chullfilled = TRUE,
-    zoom = 1,
-    eigen = FALSE,
-    box = FALSE,
-    axesnames = FALSE,
-    axesvar = FALSE,
-    ...
-  )
-  plt <- layer_axes(plt, col = "black", lwd = 1)
-  plt <- layer_ticks(plt, col = "black", lwd = 1)
-  plt <- layer_points(plt, pch = 19, cex = 1, transp = 0.5)
-  plt <- layer_morphospace_PCA(plt, size = 1, col = "black")
-  plt <- layer_axesnames(plt, cex = 1.5, name = "PC") # add axes names
-  plt <- layer_axesvar(plt, cex = 1.5) # add axes variance
-}
 pca_plot(pca_true_norm)
 dev.off()
 ```
